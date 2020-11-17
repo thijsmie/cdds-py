@@ -1,0 +1,8 @@
+module dds {
+    struct Vehicle {
+      string name;
+      short x;
+      short y;
+    };
+    #pragma keylist Vehicle name
+};
