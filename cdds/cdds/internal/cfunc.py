@@ -1,4 +1,5 @@
 from inspect import signature
+from ctypes import CFUNCTYPE
 
 
 def c_call(cname):
@@ -27,3 +28,25 @@ def c_call(cname):
             setattr(cls, name, final_func)
 
     return DllCall
+
+
+class CCallable:
+    def __init__(self, type, function):
+        self.type = type
+        self.function = function
+
+    def bind(self, fn):
+        def bindable(*args):
+            try:
+                self.function(oself, *args)
+            except:
+                # Supress all errors to avoid passing them back into C libs
+                pass
+        return self.type(bindable)
+
+
+def c_callable(function) -> CFUNCTYPE:
+    s = signature(function)
+
+    # make a c func based on python type annotations
+    return CFUNCTYPE(s.return_annotation, *[p.annotation for i, p in enumerate(s.parameters.values())])

@@ -36,3 +36,8 @@ class SampleInfo(ct.Structure):
                 ('sample_rank', ct.c_uint32),
                 ('generation_rank', ct.c_uint32),
                 ('absolute_generation_rank', ct.c_uint32)]
+
+
+class dds_inconsistent_topic_status_t(ct.Structure):
+    _fields_ = [('total_count', ct.c_uint32),
+                ('total_count_change', ct.c_int32)]

@@ -1,9 +1,9 @@
 from cdds.internal import c_call
-from cdds.internal.dds_types import dds_entity_t, dds_attach_t, dds_return_t
+from cdds.internal.dds_types import dds_entity_t, dds_attach_t, dds_return_t, dds_duration_t, dds_time_t
 from cdds.core import Entity
 from cdds.domain import DomainParticipant
 
-from ctypes import c_int
+from ctypes import c_size_t, c_int, c_void_p, c_bool, byref, cast, POINTER
 
 
 class WaitSet(Entity):
@@ -12,9 +12,11 @@ class WaitSet(Entity):
         self.attached = []
 
     def __del__(self):
+        for v in self.attached:
+            self._waitset_detach(self._ref, v[0]._ref)
         self._destroy_waitset(self._ref)
 
-    def attach(self, entity: Entity):
+    def attach(self, entity: Entity) -> None:
         if self.is_attached(entity):
             return
 
@@ -22,28 +24,36 @@ class WaitSet(Entity):
         self._waitset_attach(self._ref, entity._ref, byref(value_pt))
         self.attached.append((entity, value_pt))
 
-    def detach(self, entity: Entity):
+    def detach(self, entity: Entity) -> None:
         for i, v in enumerate(self.attached):
             if v[0] == entity:
                 self._waitset_detach(self._ref, entity._ref)
                 del self.attached[i]
                 break
 
-    def is_attached(self, entity: Entity):
+    def is_attached(self, entity: Entity) -> bool:
         for v in self.attached:
             if v[0] == entity:
                 return True
         return False
 
-    def wait(self, n_blobs, timeout):
-        # we only have one condition
-        cs = (c_void_p * 1)()
+    def get_entities(self):
+        # Note: should spend some time on synchronisation. What if the waitset is used across threads? 
+        # That is probably a bad idea in python, but who is going to stop the user from doing it anyway...
+        return [v[0] for v in self.attached]
+
+    def wait(self, timeout: int):
+        cs = (c_void_p * len(self.attached))()
         pcs = cast(cs, c_void_p)
-        s = self.rt.ddslib.dds_waitset_wait(self.handle, byref(pcs), 1, timeout)
-        if s == 0:
-            return False
-        else:
-            return True
+        return self._waitset_wait(self._ref, byref(pcs), len(self.attached), timeout)
+
+    def wait_until(self, abstime: int):
+        cs = (c_void_p * len(self.attached))()
+        pcs = cast(cs, c_void_p)
+        return self._waitset_wait_until(self._ref, byref(pcs), len(self.attached), abstime)
+
+    def set_trigger(self, value: bool):
+        return self._waitset_set_trigger(self._ref, value)
 
     @c_call("dds_create_waitset")
     def _create_waitset(self, domain_participant: dds_entity_t) -> dds_entity_t:
@@ -53,6 +63,22 @@ class WaitSet(Entity):
     def _waitset_attach(self, waitset: dds_entity_t, entity: dds_entity_t, x: dds_attach_t) -> dds_return_t:
         pass
 
+    @c_call("dds_waitset_detach")
+    def _waitset_detach(self, waitset: dds_entity_t, entity: dds_entity_t) -> dds_return_t:
+        pass
+
+    @c_call("dds_waitset_wait")
+    def _waitset_wait(self, waitset: dds_entity_t, xs: POINTER(dds_attach_t), nxs: c_size_t, reltimeout: dds_duration_t) -> dds_return_t:
+        pass
+
+    @c_call("dds_waitset_wait_until")
+    def _waitset_wait_until(self, waitset: dds_entity_t, xs: POINTER(dds_attach_t), nxs: c_size_t, abstimeout: dds_duration_t) -> dds_return_t:
+        pass
+
+    @c_call("dds_waitset_set_trigger")
+    def _waitset_set_trigger(self, waitset: dds_entity_t, value: c_bool) -> dds_return_t:
+        pass
+
     @c_call("dds_delete")
     def _destroy_waitset(self, waitset: dds_entity_t) -> None:
-        passs
+        pass

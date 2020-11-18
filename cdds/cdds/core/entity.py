@@ -1,11 +1,8 @@
-import ctypes as ct
-from ctypes.util import find_library
+from cdds.internal import load_library
 
-library = find_library("ddsc")
-dll = ct.CDLL(library)
 
 class Entity:
-    dll_handle = dll
+    dll_handle = load_library("ddsc")
        
         
 

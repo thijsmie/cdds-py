@@ -4,14 +4,23 @@ from cdds.topic import Topic
 from cdds.internal import c_call, dds_entity_t, dds_qos_p_t, dds_listener_p_t, dds_return_t, SampleInfo
 from ctypes import c_void_p, c_int, POINTER, c_size_t, c_uint32, cast
 
+from typing import Optional
+
 
 class DataReader(Entity):
+    readers = {}
+
     def __init__(self, subscriber: Subscriber, topic: Topic, qos=None, listener=None):
         self.subscriber = subscriber
         self.topic = topic
         self.qos = qos
         self.listener = listener
-        self._ref = self._create_reader(subscriber._ref, topic._ref, qos, listener)
+        self._ref = self._create_reader(subscriber._ref, topic._ref, qos, listener._ref if listener else None)
+        self.readers[self._ref] = self
+
+    @classmethod
+    def get(self, entity: dds_entity_t) -> Optional['DataReader']:
+        return self.readers.get(entity, None)
 
     def read(self, N=1):
         # TODO: Alloc these statically

@@ -1,7 +1,8 @@
+from cdds.internal import load_library
 from cdds.internal.dds_types import dds_topic_descriptor_p_t
 from ctypes import CDLL, Structure, c_int, c_char_p, byref, cast
 from dataclasses import dataclass, fields, asdict
-from ctypes.util import find_library
+
 
 
 loaded_libs = {}
@@ -15,9 +16,7 @@ def _autoconvert(obj):
 
 def DDSEntity(lib):
     if lib not in loaded_libs:
-        library = find_library(lib)
-        loaded_libs[lib] = CDLL(library)
-
+        loaded_libs[lib] = load_library(lib)
     lib = loaded_libs[lib]
 
     def DDSEntity(clso):
