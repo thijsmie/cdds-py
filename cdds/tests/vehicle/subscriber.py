@@ -1,29 +1,48 @@
 import time
+import string
+import random
+from datetime import timedelta
 
-import cdds as dds
-from cdds.core.policy import QosDurability, Qos, QosHistory
-from cdds.core.listener import Listener
-import vehicle
+from cdds.core import Listener, WaitSet, ReadCondition, QueryCondition, ViewState, SampleState, InstanceState, Qos, QosDurability, QosHistory
+from cdds.domain import DomainParticipant
+from cdds.topic import Topic
+from cdds.sub import Subscriber, DataReader
+from cdds.util import duration
 
-listener = Listener()
-
-def data_available(reader):
-    print(f"Ping!")
-listener.on_data_available = data_available
-
-
-qos = Qos(durability=QosDurability.Persistent, history=(QosHistory.KeepAll, 200), props={"a": "wow!"})
-domain_participant = dds.domain.DomainParticipant(0)
-topic = dds.topic.Topic(domain_participant, vehicle.Vehicle, 'Vehicle', qos=None)
-subscriber = dds.sub.Subscriber(domain_participant)
+from vehicle import Vehicle
 
 
-reader = dds.sub.DataReader(domain_participant, topic, listener=listener)
+
+class MyListener(Listener):
+    def on_data_available(self, reader):
+        print(">> Ping!")
+
+    def on_liveliness_changed(self, reader, status):
+        print(">> Liveliness event")
+
+
+listener = MyListener()
+qos = Qos(
+    durability=QosDurability.Transient, 
+    history=(QosHistory.KeepLast, 20)
+)
+qos.history = QosHistory.KeepAll
+
+domain_participant = DomainParticipant(0)
+topic = Topic(domain_participant, Vehicle, 'Vehicle', qos=qos)
+subscriber = Subscriber(domain_participant)
+reader = DataReader(domain_participant, topic, listener=listener)
+
+condition = QueryCondition(reader, SampleState.NotRead | ViewState.Any | InstanceState.Alive, lambda vehicle: vehicle.x % 2 == 0)
+
+waitset = WaitSet(domain_participant)
+waitset.attach(condition)
 
 while True:
-    sample = reader.take()
-    if sample:
-        sample = sample[0]
-        print(f"Received sample: Vehicle({sample.name}, {sample.x}, {sample.y})")
-        continue
-    time.sleep(1)
+    waitset.wait(duration(seconds=2.2))
+    samples = reader.take(N=100)
+    if samples:
+        for sample in samples:
+            print(f"Read sample: Vehicle({sample.name}, {sample.x}, {sample.y})")
+    else:
+        print("timeout waitset")

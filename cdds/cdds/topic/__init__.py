@@ -1,1 +1,1 @@
-from .topic import Topic
+from cdds.topic.topic import Topic

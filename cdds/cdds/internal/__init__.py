@@ -1,3 +1,4 @@
-from .clib import load_library
-from .cfunc import c_call, c_callable
-from .dds_types import *
+from cdds.internal.clib import load_library
+from cdds.internal.cfunc import c_call, c_callable
+from cdds.internal.error import DDSException
+from cdds.internal.dds_types import *

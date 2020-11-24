@@ -1,9 +1,9 @@
-from cdds.domain import DDSEntity
+from cdds.domain import Sample
 import os
 from ctypes import c_char_p, c_int16
 
 
-@DDSEntity("vehicle")
+@Sample("vehicle")
 class Vehicle:
     name: c_char_p
     x: c_int16

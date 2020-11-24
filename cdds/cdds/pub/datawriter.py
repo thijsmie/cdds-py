@@ -1,24 +1,36 @@
 from cdds.core import Entity
-from cdds.pub import Publisher
-from cdds.topic import Topic
-from cdds.internal import c_call, dds_entity_t, dds_qos_p_t, dds_listener_p_t, dds_return_t
-from ctypes import c_void_p
+from cdds.internal import DDSException, c_call
+from cdds.internal.dds_types import dds_entity_t, dds_duration_t, dds_qos_p_t, dds_listener_p_t, dds_return_t
+from cdds.internal.error import DDS_RETCODE_TIMEOUT
+
+from ctypes import c_void_p, byref
 
 
 class DataWriter(Entity):
-    def __init__(self, publisher: Publisher, topic: Topic, qos=None, listener=None):
-        self.publisher = publisher
-        self.topic = topic
-        self.qos = qos
-        self.listener = listener
-        self._ref = self._create_writer(publisher._ref, topic._ref, qos, listener)
+    def __init__(self, publisher: 'Publisher', topic: 'Topic', qos=None, listener=None):
+        super().__init__(self._create_writer(publisher._ref, topic._ref, qos._ref if qos else None, listener._ref if listener else None))
 
     def write(self, sample):
-        # TODO: raise exception based on return code instead, maybe with another decorator
-        return self._write(self._ref, sample._ref)
+        ret = self._write(self._ref, sample.to_struct())
+        if ret < 0:
+            raise DDSException(ret, f"Occurred while writing sample in {repr(self)}")
 
-    def dispose_instance(self, sample):
-        return self._dispose(self._ref, sample._ref)
+    def wait_for_acks(self, timeout: int):
+        ret = self._wait_for_acks(self._ref, timeout)
+        if ret == 0:
+            return True
+        elif ret == DDS_RETCODE_TIMEOUT:
+            return False
+        raise DDSException(ret, f"Occurred while waiting for acks from {repr(self)}")
+
+    def dispose(self, sample):
+        if sample.struct:
+            ret = self._dispose(self._ref, byref(sample.struct))
+            if ret < 0:
+                raise DDSException(ret, f"Occurred while disposing in {repr(self)}")
+
+    # TODO: register_instance, unregister_instance
+    # TODO: writedispose
 
 
     @c_call("dds_create_writer")
@@ -32,3 +44,8 @@ class DataWriter(Entity):
     @c_call("dds_dispose")
     def _dispose(self, writer: dds_entity_t, sample: c_void_p) -> dds_return_t:
         pass
+
+    @c_call("dds_wait_for_acks")
+    def _wait_for_acks(self, publisher: dds_entity_t, timeout: dds_duration_t) -> dds_return_t:
+        pass
+

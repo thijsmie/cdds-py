@@ -1,7 +1,7 @@
-from cdds.core import Entity
-from cdds.internal import c_call, dds_entity_t, dds_qos_p_t, dds_listener_p_t, dds_return_t, dds_reliability_t, dds_durability_t, dds_duration_t, dds_history_t, SampleInfo, \
+from cdds.core import DDS
+from cdds.internal import c_call, dds_qos_p_t, dds_return_t, dds_reliability_t, dds_durability_t, dds_duration_t, dds_history_t, \
     dds_presentation_access_scope_t, dds_ownership_t, dds_liveliness_t, dds_destination_order_t, dds_ingnorelocal_t
-from ctypes import c_void_p, c_int, c_int32, c_char_p, POINTER, c_size_t, c_uint32, c_bool, cast, byref, sizeof, Structure
+from ctypes import c_void_p, c_int32, c_char_p, POINTER, c_size_t, c_uint32, c_bool, cast, byref, sizeof, Structure
 from enum import Enum
 from typing import Tuple, Optional, List, Any
 
@@ -63,9 +63,13 @@ class QosException(Exception):
     __repr__ = __str__
 
 
-class Qos(Entity):
+class Qos(DDS):
+    _qosses = {}
+
     def __init__(self, **kwargs):
-        self._ref = self._create_qos()
+        super().__init__(self._create_qos())
+        self._qosses[self._ref] = self
+
         self._pre_alloc_data_pointers()
 
         for name, value in kwargs.items():
@@ -83,6 +87,10 @@ class Qos(Entity):
                     self.set_bprop(prop_name, prop_value)
             else:
                 setattr(self, name, value)
+
+    @classmethod
+    def get_qos(cls, id):
+        return cls._qosses.get(id)
 
     def __del__(self):
         self._delete_qos(self._ref)
@@ -703,3 +711,5 @@ class Qos(Entity):
     def _get_bpropnames(self,  qos: dds_qos_p_t, size: POINTER(c_uint32), names: POINTER(POINTER(c_char_p))) -> bool:
         pass
     
+# Set DDS qos type
+DDS.qos_type = Qos

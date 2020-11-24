@@ -1,4 +1,5 @@
 import ctypes as ct
+from uuid import UUID
 
 
 dds_entity_t = ct.c_int32
@@ -41,3 +42,21 @@ class SampleInfo(ct.Structure):
 class dds_inconsistent_topic_status_t(ct.Structure):
     _fields_ = [('total_count', ct.c_uint32),
                 ('total_count_change', ct.c_int32)]
+
+
+class dds_liveliness_lost_status_t(ct.Structure):
+    _fields_ = [('total_count', ct.c_uint32),
+                ('total_count_change', ct.c_int32)]
+
+class dds_liveliness_changed_status_t(ct.Structure):
+    _fields_ = [('alive_count', ct.c_uint32),
+                ('not_alive_count', ct.c_uint32),
+                ('alive_count_change', ct.c_int32),
+                ('not_alive_count_change', ct.c_int32)]
+
+
+class dds_guid_t(ct.Structure):
+    _fields_ = [('v', ct.c_uint8 * 16)]
+
+    def as_python_guid(self) -> UUID:
+        return UUID(bytes(self.v))

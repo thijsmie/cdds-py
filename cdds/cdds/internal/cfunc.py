@@ -30,23 +30,6 @@ def c_call(cname):
     return DllCall
 
 
-class CCallable:
-    def __init__(self, type, function):
-        self.type = type
-        self.function = function
-
-    def bind(self, fn):
-        def bindable(*args):
-            try:
-                self.function(oself, *args)
-            except:
-                # Supress all errors to avoid passing them back into C libs
-                pass
-        return self.type(bindable)
-
-
-def c_callable(function) -> CFUNCTYPE:
-    s = signature(function)
-
+def c_callable(return_type, argument_types) -> CFUNCTYPE:
     # make a c func based on python type annotations
-    return CFUNCTYPE(s.return_annotation, *[p.annotation for i, p in enumerate(s.parameters.values())])
+    return CFUNCTYPE(return_type, *argument_types)

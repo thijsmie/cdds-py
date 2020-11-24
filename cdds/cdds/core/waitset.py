@@ -1,33 +1,39 @@
-from cdds.internal import c_call
-from cdds.internal.dds_types import dds_entity_t, dds_attach_t, dds_return_t, dds_duration_t, dds_time_t
 from cdds.core import Entity
 from cdds.domain import DomainParticipant
+from cdds.internal import c_call, DDSException
+from cdds.internal.dds_types import dds_entity_t, dds_attach_t, dds_return_t, dds_duration_t, dds_time_t
+from cdds.internal.error import DDS_RETCODE_TIMEOUT
 
 from ctypes import c_size_t, c_int, c_void_p, c_bool, byref, cast, POINTER
 
 
 class WaitSet(Entity):
     def __init__(self, domain_participant: DomainParticipant):
-        self._ref = self._create_waitset(domain_participant._ref)
+        super().__init__(self._create_waitset(domain_participant._ref))
         self.attached = []
 
     def __del__(self):
         for v in self.attached:
             self._waitset_detach(self._ref, v[0]._ref)
-        self._destroy_waitset(self._ref)
+        super().__del__()
 
     def attach(self, entity: Entity) -> None:
         if self.is_attached(entity):
             return
 
         value_pt = c_int()
-        self._waitset_attach(self._ref, entity._ref, byref(value_pt))
+
+        ret = self._waitset_attach(self._ref, entity._ref, byref(value_pt))
+        if ret < 0:
+            raise DDSException(ret, f"Occurred when trying to attach {repr(entity)} to {repr(self)}")
         self.attached.append((entity, value_pt))
 
     def detach(self, entity: Entity) -> None:
         for i, v in enumerate(self.attached):
             if v[0] == entity:
-                self._waitset_detach(self._ref, entity._ref)
+                ret = self._waitset_detach(self._ref, entity._ref)
+                if ret < 0:
+                    raise DDSException(ret, f"Occurred when trying to attach {repr(entity)} to {repr(self)}")
                 del self.attached[i]
                 break
 
@@ -45,15 +51,28 @@ class WaitSet(Entity):
     def wait(self, timeout: int):
         cs = (c_void_p * len(self.attached))()
         pcs = cast(cs, c_void_p)
-        return self._waitset_wait(self._ref, byref(pcs), len(self.attached), timeout)
+        ret = self._waitset_wait(self._ref, byref(pcs), len(self.attached), timeout)
+
+        if ret >= 0:
+            return ret
+        
+        raise DDSException(ret, f"Occurred while waiting in {repr(self)}")
 
     def wait_until(self, abstime: int):
         cs = (c_void_p * len(self.attached))()
         pcs = cast(cs, c_void_p)
-        return self._waitset_wait_until(self._ref, byref(pcs), len(self.attached), abstime)
+        ret = self._waitset_wait_until(self._ref, byref(pcs), len(self.attached), abstime)
+
+        if ret >= 0:
+            return ret
+
+        raise DDSException(ret, f"Occurred while waiting in {repr(self)}")
 
     def set_trigger(self, value: bool):
-        return self._waitset_set_trigger(self._ref, value)
+        ret = self._waitset_set_trigger(self._ref, value)
+        if ret < 0:
+            raise DDSException(ret, f"Occurred when setting trigger in {repr(self)}")
+
 
     @c_call("dds_create_waitset")
     def _create_waitset(self, domain_participant: dds_entity_t) -> dds_entity_t:
@@ -77,8 +96,4 @@ class WaitSet(Entity):
 
     @c_call("dds_waitset_set_trigger")
     def _waitset_set_trigger(self, waitset: dds_entity_t, value: c_bool) -> dds_return_t:
-        pass
-
-    @c_call("dds_delete")
-    def _destroy_waitset(self, waitset: dds_entity_t) -> None:
         pass
