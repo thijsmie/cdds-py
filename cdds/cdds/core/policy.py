@@ -1,55 +1,185 @@
-from cdds.core import DDS
-from cdds.internal import c_call, dds_qos_p_t, dds_return_t, dds_reliability_t, dds_durability_t, dds_duration_t, dds_history_t, \
+from cdds.internal import DDS, c_call
+from cdds.internal.dds_types import dds_qos_p_t, dds_return_t, dds_reliability_t, dds_durability_t, dds_duration_t, dds_history_t, \
     dds_presentation_access_scope_t, dds_ownership_t, dds_liveliness_t, dds_destination_order_t, dds_ingnorelocal_t
+from cdds.util import duration
+
 from ctypes import c_void_p, c_int32, c_char_p, POINTER, c_size_t, c_uint32, c_bool, cast, byref, sizeof, Structure
-from enum import Enum
-from typing import Tuple, Optional, List, Any
+from enum import Enum, auto
+from typing import Tuple, Callable, Optional, List, Any
 
 
 
-class QosReliability(Enum):
+class _QosReliability(Enum):
     BestEffort = 0
     Reliable = 1
 
 
-class QosDurability(Enum):
+class _QosDurability(Enum):
     Volatile = 0
     TransientLocal = 1
     Transient = 2
     Persistent = 3
 
 
-class QosHistory(Enum):
+class _QosHistory(Enum):
     KeepLast = 0
     KeepAll = 1
 
 
-class QosAccessScope(Enum):
+class _QosAccessScope(Enum):
     Instance = 0
     Topic = 1
     Group = 2
 
 
-class QosOwnership(Enum):
+class _QosOwnership(Enum):
     Shared = 0
     Exclusive = 1
 
 
-class QosLiveliness(Enum):
+class _QosLiveliness(Enum):
     Automatic = 0
     ManualByParticipant = 1
     ManualByTopic = 2
 
 
-class QosDestinationOrder(Enum):
+class _QosDestinationOrder(Enum):
     ByReceptionTimestamp = 0
     BySourceTimestamp = 1
 
 
-class QosIgnoreLocal(Enum):
+class _QosIgnoreLocal(Enum):
     Nothing = 0
     Participant = 1
     Process = 2
+
+
+class _PolicyType(Enum):
+    Reliability = auto()
+    Durability = auto()
+    History = auto()
+    ResourceLimits = auto()
+    PresentationAccessScope = auto()
+    Lifespan = auto()
+    Deadline = auto()
+    LatencyBudget = auto()
+    Ownership = auto()
+    OwnershipStrength = auto()
+    Liveliness = auto()
+    TimeBasedFilter = auto()
+    Partitions = auto()
+    TransportPriority = auto()
+    DestinationOrder = auto()
+    WriterDataLifecycle = auto()
+    ReaderDataLifecycle = auto()
+    DurabilityService = auto()
+    IgnoreLocal = auto()
+
+
+class Policy:
+    class Reliability:
+        @staticmethod
+        def BestEffort(max_blocking_time: int) -> Tuple[_PolicyType, Tuple[_QosReliability, int]]:
+            return _PolicyType.Reliability, (_QosReliability.BestEffort, max_blocking_time)
+            
+        @staticmethod
+        def Reliable(max_blocking_time: int) -> Tuple[_PolicyType, Tuple[_QosReliability, int]]:
+            return _PolicyType.Reliability, (_QosReliability.Reliable, max_blocking_time)
+
+    class Durability:
+        Volatile: Tuple[_PolicyType, _QosDurability] = (_PolicyType.Durability, _QosDurability.Volatile)
+        TransientLocal: Tuple[_PolicyType, _QosDurability] = (_PolicyType.Durability, _QosDurability.TransientLocal)
+        Transient: Tuple[_PolicyType, _QosDurability] = (_PolicyType.Durability, _QosDurability.Transient)
+        Persistent: Tuple[_PolicyType, _QosDurability] = (_PolicyType.Durability, _QosDurability.Persistent)
+    
+    class History:
+        KeepAll: Tuple[_PolicyType, Tuple[_QosHistory, int]] = (_PolicyType.History, (_QosHistory.KeepAll, 0))
+        @staticmethod
+        def KeepLast(amount: int) -> Tuple[_PolicyType, Tuple[_QosHistory, int]]:
+            return _PolicyType.History, (_QosHistory.KeepLast, amount)
+
+    @staticmethod
+    def ResourceLimits(max_samples: int, max_instances: int, max_samples_per_instance: int) -> Tuple[_PolicyType, Tuple[int, int, int]]:
+        return _PolicyType.ResourceLimits, (max_samples, max_instances, max_samples_per_instance)
+
+    class PresentationAccessScope:
+        @staticmethod
+        def Instance(coherent_access: bool, ordered_access: bool) -> Tuple[_PolicyType, Tuple[_QosAccessScope, bool, bool]]:
+            return _PolicyType.PresentationAccessScope, (_QosAccessScope.Instance, coherent_access, ordered_access)
+
+        @staticmethod
+        def Topic(coherent_access: bool, ordered_access: bool) -> Tuple[_PolicyType, Tuple[_QosAccessScope, bool, bool]]:
+            return _PolicyType.PresentationAccessScope, (_QosAccessScope.Topic, coherent_access, ordered_access)
+
+        @staticmethod
+        def Group(coherent_access: bool, ordered_access: bool) -> Tuple[_PolicyType, Tuple[_QosAccessScope, bool, bool]]:
+            return _PolicyType.PresentationAccessScope, (_QosAccessScope.Group, coherent_access, ordered_access)
+
+    @staticmethod
+    def Lifespan(lifespan: int) -> Tuple[_PolicyType, int]:
+        return _PolicyType.Lifespan, lifespan
+
+    @staticmethod
+    def Deadline(deadline: int) -> Tuple[_PolicyType, int]:
+        return _PolicyType.Deadline, deadline
+
+    @staticmethod
+    def LatencyBudget(budget: int) -> Tuple[_PolicyType, int]:
+        return _PolicyType.LatencyBudget, budget
+    class Ownership:
+        Shared: Tuple[_PolicyType, _QosOwnership] = (_PolicyType.Ownership, _QosOwnership.Shared)
+        Exclusive: Tuple[_PolicyType, _QosOwnership] = (_PolicyType.Ownership, _QosOwnership.Exclusive)
+
+    @staticmethod
+    def OwnershipStrength(strength: int) -> Tuple[_PolicyType, int]:
+        return _PolicyType.OwnershipStrength, strength
+
+    class Liveliness:
+        @staticmethod
+        def Automatic(lease_duration: int) -> Tuple[_PolicyType, Tuple[_QosLiveliness, int]]:
+            return _PolicyType.Liveliness, (_QosLiveliness.Automatic, lease_duration)
+
+        @staticmethod
+        def ManualByParticipant(lease_duration: int) -> Tuple[_PolicyType, Tuple[_QosLiveliness, int]]:
+            return _PolicyType.Liveliness, (_QosLiveliness.ManualByParticipant, lease_duration)
+
+        @staticmethod
+        def ManualByTopic(lease_duration: int) -> Tuple[_PolicyType, Tuple[_QosLiveliness, int]]:
+            return _PolicyType.Liveliness, (_QosLiveliness.ManualByTopic, lease_duration)
+
+    @staticmethod
+    def TimeBasedFilter(filter: int) -> Tuple[_PolicyType, int]:
+        return _PolicyType.TimeBasedFilter, filter
+    
+    @staticmethod
+    def Partitions(*partitions: List[str]) -> Tuple[_PolicyType, List[str]]:
+        return _PolicyType.Partitions, partitions
+
+    @staticmethod
+    def TransportPriority(priority: int) -> Tuple[_PolicyType, int]:
+        return _PolicyType.TransportPriority, priority
+
+    class DestinationOrder:
+        ByReceptionTimestamp: Tuple[_PolicyType, _QosDestinationOrder] = (_PolicyType.DestinationOrder, _QosDestinationOrder.ByReceptionTimestamp)
+        BySourceTimestamp: Tuple[_PolicyType, _QosDestinationOrder] = (_PolicyType.DestinationOrder, _QosDestinationOrder.BySourceTimestamp)
+
+    @staticmethod
+    def WriterDataLifecycle(autodispose: bool) -> Tuple[_PolicyType, bool]:
+        return _PolicyType.WriterDataLifecycle, autodispose
+
+    @staticmethod
+    def ReaderDataLifecycle(autopurge_nowriter_samples_delay: int, autopurge_disposed_samples_delay: int) -> Tuple[_PolicyType, Tuple[int, int]]:
+        return _PolicyType.ReaderDataLifecycle, (autopurge_nowriter_samples_delay, autopurge_disposed_samples_delay)
+
+    @staticmethod
+    def DurabilityService(cleanup_delay: int, history: Tuple[_PolicyType, Tuple[_QosHistory, int]], max_samples: int, max_instances: int, \
+         max_samples_per_instance) -> Tuple[_PolicyType, Tuple[int, _QosHistory, int, int, int, int]]:
+         assert (history[0] == _PolicyType.History)
+         return _PolicyType.DurabilityService, (cleanup_delay, history[1][0], history[1][1], max_samples, max_instances, max_samples_per_instance)
+
+    @staticmethod
+    def IgnoreLocal(ignorelocal: bool) -> Tuple[_PolicyType, bool]:
+        return _PolicyType.IgnoreLocal, ignorelocal
 
 
 class QosException(Exception):
@@ -65,12 +195,38 @@ class QosException(Exception):
 
 class Qos(DDS):
     _qosses = {}
+    _attr_dispatch = {
+        _PolicyType.Reliability: "set_reliability",
+        _PolicyType.Durability: "set_durability",
+        _PolicyType.History: "set_history",
+        _PolicyType.ResourceLimits: "set_resource_limits",
+        _PolicyType.PresentationAccessScope: "set_presentation_access_scope",
+        _PolicyType.Lifespan: "set_lifespan",
+        _PolicyType.Deadline: "set_deadline",
+        _PolicyType.LatencyBudget: "set_latency_budget",
+        _PolicyType.Ownership: "set_ownership",
+        _PolicyType.OwnershipStrength: "set_ownership_strength",
+        _PolicyType.Liveliness: "set_liveliness",
+        _PolicyType.TimeBasedFilter: "set_time_based_filter",
+        _PolicyType.Partitions: "set_partitions",
+        _PolicyType.TransportPriority: "set_transport_priority",
+        _PolicyType.DestinationOrder: "set_destination_order",
+        _PolicyType.WriterDataLifecycle: "set_writer_data_lifecycle",
+        _PolicyType.ReaderDataLifecycle: "set_reader_data_lifecycle",
+        _PolicyType.DurabilityService: "set_durability_service",
+        _PolicyType.IgnoreLocal: "set_ignore_local"
+    }
 
-    def __init__(self, **kwargs):
+    def __init__(self, *args, **kwargs):
         super().__init__(self._create_qos())
         self._qosses[self._ref] = self
 
         self._pre_alloc_data_pointers()
+
+        for policy in args:
+            if not policy or len(policy) < 2 or policy[0] not in self._attr_dispatch:
+                raise QosException(f"Passed invalid argument to Qos: {policy}")
+            getattr(self, self._attr_dispatch[policy[0]])(policy)
 
         for name, value in kwargs.items():
             if name == "userdata":
@@ -87,6 +243,11 @@ class Qos(DDS):
                     self.set_bprop(prop_name, prop_value)
             else:
                 setattr(self, name, value)
+
+    def __iadd__(self, policy):
+        if not policy or len(policy) < 2 or policy[0] not in self._attr_dispatch:
+            raise QosException(f"Passed invalid argument to Qos: {policy}")
+        getattr(self, self._attr_dispatch[policy[0]])(policy)
 
     @classmethod
     def get_qos(cls, id):
@@ -164,85 +325,73 @@ class Qos(DDS):
 
         return struct[0]
 
-    @property
-    def durability(self) -> QosDurability:
+    def get_durability(self) -> Tuple[_PolicyType, _QosDurability]:
         if not self._get_durability(self._ref, byref(self._gc_durability)):
             raise QosException("Durability or Qos object invalid.")
 
-        return QosDurability(int(self._gc_durability))
+        return _PolicyType.Durability, _QosDurability(int(self._gc_durability))
 
-    @property
-    def history(self) -> Tuple[QosHistory, int]:
+    def get_history(self) -> Tuple[_PolicyType, Tuple[_QosHistory, int]]:
         if not self._get_history(self._ref, byref(self._gc_history), byref(self._gc_history_depth)):
             raise QosException("History or Qos object invalid.")
 
-        return QosHistory(int(self._gc_history)), int(self._gc_history_depth)
+        return _PolicyType.History, (_QosHistory(int(self._gc_history)), int(self._gc_history_depth))
 
-    @property
-    def resource_limits(self) -> Tuple[int, int, int]:
+    def get_resource_limits(self) -> Tuple[_PolicyType, Tuple[int, int, int]]:
         if not self._get_resource_limits(self._ref, byref(self._gc_max_samples), byref(self._gc_max_instances), byref(self._gc_max_samples_per_instance)):
             raise QosException("Resource limits or Qos object invalid.")
 
-        return int(self._gc_max_samples), int(self._gc_max_instances), int(self._gc_max_samples_per_instance)
+        return _PolicyType.ResourceLimits, (int(self._gc_max_samples), int(self._gc_max_instances), int(self._gc_max_samples_per_instance))
 
-    @property
-    def presentation(self) -> Tuple[QosAccessScope, bool, bool]:
+    def get_presentation(self) -> Tuple[_PolicyType, Tuple[_QosAccessScope, bool, bool]]:
         if not self._get_presentation(self._ref, byref(self._gc_access_scope), byref(self._gc_coherent_access), byref(self._gc_ordered_access)):
             raise QosException("Presentation or Qos object invalid.")
         
-        return QosAccessScope(int(self._gc_access_scope)), bool(self._gc_coherent_access), bool(self._gc_ordered_access)
+        return _PolicyType.PresentationAccessScope, (_QosAccessScope(int(self._gc_access_scope)), bool(self._gc_coherent_access), bool(self._gc_ordered_access))
 
-    @property
-    def lifespan(self) -> int:
+    def get_lifespan(self) -> Tuple[_PolicyType, int]:
         if not self._get_lifespan(self._ref, byref(self._gc_lifespan)):
             raise QosException("Lifespan or Qos object invalid.")
 
-        return int(self._gc_lifespan)
+        return _PolicyType.Lifespan, int(self._gc_lifespan)
 
-    @property
-    def deadline(self) -> int:
+    def get_deadline(self) -> Tuple[_PolicyType, int]:
         if not self._get_deadline(self._ref, byref(self._gc_deadline)):
             raise QosException("Deadline or Qos object invalid.")
 
-        return int(self._gc_deadline)
+        return _PolicyType.Deadline, int(self._gc_deadline)
 
-    @property
-    def latency_budget(self) -> int:
+    def get_latency_budget(self) -> Tuple[_PolicyType, int]:
         if not self._get_latency_budget(self._ref, byref(self._gc_latency_budget)):
             raise QosException("Deadline or Qos object invalid.")
 
-        return int(self._gc_latency_budget)
+        return _PolicyType.LatencyBudget, int(self._gc_latency_budget)
 
-    @property
-    def ownership(self) -> QosOwnership:
+    def get_ownership(self) -> Tuple[_PolicyType, _QosOwnership]:
         if not self._get_ownership(self._ref, byref(self._gc_ownership)):
             raise QosException("Ownership or Qos object invalid.")
 
-        return QosOwnership(int(self._gc_ownership))
+        return _PolicyType.Ownership, _QosOwnership(int(self._gc_ownership))
 
-    @property
-    def ownership_strength(self) -> int:
+    def get_ownership_strength(self) -> Tuple[_PolicyType, int]:
         if not self._get_ownership_strength(self._ref, byref(self._gc_ownership_strength)):
             raise QosException("Ownership strength or Qos object invalid.")
 
-        return int(self._gc_ownership_strength)
+        return _PolicyType.OwnershipStrength, int(self._gc_ownership_strength)
 
-    @property
-    def liveliness(self) -> Tuple[QosLiveliness, int]:
+    def get_liveliness(self) -> Tuple[_PolicyType, Tuple[_QosLiveliness, int]]:
         if not self._get_liveliness(self._ref, byref(self._gc_liveliness), byref(self._gc_lease_duration)):
             raise QosException("Liveliness or Qos object invalid.")
 
-        return QosLiveliness(int(self._gc_liveliness)), int(self._gc_lease_duration)
+        return _PolicyType.Liveliness, (_QosLiveliness(int(self._gc_liveliness)), int(self._gc_lease_duration))
 
-    @property
-    def time_based_filter(self) -> int:
+    def get_time_based_filter(self) -> Tuple[_PolicyType, int]:
         if not self._get_time_based_filter(self._ref, byref(self._gc_time_based_filter)):
             raise QosException("Time Based Filter or Qos object invalid.")
 
-        return int(self._gc_time_based_filter)
+        return _PolicyType.TimeBasedFilter, int(self._gc_time_based_filter)
 
-    @property
-    def partitions(self) -> List[str]:
+    def get_partitions(self) -> Tuple[_PolicyType, List[str]]:
         if not self._get_partitions(self._ref, byref(self._gc_partition_num), byref(self._gc_partition_names)):
             raise QosException("Partition or Qos object invalid.")
 
@@ -250,45 +399,39 @@ class Qos(DDS):
         for i in range(self._gc_partition_num):
             names[i] = bytes(self._gc_partition_names[0][i]).decode()
 
-        return names
+        return _PolicyType.Partitions, names
 
-    @property
-    def reliability(self) -> Tuple[QosReliability, int]:
+    def get_reliability(self) -> Tuple[_PolicyType, Tuple[_QosReliability, int]]:
         if not self._get_reliability(self._ref, byref(self._gc_reliability), byref(self._gc_max_blocking_time)):
             raise QosException("Reliability or Qos object invalid.")
 
-        return QosReliability(int(self._gc_reliability)), int(self._gc_max_blocking_time)
+        return _PolicyType.Reliability, (_QosReliability(int(self._gc_reliability)), int(self._gc_max_blocking_time))
 
-    @property
-    def transport_priority(self) -> int:
+    def get_transport_priority(self) -> Tuple[_PolicyType, int]:
         if not self._get_transport_priority(self._ref, byref(self._gc_transport_priority)):
             raise QosException("Transport Priority or Qos object invalid.")
 
-        return int(self._gc_transport_priority)
+        return _PolicyType.TransportPriority, int(self._gc_transport_priority)
 
-    @property
-    def destination_order(self) -> QosDestinationOrder:
+    def get_destination_order(self) -> Tuple[_PolicyType, _QosDestinationOrder]:
         if not self._get_destination_order(self._ref, byref(self._gc_destination_order)):
             raise QosException("Destination Order or Qos object invalid.")
 
-        return QosDestinationOrder(int(self._gc_destination_order))
+        return _PolicyType.DestinationOrder, _QosDestinationOrder(int(self._gc_destination_order))
 
-    @property
-    def writer_data_lifecycle(self) -> bool:
+    def get_writer_data_lifecycle(self) -> Tuple[_PolicyType, bool]:
         if not self._get_writer_data_lifecycle(self._ref, byref(self._gc_writer_autodispose)):
             raise QosException("Writer Data Lifecycle or Qos object invalid.")
 
-        return bool(self._gc_writer_autodispose)
+        return _PolicyType.WriterDataLifecycle, bool(self._gc_writer_autodispose)
 
-    @property
-    def reader_data_lifecycle(self) -> Tuple[int, int]:
+    def get_reader_data_lifecycle(self) -> Tuple[_PolicyType, Tuple[int, int]]:
         if not self._get_reader_data_lifecycle(self._ref, byref(self._gc_autopurge_nowriter_samples_delay), byref(self._gc_autopurge_disposed_samples_delay)):
             raise QosException("Reader Data Lifecycle or Qos object invalid.")
 
-        return int(self._gc_autopurge_nowriter_samples_delay), int(self._gc_autopurge_disposed_samples_delay)
+        return _PolicyType.ReaderDataLifecycle, (int(self._gc_autopurge_nowriter_samples_delay), int(self._gc_autopurge_disposed_samples_delay))
 
-    @property
-    def durability_service(self) -> Tuple[int, QosHistory, int, int, int, int]:
+    def get_durability_service(self) -> Tuple[_PolicyType, Tuple[int, _QosHistory, int, int, int, int]]:
         if not self._get_durability_service(self._ref, 
             byref(self._gc_durservice_service_cleanup_delay), 
             byref(self._gc_durservice_history_kind), 
@@ -298,16 +441,16 @@ class Qos(DDS):
             byref(self._gc_durservice_max_samples_per_instance)):
             raise QosException("Durability Service or Qos object invalid.")
 
-        return int(self._gc_durservice_service_cleanup_delay), QosHistory(int(self._gc_durservice_history_kind)), \
+        return _PolicyType.DurabilityService, (int(self._gc_durservice_service_cleanup_delay), \
+             _QosHistory(int(self._gc_durservice_history_kind)), int(self._gc_durservice_history_depth),
              int(self._gc_durservice_service_cleanup_delay), int(self._gc_durservice_service_cleanup_delay), \
-             int(self._gc_durservice_service_cleanup_delay)
+             int(self._gc_durservice_service_cleanup_delay))
 
-    @property
-    def ignorelocal(self) -> bool:
+    def get_ignorelocal(self) -> Tuple[_PolicyType, bool]:
         if not self._get_ignorelocal(self._ref, byref(self._gc_ignorelocal)):
             raise QosException("Ignorelocal or Qos object invalid.")
 
-        return bool(self._gc_ignorelocal)
+        return _PolicyType.IgnoreLocal, bool(self._gc_ignorelocal)
 
     def get_propnames(self) -> List[str]:
         if not self._get_propnames(self._ref, byref(self._gc_propnames_num), byref(self._gc_propnames_names)):
@@ -353,82 +496,82 @@ class Qos(DDS):
         value_p = cast(byref(value), c_void_p)
         self._set_groupdata(self._ref, value_p, sizeof(value))
 
-    @durability.setter
-    def durability(self, durability: QosDurability) -> None:
-        self._set_durability(self._ref, durability.value)
+    def set_durability(self, durability: Tuple[_PolicyType, _QosDurability]) -> None:
+        assert(durability[0] == _PolicyType.Durability)
+        self._set_durability(self._ref, durability[1].value)
 
-    @history.setter
-    def history(self, history: Tuple[QosHistory, int]) -> None:
-        self._set_history(self._ref, history[0].value, history[1])
+    def set_history(self, history: Tuple[_PolicyType, Tuple[_QosHistory, int]]) -> None:
+        assert(history[0] == _PolicyType.History)
+        self._set_history(self._ref, history[1][0].value, history[1][1])
 
-    @resource_limits.setter
-    def resource_limits(self, limits: Tuple[int, int, int]) -> None:
-        self._set_resource_limits(self._ref, *limits)
+    def set_resource_limits(self, limits: Tuple[_PolicyType, Tuple[int, int, int]]) -> None:
+        assert(limits[0] == _PolicyType.ResourceLimits)
+        self._set_resource_limits(self._ref, *limits[1])
 
-    @presentation.setter
-    def presentation(self, presentation: Tuple[QosAccessScope, bool, bool]) -> None:
-        self._set_presentation(self._ref, presentation[0].value, presentation[1], presentation[2])
+    def set_presentation(self, presentation: Tuple[_PolicyType, Tuple[_QosAccessScope, bool, bool]]) -> None:
+        assert(presentation[0] == _PolicyType.PresentationAccessScope)
+        self._set_presentation(self._ref, presentation[1][0].value, presentation[1][1], presentation[1][2])
 
-    @lifespan.setter
-    def lifespan(self, lifespan: int) -> None:
-        self._set_lifespan(self._ref, lifespan)
+    def set_lifespan(self, lifespan: Tuple[_PolicyType, int]) -> None:
+        assert(lifespan[0] == _PolicyType.Lifespan)
+        self._set_lifespan(self._ref, lifespan[1])
 
-    @deadline.setter
-    def deadline(self, deadline: int) -> None:
-        self._set_deadline(self._ref, deadline)
+    def set_deadline(self, deadline: Tuple[_PolicyType, int]) -> None:
+        assert(deadline[0] == _PolicyType.Deadline)
+        self._set_deadline(self._ref, deadline[1])
 
-    @latency_budget.setter
-    def latency_budget(self, latency_budget: int) -> None:
-        self._set_latency_budget(self._ref, latency_budget)
+    def set_latency_budget(self, latency_budget: Tuple[_PolicyType, int]) -> None:
+        assert(latency_budget[0] == _PolicyType.LatencyBudget)
+        self._set_latency_budget(self._ref, latency_budget[1])
 
-    @ownership.setter
-    def ownership(self, ownership: QosOwnership) -> None:
-        self._set_ownership(self._ref, ownership.value)
+    def set_ownership(self, ownership: Tuple[_PolicyType, _QosOwnership]) -> None:
+        assert(ownership[0] == _PolicyType.Ownership)
+        self._set_ownership(self._ref, ownership[1].value)
 
-    @ownership_strength.setter
-    def ownership_strength(self, strength: int) -> None:
-        self._set_ownership_strength(self._ref, strength)
+    def set_ownership_strength(self, strength: Tuple[_PolicyType, int]) -> None:
+        assert(strength[0] == _PolicyType.OwnershipStrength)
+        self._set_ownership_strength(self._ref, strength[1])
 
-    @liveliness.setter
-    def liveliness(self, liveliness: Tuple[QosLiveliness, int]) -> None:
-        self._set_liveliness(self._ref, liveliness[0].value, liveliness[1])
+    def set_liveliness(self, liveliness: Tuple[_PolicyType, Tuple[_QosLiveliness, int]]) -> None:
+        assert(liveliness[0] == _PolicyType.Liveliness)
+        self._set_liveliness(self._ref, liveliness[1][0].value, liveliness[1][1])
 
-    @time_based_filter.setter
-    def time_based_filter(self, minimum_separation: int) -> None:
-        self._set_time_based_filter(self._ref, minimum_separation)
+    def set_time_based_filter(self, minimum_separation: Tuple[_PolicyType, int]) -> None:
+        assert(minimum_separation[0] == _PolicyType.TimeBasedFilter)
+        self._set_time_based_filter(self._ref, minimum_separation[1])
 
-    @partitions.setter
-    def partitions(self, partitions: List[str]):
-        ps = [p.encode() for p in partitions]
+    def set_partitions(self, partitions: Tuple[_PolicyType, List[str]]) -> None:
+        assert(partitions[0] == _PolicyType.Partitions)
+        ps = [p.encode() for p in partitions[1]]
         self._set_partitions(self._ref, len(ps), ps)
 
-    @reliability.setter
-    def reliabilty(self, reliability: Tuple[QosReliability, int]) -> None:
-        self._set_reliability(self._ref, reliability[0].value, reliability[1])
+    def set_reliability(self, reliability: Tuple[_PolicyType, Tuple[_QosReliability, int]]) -> None:
+        assert(reliability[0] == _PolicyType.Reliability)
+        self._set_reliability(self._ref, reliability[1][0].value, reliability[1][1])
 
-    @transport_priority.setter
-    def transport_priority(self, value: int) -> None:
-        self._set_transport_priority(self._ref, value)
+    def set_transport_priority(self, value: Tuple[_PolicyType, int]) -> None:
+        assert(value[0] == _PolicyType.TransportPriority)
+        self._set_transport_priority(self._ref, value[1])
 
-    @destination_order.setter
-    def destination_order(self, destination_order_kind: QosDestinationOrder) -> None:
-        self._set_destination_order(self._ref, destination_order_kind.value)
+    def set_destination_order(self, destination_order_kind: Tuple[_PolicyType, _QosDestinationOrder]) -> None:
+        assert(destination_order_kind[0] == _PolicyType.DestinationOrder)
+        self._set_destination_order(self._ref, destination_order_kind[1].value)
 
-    @writer_data_lifecycle.setter
-    def writer_data_lifecycle(self, autodispose: bool) -> None:
-        self._set_writer_data_lifecycle(self._ref, autodispose)
+    def set_writer_data_lifecycle(self, autodispose: Tuple[_PolicyType, bool]) -> None:
+        assert(autodispose[0] == _PolicyType.WriterDataLifecycle)
+        self._set_writer_data_lifecycle(self._ref, autodispose[1])
 
-    @reader_data_lifecycle.setter
-    def reader_data_lifecycle(self, autopurge: Tuple[int, int]) -> None:
-        self._set_reader_data_lifecycle(self._ref, *autopurge)
+    def set_reader_data_lifecycle(self, autopurge: Tuple[_PolicyType, Tuple[int, int]]) -> None:
+        assert(autopurge[0] == _PolicyType.ReaderDataLifecycle)
+        self._set_reader_data_lifecycle(self._ref, *autopurge[1])
 
-    @durability_service.setter
-    def durability_service(self, settings: Tuple[int, QosHistory, int, int, int, int]) -> None:
-        self._set_durability_service(self._ref, settings[0], settings[1].value, settings[2], settings[3], settings[4], settings[5])
+    def set_durability_service(self, settings: Tuple[_PolicyType, Tuple[int, _QosHistory, int, int, int, int]]) -> None:
+        assert(settings[0] == _PolicyType.DurabilityService)
+        self._set_durability_service(self._ref, settings[1][0], settings[1][1].value, settings[1][2], settings[1][3], settings[1][4], settings[1][5])
 
-    @ignorelocal.setter
-    def ignorelocal(self, ingnore_local: QosIgnoreLocal) -> None:
-        self._set_ignorelocal(self._ref, ingnore_local.value)
+    def set_ignorelocal(self, ignorelocal: Tuple[_PolicyType, _QosIgnoreLocal]) -> None:
+        assert(ignorelocal[0] == _PolicyType.IgnoreLocal)
+        self._set_ignorelocal(self._ref, ignorelocal[1].value)
 
     def set_prop(self, name: str, value: str) -> None:
         self._set_prop(self._ref, name.encode(), value.encode())

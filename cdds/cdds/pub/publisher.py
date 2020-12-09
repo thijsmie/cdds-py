@@ -1,7 +1,7 @@
-from cdds.core import Entity
+from cdds.core import Entity, DDSException
 from cdds.domain.participant import DomainParticipant
-from cdds.internal import DDSException, c_call, dds_entity_t, dds_return_t, dds_qos_p_t, dds_listener_p_t, dds_duration_t
-from cdds.internal.error import DDS_RETCODE_TIMEOUT
+from cdds.internal import c_call, dds_entity_t, dds_return_t, dds_qos_p_t, dds_listener_p_t, dds_duration_t
+from cdds.core.exception import DDS_RETCODE_TIMEOUT
 
 
 class Publisher(Entity):

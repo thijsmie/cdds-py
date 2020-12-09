@@ -1,5 +1,5 @@
-from cdds.core import Entity
-from cdds.internal import c_call, DDSException
+from cdds.core import Entity, DDSException
+from cdds.internal import c_call
 from cdds.internal.dds_types import dds_domainid_t, dds_entity_t
 
 from ctypes import c_char_p, c_size_t, POINTER, byref

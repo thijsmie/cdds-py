@@ -1,14 +1,18 @@
-from cdds.core import DDS, Entity
-from cdds.internal import c_call, c_callable, dds_listener_p_t, dds_entity_t, dds_inconsistent_topic_status_t, dds_liveliness_lost_status_t, dds_liveliness_changed_status_t
+import cdds
+from cdds.core import Entity, DDSAPIException
+from cdds.internal import c_call, c_callable, DDS
+from cdds.internal.dds_types import dds_listener_p_t, dds_entity_t, dds_inconsistent_topic_status_t, dds_liveliness_lost_status_t, dds_liveliness_changed_status_t, \
+    dds_offered_deadline_missed_status_t
 
 from ctypes import c_void_p
-from typing import Callable
+from typing import Callable, Any
 
 
 dds_inconsistent_topic_fn = c_callable(None, [dds_entity_t, dds_inconsistent_topic_status_t, c_void_p])
 dds_data_available_fn = c_callable(None, [dds_entity_t, c_void_p])
 dds_liveliness_lost_fn = c_callable(None, [dds_entity_t, dds_liveliness_lost_status_t, c_void_p])
 dds_liveliness_changed_fn = c_callable(None, [dds_entity_t, dds_liveliness_changed_status_t, c_void_p])
+dds_offered_deadline_missed_fn = c_callable(None, [dds_entity_t, dds_offered_deadline_missed_status_t, c_void_p])
 
 
 def is_override(func):
@@ -18,7 +22,7 @@ def is_override(func):
     return func.__func__ != prntM.__func__
 
 class Listener(DDS):
-    def __init__(self):
+    def __init__(self, **kwargs):
         super().__init__(self._create_listener(None))
 
         if is_override(self.on_data_available):
@@ -32,7 +36,23 @@ class Listener(DDS):
 
         if is_override(self.on_liveliness_changed):
             self.set_on_liveliness_changed(self.on_liveliness_changed)
-        
+
+        if is_override(self.on_offered_deadline_missed):
+            self.set_on_offered_deadline_missed(self.on_offered_deadline_missed)
+
+        self.setters = {
+            "on_data_available": self.set_on_data_available,
+            "on_inconsistent_topic": self.set_on_inconsistent_topic,
+            "on_liveliness_lost": self.set_on_liveliness_lost,
+            "on_liveliness_changed": self.set_on_liveliness_changed,
+            "on_offered_deadline_missed": self.set_on_offered_deadline_missed
+        }
+
+        for name, value in kwargs.items():
+            if name not in self.setters:
+                raise DDSAPIException(f"Invalid listener attribute '{name}'")
+            self.setters[name](value)
+
     def __del__(self):
         self._delete_listener(self._ref)
 
@@ -50,10 +70,15 @@ class Listener(DDS):
     def merge(self, listener: 'Listener') -> None:
         self._merge_listener(self._ref, listener._ref)
 
-    def on_inconsistent_topic(self, reader: 'DataReader', status: dds_inconsistent_topic_status_t) -> None:
+    def __setattr__(self, name: str, value: Any) -> None:
+        if name in self.setters:
+            return self.setters[name](value)
+        return super().__setattr__(name, value)
+
+    def on_inconsistent_topic(self, reader: 'cdds.sub.DataReader', status: dds_inconsistent_topic_status_t) -> None:
         pass
 
-    def set_on_inconsistent_topic(self, callable: Callable[['DataReader'], None]):
+    def set_on_inconsistent_topic(self, callable: Callable[['cdds.sub.DataReader'], None]):
         self.on_inconsistent_topic = callable
         if callable is None:
             self._set_inconsistent_topic(self._ref, None)
@@ -63,10 +88,10 @@ class Listener(DDS):
             self._on_inconsistent_topic = dds_inconsistent_topic_fn(call)
             self._set_inconsistent_topic(self._ref, self._on_inconsistent_topic)
 
-    def on_data_available(self, reader: 'DataReader') -> None:
+    def on_data_available(self, reader: 'cdds.sub.DataReader') -> None:
         pass
 
-    def set_on_data_available(self, callable: Callable[['DataReader'], None]):
+    def set_on_data_available(self, callable: Callable[['cdds.sub.DataReader'], None]):
         self.on_data_available = callable
         if callable is None:
             self._set_data_available(self._ref, None)
@@ -76,10 +101,10 @@ class Listener(DDS):
             self._on_data_available = dds_data_available_fn(call)
             self._set_data_available(self._ref, self._on_data_available)
 
-    def on_liveliness_lost(self, writer: 'DataWriter', status: dds_liveliness_lost_status_t) -> None:
+    def on_liveliness_lost(self, writer: 'cdds.pub.DataWriter', status: dds_liveliness_lost_status_t) -> None:
         pass
 
-    def set_on_liveliness_lost(self, callable: Callable[['DataWriter', dds_liveliness_lost_status_t], None]):
+    def set_on_liveliness_lost(self, callable: Callable[['cdds.pub.DataWriter', dds_liveliness_lost_status_t], None]):
         self.on_liveliness_lost = callable
         if callable is None:
             self._set_liveliness_lost(self._ref, None)
@@ -89,10 +114,10 @@ class Listener(DDS):
             self._on_liveliness_lost = dds_liveliness_lost_fn(call)
             self._set_liveliness_lost(self._ref, self._on_liveliness_lost)
 
-    def on_liveliness_changed(self, reader: 'DataReader', status: dds_liveliness_changed_status_t) -> None:
+    def on_liveliness_changed(self, reader: 'cdds.sub.DataReader', status: dds_liveliness_changed_status_t) -> None:
         pass
 
-    def set_on_liveliness_changed(self, callable: Callable[['DataReader', dds_liveliness_changed_status_t], None]):
+    def set_on_liveliness_changed(self, callable: Callable[['cdds.sub.DataReader', dds_liveliness_changed_status_t], None]):
         self.on_liveliness_changed = callable
         if callable is None:
             self._set_liveliness_changed(self._ref, None)
@@ -102,7 +127,19 @@ class Listener(DDS):
             self._on_liveliness_changed = dds_liveliness_changed_fn(call)
             self._set_liveliness_changed(self._ref, self._on_liveliness_changed)
 
-    # TODO: on_offered_deadline_missed
+    def on_offered_deadline_missed(self, writer: 'cdds.sub.DataWriter', status: dds_offered_deadline_missed_status_t) -> None:
+        pass
+
+    def set_on_offered_deadline_missed(self, callable: Callable[['cdds.sub.DataWriter', dds_offered_deadline_missed_status_t], None]):
+        self.on_offered_deadline_missed = callable
+        if callable is None:
+            self._set_on_offered_deadline_missed(self._ref, None)
+        else:
+            def call(writer, status, arg):
+                self.on_offered_deadline_missed(Entity.get_entity(writer), status)
+            self._on_offered_deadline_missed = dds_offered_deadline_missed_fn(call)
+            self._set_on_offered_deadline_missed(self._ref, self._on_offered_deadline_missed)
+
     # TODO: on_offered_incompatible_qos
     # TODO: on_data_on_readers
     # TODO: on_sample_lost
@@ -142,6 +179,10 @@ class Listener(DDS):
 
     @c_call("dds_lset_liveliness_changed")
     def _set_liveliness_changed(self, listener: dds_listener_p_t, callback: dds_liveliness_changed_fn) -> None:
+        pass
+
+    @c_call("dds_lset_offered_deadline_missed")
+    def _set_on_offered_deadline_missed(self, listener: dds_listener_p_t, callback: dds_offered_deadline_missed_fn) -> None:
         pass
 
     @c_call("dds_delete_listener")

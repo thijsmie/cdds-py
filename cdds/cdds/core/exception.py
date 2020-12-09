@@ -51,3 +51,10 @@ class DDSException(Exception):
         return str(self)
 
 
+class DDSAPIException(Exception):
+    def __init__(self, msg):
+        self.msg = msg
+        super().__init__()
+
+    def __str__(self) -> str:
+        return f"[DDSAPIException] {self.msg}"

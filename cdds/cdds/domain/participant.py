@@ -1,16 +1,17 @@
 from ctypes import c_char_p
-from cdds.core import Entity
+from typing import Optional
+from cdds.core import Entity, DDSException
 from cdds.topic import Topic
-from cdds.internal import c_call, DDSException
+from cdds.internal import c_call
 from cdds.internal.dds_types import dds_domainid_t, dds_qos_p_t, dds_listener_p_t, dds_entity_t
-from cdds.internal.error import DDS_RETCODE_PRECONDITION_NOT_MET
+from cdds.core.exception import DDS_RETCODE_PRECONDITION_NOT_MET
 
 
 class DomainParticipant(Entity):
     def __init__(self, domain_id=0, qos=None, listener=None):
         super().__init__(self._create_participant(domain_id, qos._ref if qos else None, listener._ref if listener else None))
 
-    def find_topic(self, name):
+    def find_topic(self, name) -> Optional[Topic]:
         ret = self._find_topic(self._ref, name.encode("ASCII"))
         if ret > 0:
             # Note that this function returns a _new_ topic instance which we do not have in our entity list

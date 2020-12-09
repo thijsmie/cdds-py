@@ -2,3 +2,5 @@ build/
 **/build
 .vscode/*
 __pycache__
+docs/_build
+.coverage

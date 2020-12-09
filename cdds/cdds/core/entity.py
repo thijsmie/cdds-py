@@ -1,14 +1,16 @@
-from cdds.internal import c_call, DDSException
+import cdds
+from cdds.internal import DDS, c_call
 from cdds.internal.dds_types import dds_instance_handle_t, dds_entity_t, dds_return_t, dds_guid_t, dds_qos_p_t, dds_listener_p_t, dds_domainid_t
-from cdds.core import DDS, Qos
+from cdds.core import Qos, DDSException
 
-from ctypes import POINTER, byref, c_uint32, c_size_t
+from ctypes import POINTER, byref, c_uint32, c_size_t, cast
 from typing import Optional, Dict
+from weakref import WeakValueDictionary
 
 
 class Entity(DDS):
     """Maintain a global map of entities to be able to return python objects when the API hands us dds_entity_t references."""
-    _entities: Dict[dds_entity_t, 'Entity'] = {}
+    _entities: Dict[dds_entity_t, 'Entity'] = WeakValueDictionary()
 
     def __init__(self, ref) -> None:
         if ref < 0:
@@ -17,6 +19,9 @@ class Entity(DDS):
         self._entities[self._ref] = self
 
     def __del__(self):
+        if self._ref not in self._entities:
+            return
+
         del self._entities[self._ref]
         self._delete(self._ref)
 
@@ -26,15 +31,16 @@ class Entity(DDS):
             return self.get_entity(ref)
         raise DDSException(ref, f"Occurred when getting the subscriber for {repr(self)}")
 
-    subscriber = property(get_subscriber, doc="Entity subscriber")
+    subscriber: 'cdds.sub.Subscriber' = property(get_subscriber, doc="Entity subscriber")
 
-    def get_datareader(self):
+    def get_datareader(self) -> Optional['cdds.sub.DataReader']:
+        """Get the DataReader associated with this entity"""
         ref = self._get_datareader(self._ref)
         if ref >= 0:
             return self.get_entity(ref)
         raise DDSException(ref, f"Occurred when getting the datareader for {repr(self)}")
 
-    datareader = property(get_datareader, doc="Entity datareader")
+    datareader: Optional['cdds.sub.DataReader'] = property(get_datareader, doc="""The DataReader associated with this entity. This is read only (maps to set_datareader). Can be None.""")
 
     def get_instance_handle(self):
         handle = dds_instance_handle_t()
@@ -43,7 +49,7 @@ class Entity(DDS):
             return int(handle)
         raise DDSException(ret, f"Occurred when getting the instance handle for {repr(self)}")
 
-    instance_handle = property(get_instance_handle, doc="Entity instance handle")
+    instance_handle: int = property(get_instance_handle, doc="Entity instance handle")
 
     def get_guid(self):
         guid = dds_guid_t()
@@ -105,14 +111,14 @@ class Entity(DDS):
 
     qos = property(get_qos, set_qos, doc="Entity QOS")
 
-    def get_listener(self) -> 'Listener':
+    def get_listener(self) -> 'cdds.core.listener.Listener':
         listener = self.listener_type()
         ret = self._get_listener(self._ref, listener._ref)
         if ret == 0:
             return listener
         raise DDSException(ret, f"Occurred when getting the Listener for {repr(self)}")
 
-    def set_listener(self, listener: 'Listener') -> None:
+    def set_listener(self, listener: 'cdds.core.listener.Listener') -> None:
         ret = self._set_listener(self._ref, listener._ref)
         if ret == 0:
             return
@@ -150,9 +156,10 @@ class Entity(DDS):
         elif num_children == 0:
             return []
             
-        children_list = dds_entity_t * int(num_children)
+        children_list = (dds_entity_t * int(num_children))()
+        children_list_pt = cast(children_list, POINTER(dds_entity_t))
 
-        ret = self._get_children(self._ref, byref(children_list[0]), num_children)
+        ret = self._get_children(self._ref, children_list_pt, num_children)
         if ret >= 0:
             return [self.get_entity(children_list[i]) for i in range(ret)]
 
@@ -172,7 +179,7 @@ class Entity(DDS):
        
     @classmethod
     def get_entity(cls, id) -> Optional['Entity']:
-        cls._entities.get(id)
+        return cls._entities.get(id)
 
     @classmethod
     def _init_from_retcode(cls, code):

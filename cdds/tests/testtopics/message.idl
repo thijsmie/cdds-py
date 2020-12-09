@@ -1,0 +1,6 @@
+module dds {
+    struct Message {
+      string message;
+    };
+    #pragma keylist Message message
+};

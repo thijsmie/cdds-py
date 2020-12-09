@@ -1,9 +1,11 @@
-from cdds.core import Entity
-from cdds.internal import c_call, DDSException
-from cdds.internal.dds_types import dds_entity_t, dds_qos_p_t, dds_listener_p_t, dds_return_t, dds_duration_t, SampleInfo
-from cdds.internal.error import DDS_RETCODE_TIMEOUT, DDS_RETCODE_UNSUPPORTED
+import cdds
 
-from ctypes import c_void_p, c_int, POINTER, c_size_t, c_uint32, cast, byref
+from cdds.core import Entity, DDSException
+from cdds.internal import c_call
+from cdds.internal.dds_types import dds_entity_t, dds_qos_p_t, dds_listener_p_t, dds_return_t, dds_duration_t, SampleInfo
+from cdds.core.exception import DDS_RETCODE_TIMEOUT
+
+from ctypes import c_void_p, POINTER, c_size_t, c_uint32, cast, byref
 from typing import Optional, Union
 
 
@@ -21,35 +23,53 @@ class SampleList(list):
 
 class DataReader(Entity):
     # TODO: support RHC (dds_create_reader_rhc)
-    def __init__(self, subscriber_or_participant: Union['Subscriber', 'DomainParticipant'], topic: 'Topic', qos=None, listener=None):
+    def __init__(self, subscriber_or_participant: Union['cdds.sub.Subscriber', 'cdds.domain.DomainParticipant'], topic: 'cdds.topic.Topic', qos=None, listener=None):
         self.topic = topic
         super().__init__(self._create_reader(subscriber_or_participant._ref, topic._ref, qos, listener._ref if listener else None))
 
-    def read(self, N=1):
+    def read(self, N=1, condition=None):
+        ref = condition._ref if condition else self._ref
+
         sample_info = (SampleInfo * N)()
         sample_info_pt = cast(sample_info, POINTER(SampleInfo))
         samples = (c_void_p * N)()
 
-        ret = self._read(self._ref, samples, sample_info_pt, N, N)
+        ret = self._read(ref, samples, sample_info_pt, N, N)
 
         if ret < 0:
             raise DDSException(ret, f"Occurred when calling read() in {repr(self)}")
 
-        result_pt = cast(samples[0], POINTER(self.topic.data_type.struct_class))
-        return SampleList(self, sample_info, min(ret, N), *[self.topic.data_type.from_struct(result_pt[i]) for i in range(min(ret, N))])
+        if ret == 0:
+            return []
 
-    def take(self, N=1):
+        result_pt = cast(samples[0], POINTER(self.topic.data_type.struct_class))
+        return_samples = [self.topic.data_type.from_struct(result_pt[i]) for i in range(min(ret, N))]
+        retn = self._return_loan(ref, samples, min(N, ret))
+        if retn < 0:
+            raise DDSException(retn, f"Occured when returning loan for take(0 in {repr(self)}")
+        return return_samples
+
+    def take(self, N=1, condition=None):
+        ref = condition._ref if condition else self._ref
+
         sample_info = (SampleInfo * N)()
         sample_info_pt = cast(sample_info, POINTER(SampleInfo))
         samples = (c_void_p * N)()
 
-        ret = self._take(self._ref, samples, sample_info_pt, N, N)
+        ret = self._take(ref, samples, sample_info_pt, N, N)
 
         if ret < 0:
             raise DDSException(ret, f"Occurred when calling take() in {repr(self)}")
 
+        if ret == 0:
+            return []
+
         result_pt = cast(samples[0], POINTER(self.topic.data_type.struct_class))
-        return SampleList(self, samples, min(ret, N), [self.topic.data_type.from_struct(result_pt[i]) for i in range(min(ret, N))])
+        return_samples = [self.topic.data_type.from_struct(result_pt[i]) for i in range(min(ret, N))]
+        retn = self._return_loan(ref, samples, min(N, ret))
+        if retn < 0:
+            raise DDSException(retn, f"Occured when returning loan for take(0 in {repr(self)}")
+        return return_samples
 
     def wait_for_historical_data(self, timeout: int) -> bool:
         ret = self._wait_for_historical_data(self._ref, timeout)
@@ -59,9 +79,6 @@ class DataReader(Entity):
         elif ret == DDS_RETCODE_TIMEOUT:
             return False
         raise DDSException(ret, f"Occured while waiting for historical data in {repr(self)}")
-
-    def return_loan(self, buffer, size):
-        self._return_loan(self._ref, buffer, size)
 
     @c_call("dds_create_reader")
     def _create_reader(self, subscriber: dds_entity_t, topic: dds_entity_t, qos: dds_qos_p_t, listener: dds_listener_p_t) -> dds_entity_t:

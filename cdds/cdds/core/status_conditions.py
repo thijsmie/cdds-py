@@ -1,6 +1,8 @@
-from cdds.internal import c_call, c_callable, DDSException
+import cdds
+
+from cdds.internal import c_call, c_callable
 from cdds.internal.dds_types import dds_entity_t, dds_attach_t, dds_return_t, dds_duration_t, dds_time_t
-from cdds.core import Entity
+from cdds.core import Entity, DDSException
 
 from ctypes import c_uint32, c_size_t, c_int, c_void_p, c_bool, byref, cast, POINTER
 from typing import Callable, Any
@@ -32,14 +34,24 @@ class Condition(Entity):
         ret = self._get_mask(self._ref, byref(mask))
         if ret == 0:
             return int(mask)
-        raise DDSException(ret, f"Occurred when obtaining the mask of {repr(self)}.")
+        raise DDSException(ret, f"Occurred when obtaining the mask of {repr(self)}")
+
+    def triggered(self) -> bool:
+        ret = self._triggered(self._ref)
+        if ret < 0:
+            raise DDSException(ret, f"Occurred when checking if {repr(self)} was triggered")
+        return ret == 1
 
     @c_call("dds_get_mask")
-    def _get_mask(self, condition: dds_entity_t, mask: POINTER(c_uint32)):
+    def _get_mask(self, condition: dds_entity_t, mask: POINTER(c_uint32)) -> dds_return_t:
+        pass
+
+    @c_call("dds_triggered")
+    def _triggered(self, condition: dds_entity_t) -> dds_return_t:
         pass
 
 class ReadCondition(Condition):
-    def __init__(self, reader: 'DataReader', mask: int) -> None:
+    def __init__(self, reader: 'cdds.sub.DataReader', mask: int) -> None:
         self.reader = reader
         self.mask = mask
         super().__init__(self._create_readcondition(reader._ref, mask))
@@ -51,7 +63,7 @@ class ReadCondition(Condition):
 
 dds_querycondition_filter_fn = c_callable(c_bool, [c_void_p])
 class QueryCondition(Condition):
-    def __init__(self, reader: 'DataReader', mask: int, filter: Callable[[Any], bool]) -> None:
+    def __init__(self, reader: 'cdds.sub.DataReader', mask: int, filter: Callable[[Any], bool]) -> None:
         self.reader = reader
         self.mask = mask
         self.filter = filter

@@ -54,6 +54,11 @@ class dds_liveliness_changed_status_t(ct.Structure):
                 ('alive_count_change', ct.c_int32),
                 ('not_alive_count_change', ct.c_int32)]
 
+class dds_offered_deadline_missed_status_t(ct.Structure):
+    _fields_ = [('total_count', ct.c_uint32),
+                ('total_count_change', ct.c_int32),
+                ('last_instance_handle', dds_instance_handle_t)]
+
 
 class dds_guid_t(ct.Structure):
     _fields_ = [('v', ct.c_uint8 * 16)]

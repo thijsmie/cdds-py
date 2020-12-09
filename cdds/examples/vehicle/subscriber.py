@@ -3,7 +3,7 @@ import string
 import random
 from datetime import timedelta
 
-from cdds.core import Listener, WaitSet, ReadCondition, QueryCondition, ViewState, SampleState, InstanceState, Qos, QosDurability, QosHistory
+from cdds.core import Listener, WaitSet, ReadCondition, QueryCondition, ViewState, SampleState, InstanceState, Qos, Policy
 from cdds.domain import DomainParticipant
 from cdds.topic import Topic
 from cdds.sub import Subscriber, DataReader
@@ -23,10 +23,11 @@ class MyListener(Listener):
 
 listener = MyListener()
 qos = Qos(
-    durability=QosDurability.Transient, 
-    history=(QosHistory.KeepLast, 20)
+    Policy.Reliability.BestEffort(duration(seconds=1)),
+    Policy.Deadline(duration(microseconds=10)),
+    Policy.Durability.Transient
 )
-qos.history = QosHistory.KeepAll
+qos += Policy.History.KeepLast(10)
 
 domain_participant = DomainParticipant(0)
 topic = Topic(domain_participant, Vehicle, 'Vehicle', qos=qos)

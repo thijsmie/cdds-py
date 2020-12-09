@@ -1,13 +1,15 @@
-from cdds.core import Entity
-from cdds.internal import DDSException, c_call
+import cdds
+
+from cdds.core import Entity, DDSException
+from cdds.internal import c_call
 from cdds.internal.dds_types import dds_entity_t, dds_duration_t, dds_qos_p_t, dds_listener_p_t, dds_return_t
-from cdds.internal.error import DDS_RETCODE_TIMEOUT
+from cdds.core.exception import DDS_RETCODE_TIMEOUT
 
 from ctypes import c_void_p, byref
 
 
 class DataWriter(Entity):
-    def __init__(self, publisher: 'Publisher', topic: 'Topic', qos=None, listener=None):
+    def __init__(self, publisher: 'cdds.pub.Publisher', topic: 'cdds.topic.Topic', qos=None, listener=None):
         super().__init__(self._create_writer(publisher._ref, topic._ref, qos._ref if qos else None, listener._ref if listener else None))
 
     def write(self, sample):

@@ -14,7 +14,7 @@ def c_call(cname):
             s = signature(self.function)
 
             # Set c function types based on python type annotations
-            cfunc = getattr(cls.dll_handle, cname)
+            cfunc = getattr(cls._dll_handle, cname)
             cfunc.restype = s.return_annotation
 
             # Note: ignoring the 'self' argument
