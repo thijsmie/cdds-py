@@ -1,13 +1,21 @@
 from cdds.internal.clib import load_library, load_library_with_path, MissingLibraryException
 from cdds.internal.dds_types import dds_topic_descriptor_p_t
-from ctypes import CDLL, Structure, c_int, c_char_p, byref, cast
+from ctypes import CDLL, Structure, c_int, c_char_p, byref, cast, string_at
 from dataclasses import dataclass, fields, asdict
 
 from inspect import getabsfile
 import os
+from copy import copy as cp
 
 
 loaded_libs = {}
+
+def copy(v, t):
+    if t == c_char_p:
+        v = cp(string_at(v))
+        print(v.decode())
+    return v
+
 
 def Sample(_lib):
     lib = _lib
@@ -37,7 +45,7 @@ def Sample(_lib):
 
             @classmethod
             def from_struct(cls, struct):
-                return cls(**{f: getattr(struct, f) for (f,_) in Struct._fields_})
+                return cls(**{f: copy(getattr(struct, f), t) for (f,t) in Struct._fields_})
 
             def to_struct(self):
                 self.struct = Struct(**asdict(self))

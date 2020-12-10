@@ -1,7 +1,7 @@
 from cdds.core import WaitSet, ReadCondition, ViewState, InstanceState, SampleState
 from cdds.domain import DomainParticipant
 from cdds.sub import Subscriber, DataReader
-from cdds.util import duration
+from cdds.util.time import duration
 from cdds.topic import Topic
 
 from asyncio import get_event_loop, ensure_future, QueueEmpty

@@ -9,38 +9,58 @@ from typing import Callable, Any
 
 
 class SampleState:
-    Read = 1
-    NotRead = 2
-    Any = 3
+    Read: int = 1
+    NotRead: int = 2
+    Any: int = 3
 
 
 class ViewState:
-    New = 4
-    Old = 8
-    Any = 12
+    New: int = 4
+    Old: int = 8
+    Any: int = 12
 
 
 class InstanceState:
-    Alive = 16
-    NotAliveDisposed = 32
-    NotAliveNoWriters = 64
-    Any = 112
+    Alive: int = 16
+    NotAliveDisposed: int = 32
+    NotAliveNoWriters: int = 64
+    Any: int = 112
+
+
+class DDSStatus:
+    InconsistentTopic = 1 << 1
+    OfferedDeadlineMissed = 1 << 2
+    RequestedDeadlineMissed = 1 << 3
+    OfferedIncompatibleQos = 1 << 4
+    RequestedIncompatibleQos = 1 << 5
+    SampleLost = 1 << 6
+    SampleRejected = 1 << 7
+    DataOnReaders = 1 << 8
+    DataAvailable = 1 << 9
+    LivelinessLost = 1 << 10
+    LivelinessChanged = 1 << 11
+    PublicationMatched = 1 << 12
+    SubscriptionMatched = 1 << 13
+    All = (1 << 14) - 1
+
 
 
 class Condition(Entity):
     """Utility class to implement common methods between Read and Queryconditions"""
-    def get_mask(self):
-        mask = c_uint32()
+    def get_mask(self) -> int:
+        mask: c_uint32 = c_uint32()
         ret = self._get_mask(self._ref, byref(mask))
         if ret == 0:
-            return int(mask)
+            return mask.value
         raise DDSException(ret, f"Occurred when obtaining the mask of {repr(self)}")
 
-    def triggered(self) -> bool:
+    def is_triggered(self) -> bool:
         ret = self._triggered(self._ref)
         if ret < 0:
             raise DDSException(ret, f"Occurred when checking if {repr(self)} was triggered")
         return ret == 1
+
+    triggered: bool = property(is_triggered)
 
     @c_call("dds_get_mask")
     def _get_mask(self, condition: dds_entity_t, mask: POINTER(c_uint32)) -> dds_return_t:

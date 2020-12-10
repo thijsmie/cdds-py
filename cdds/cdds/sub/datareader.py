@@ -5,36 +5,37 @@ from cdds.internal import c_call
 from cdds.internal.dds_types import dds_entity_t, dds_qos_p_t, dds_listener_p_t, dds_return_t, dds_duration_t, SampleInfo
 from cdds.core.exception import DDS_RETCODE_TIMEOUT
 
-from ctypes import c_void_p, POINTER, c_size_t, c_uint32, cast, byref
+from ctypes import c_void_p, POINTER, c_size_t, c_uint32, cast, byref, create_string_buffer, addressof, pointer, sizeof, Array
 from typing import Optional, Union
 
 
-class SampleList(list):
-    def __init__(self, entity, buf, bufsize, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.entity = entity
-        self.buf = buf
-        self.bufsize = bufsize
-
-    def __del__(self):
-        self.entity.return_loan(byref(cast(self.buf[0], c_void_p)), self.bufsize)
-
-
-
 class DataReader(Entity):
-    # TODO: support RHC (dds_create_reader_rhc)
     def __init__(self, subscriber_or_participant: Union['cdds.sub.Subscriber', 'cdds.domain.DomainParticipant'], topic: 'cdds.topic.Topic', qos=None, listener=None):
         self.topic = topic
-        super().__init__(self._create_reader(subscriber_or_participant._ref, topic._ref, qos, listener._ref if listener else None))
+        self._N = 0
+        self._sampleinfos = None
+        self._pt_sampleinfos = None
+        self._samples = None
+        self._pt_samples = None
+        self._pt_void_samples = None
+        super().__init__(self._create_reader(subscriber_or_participant._ref, topic._ref, qos._ref if qos else None, listener._ref if listener else None))
+
+    def _ensure_memory(self, N):
+        if N <= self._N:
+            return
+        self._sampleinfos = (SampleInfo * N)()
+        self._pt_sampleinfos = cast(self._sampleinfos, POINTER(SampleInfo))
+        self._samples = (self.topic.data_type.struct_class * N)()
+        self._pt_samples = (POINTER(self.topic.data_type.struct_class) * N)()
+        for i in range(N):
+            self._pt_samples[i] = pointer(self._samples[i])
+        self._pt_void_samples = cast(self._pt_samples, POINTER(c_void_p))
 
     def read(self, N=1, condition=None):
         ref = condition._ref if condition else self._ref
+        self._ensure_memory(N)
 
-        sample_info = (SampleInfo * N)()
-        sample_info_pt = cast(sample_info, POINTER(SampleInfo))
-        samples = (c_void_p * N)()
-
-        ret = self._read(ref, samples, sample_info_pt, N, N)
+        ret = self._read(ref, self._pt_void_samples, self._pt_sampleinfos, N, N)
 
         if ret < 0:
             raise DDSException(ret, f"Occurred when calling read() in {repr(self)}")
@@ -42,21 +43,15 @@ class DataReader(Entity):
         if ret == 0:
             return []
 
-        result_pt = cast(samples[0], POINTER(self.topic.data_type.struct_class))
-        return_samples = [self.topic.data_type.from_struct(result_pt[i]) for i in range(min(ret, N))]
-        retn = self._return_loan(ref, samples, min(N, ret))
-        if retn < 0:
-            raise DDSException(retn, f"Occured when returning loan for take(0 in {repr(self)}")
+        return_samples = [self.topic.data_type.from_struct(self._samples[i]) for i in range(min(ret, N))]
+        
         return return_samples
 
     def take(self, N=1, condition=None):
         ref = condition._ref if condition else self._ref
+        self._ensure_memory(N)
 
-        sample_info = (SampleInfo * N)()
-        sample_info_pt = cast(sample_info, POINTER(SampleInfo))
-        samples = (c_void_p * N)()
-
-        ret = self._take(ref, samples, sample_info_pt, N, N)
+        ret = self._take(ref, self._pt_void_samples, self._pt_sampleinfos, N, N)
 
         if ret < 0:
             raise DDSException(ret, f"Occurred when calling take() in {repr(self)}")
@@ -64,11 +59,8 @@ class DataReader(Entity):
         if ret == 0:
             return []
 
-        result_pt = cast(samples[0], POINTER(self.topic.data_type.struct_class))
-        return_samples = [self.topic.data_type.from_struct(result_pt[i]) for i in range(min(ret, N))]
-        retn = self._return_loan(ref, samples, min(N, ret))
-        if retn < 0:
-            raise DDSException(retn, f"Occured when returning loan for take(0 in {repr(self)}")
+        return_samples = [self.topic.data_type.from_struct(self._samples[i]) for i in range(min(ret, N))]
+
         return return_samples
 
     def wait_for_historical_data(self, timeout: int) -> bool:

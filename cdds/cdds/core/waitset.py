@@ -1,5 +1,4 @@
 from cdds.core import Entity, DDSException
-from cdds.domain import DomainParticipant
 from cdds.internal import c_call
 from cdds.internal.dds_types import dds_entity_t, dds_attach_t, dds_return_t, dds_duration_t, dds_time_t
 from cdds.core.exception import DDS_RETCODE_TIMEOUT
@@ -8,7 +7,7 @@ from ctypes import c_size_t, c_int, c_void_p, c_bool, byref, cast, POINTER
 
 
 class WaitSet(Entity):
-    def __init__(self, domain_participant: DomainParticipant):
+    def __init__(self, domain_participant: 'cdds.domain.DomainParticipant'):
         super().__init__(self._create_waitset(domain_participant._ref))
         self.attached = []
 

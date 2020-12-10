@@ -64,4 +64,4 @@ class dds_guid_t(ct.Structure):
     _fields_ = [('v', ct.c_uint8 * 16)]
 
     def as_python_guid(self) -> UUID:
-        return UUID(bytes(self.v))
+        return UUID(bytes=bytes(self.v))

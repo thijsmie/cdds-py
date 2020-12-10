@@ -1,9 +1,9 @@
 from cdds.internal import DDS, c_call
 from cdds.internal.dds_types import dds_qos_p_t, dds_return_t, dds_reliability_t, dds_durability_t, dds_duration_t, dds_history_t, \
     dds_presentation_access_scope_t, dds_ownership_t, dds_liveliness_t, dds_destination_order_t, dds_ingnorelocal_t
-from cdds.util import duration
+from cdds.util.time import duration
 
-from ctypes import c_void_p, c_int32, c_char_p, POINTER, c_size_t, c_uint32, c_bool, cast, byref, sizeof, Structure
+from ctypes import c_void_p, c_int32, c_char_p, POINTER, c_size_t, c_uint32, c_bool, cast, byref, pointer, sizeof, Structure
 from enum import Enum, auto
 from typing import Tuple, Callable, Optional, List, Any
 
@@ -177,10 +177,10 @@ class Policy:
          assert (history[0] == _PolicyType.History)
          return _PolicyType.DurabilityService, (cleanup_delay, history[1][0], history[1][1], max_samples, max_instances, max_samples_per_instance)
 
-    @staticmethod
-    def IgnoreLocal(ignorelocal: bool) -> Tuple[_PolicyType, bool]:
-        return _PolicyType.IgnoreLocal, ignorelocal
-
+    class IgnoreLocal:
+        Nothing: Tuple[_PolicyType, _QosDestinationOrder] = (_PolicyType.IgnoreLocal, _QosIgnoreLocal.Nothing)
+        Participant: Tuple[_PolicyType, _QosDestinationOrder] = (_PolicyType.IgnoreLocal, _QosIgnoreLocal.Participant)
+        Process: Tuple[_PolicyType, _QosIgnoreLocal] = (_PolicyType.IgnoreLocal, _QosIgnoreLocal.Process)
 
 class QosException(Exception):
     def __init__(self, msg, *args, **kwargs):
@@ -248,6 +248,7 @@ class Qos(DDS):
         if not policy or len(policy) < 2 or policy[0] not in self._attr_dispatch:
             raise QosException(f"Passed invalid argument to Qos: {policy}")
         getattr(self, self._attr_dispatch[policy[0]])(policy)
+        return self
 
     @classmethod
     def get_qos(cls, id):
@@ -255,6 +256,9 @@ class Qos(DDS):
 
     def __del__(self):
         self._delete_qos(self._ref)
+
+    def __eq__(self, o: 'Qos') -> bool:
+        return self._eq(self._ref, o._ref)
 
     def get_userdata(self) -> Tuple[c_size_t, c_void_p]:
         if not self._get_userdata(self._ref, byref(self._gc_userdata_value), byref(self._gc_userdata_size)):
@@ -329,95 +333,95 @@ class Qos(DDS):
         if not self._get_durability(self._ref, byref(self._gc_durability)):
             raise QosException("Durability or Qos object invalid.")
 
-        return _PolicyType.Durability, _QosDurability(int(self._gc_durability))
+        return _PolicyType.Durability, _QosDurability(self._gc_durability.value)
 
     def get_history(self) -> Tuple[_PolicyType, Tuple[_QosHistory, int]]:
         if not self._get_history(self._ref, byref(self._gc_history), byref(self._gc_history_depth)):
             raise QosException("History or Qos object invalid.")
 
-        return _PolicyType.History, (_QosHistory(int(self._gc_history)), int(self._gc_history_depth))
+        return _PolicyType.History, (_QosHistory(self._gc_history.value), self._gc_history_depth.value)
 
     def get_resource_limits(self) -> Tuple[_PolicyType, Tuple[int, int, int]]:
         if not self._get_resource_limits(self._ref, byref(self._gc_max_samples), byref(self._gc_max_instances), byref(self._gc_max_samples_per_instance)):
             raise QosException("Resource limits or Qos object invalid.")
 
-        return _PolicyType.ResourceLimits, (int(self._gc_max_samples), int(self._gc_max_instances), int(self._gc_max_samples_per_instance))
+        return _PolicyType.ResourceLimits, (self._gc_max_samples.value, self._gc_max_instances.value, self._gc_max_samples_per_instance.value)
 
-    def get_presentation(self) -> Tuple[_PolicyType, Tuple[_QosAccessScope, bool, bool]]:
+    def get_presentation_access_scope(self) -> Tuple[_PolicyType, Tuple[_QosAccessScope, bool, bool]]:
         if not self._get_presentation(self._ref, byref(self._gc_access_scope), byref(self._gc_coherent_access), byref(self._gc_ordered_access)):
             raise QosException("Presentation or Qos object invalid.")
         
-        return _PolicyType.PresentationAccessScope, (_QosAccessScope(int(self._gc_access_scope)), bool(self._gc_coherent_access), bool(self._gc_ordered_access))
+        return _PolicyType.PresentationAccessScope, (_QosAccessScope(self._gc_access_scope.value), bool(self._gc_coherent_access), bool(self._gc_ordered_access))
 
     def get_lifespan(self) -> Tuple[_PolicyType, int]:
         if not self._get_lifespan(self._ref, byref(self._gc_lifespan)):
             raise QosException("Lifespan or Qos object invalid.")
 
-        return _PolicyType.Lifespan, int(self._gc_lifespan)
+        return _PolicyType.Lifespan, self._gc_lifespan.value
 
     def get_deadline(self) -> Tuple[_PolicyType, int]:
         if not self._get_deadline(self._ref, byref(self._gc_deadline)):
             raise QosException("Deadline or Qos object invalid.")
 
-        return _PolicyType.Deadline, int(self._gc_deadline)
+        return _PolicyType.Deadline, self._gc_deadline.value
 
     def get_latency_budget(self) -> Tuple[_PolicyType, int]:
         if not self._get_latency_budget(self._ref, byref(self._gc_latency_budget)):
             raise QosException("Deadline or Qos object invalid.")
 
-        return _PolicyType.LatencyBudget, int(self._gc_latency_budget)
+        return _PolicyType.LatencyBudget, self._gc_latency_budget.value
 
     def get_ownership(self) -> Tuple[_PolicyType, _QosOwnership]:
         if not self._get_ownership(self._ref, byref(self._gc_ownership)):
             raise QosException("Ownership or Qos object invalid.")
 
-        return _PolicyType.Ownership, _QosOwnership(int(self._gc_ownership))
+        return _PolicyType.Ownership, _QosOwnership(self._gc_ownership.value)
 
     def get_ownership_strength(self) -> Tuple[_PolicyType, int]:
         if not self._get_ownership_strength(self._ref, byref(self._gc_ownership_strength)):
             raise QosException("Ownership strength or Qos object invalid.")
 
-        return _PolicyType.OwnershipStrength, int(self._gc_ownership_strength)
+        return _PolicyType.OwnershipStrength, self._gc_ownership_strength.value
 
     def get_liveliness(self) -> Tuple[_PolicyType, Tuple[_QosLiveliness, int]]:
         if not self._get_liveliness(self._ref, byref(self._gc_liveliness), byref(self._gc_lease_duration)):
             raise QosException("Liveliness or Qos object invalid.")
 
-        return _PolicyType.Liveliness, (_QosLiveliness(int(self._gc_liveliness)), int(self._gc_lease_duration))
+        return _PolicyType.Liveliness, (_QosLiveliness(self._gc_liveliness.value), self._gc_lease_duration.value)
 
     def get_time_based_filter(self) -> Tuple[_PolicyType, int]:
         if not self._get_time_based_filter(self._ref, byref(self._gc_time_based_filter)):
             raise QosException("Time Based Filter or Qos object invalid.")
 
-        return _PolicyType.TimeBasedFilter, int(self._gc_time_based_filter)
+        return _PolicyType.TimeBasedFilter, self._gc_time_based_filter.value
 
     def get_partitions(self) -> Tuple[_PolicyType, List[str]]:
         if not self._get_partitions(self._ref, byref(self._gc_partition_num), byref(self._gc_partition_names)):
             raise QosException("Partition or Qos object invalid.")
 
-        names = [None] * self._gc_partition_num
-        for i in range(self._gc_partition_num):
-            names[i] = bytes(self._gc_partition_names[0][i]).decode()
+        names = [None] * self._gc_partition_num.value
+        for i in range(self._gc_partition_num.value):
+            names[i] = bytes(self._gc_partition_names[i]).decode()
 
-        return _PolicyType.Partitions, names
+        return _PolicyType.Partitions, tuple(names)
 
     def get_reliability(self) -> Tuple[_PolicyType, Tuple[_QosReliability, int]]:
         if not self._get_reliability(self._ref, byref(self._gc_reliability), byref(self._gc_max_blocking_time)):
             raise QosException("Reliability or Qos object invalid.")
 
-        return _PolicyType.Reliability, (_QosReliability(int(self._gc_reliability)), int(self._gc_max_blocking_time))
+        return _PolicyType.Reliability, (_QosReliability(self._gc_reliability.value), self._gc_max_blocking_time.value)
 
     def get_transport_priority(self) -> Tuple[_PolicyType, int]:
         if not self._get_transport_priority(self._ref, byref(self._gc_transport_priority)):
             raise QosException("Transport Priority or Qos object invalid.")
 
-        return _PolicyType.TransportPriority, int(self._gc_transport_priority)
+        return _PolicyType.TransportPriority, self._gc_transport_priority.value
 
     def get_destination_order(self) -> Tuple[_PolicyType, _QosDestinationOrder]:
         if not self._get_destination_order(self._ref, byref(self._gc_destination_order)):
             raise QosException("Destination Order or Qos object invalid.")
 
-        return _PolicyType.DestinationOrder, _QosDestinationOrder(int(self._gc_destination_order))
+        return _PolicyType.DestinationOrder, _QosDestinationOrder(self._gc_destination_order.value)
 
     def get_writer_data_lifecycle(self) -> Tuple[_PolicyType, bool]:
         if not self._get_writer_data_lifecycle(self._ref, byref(self._gc_writer_autodispose)):
@@ -429,7 +433,7 @@ class Qos(DDS):
         if not self._get_reader_data_lifecycle(self._ref, byref(self._gc_autopurge_nowriter_samples_delay), byref(self._gc_autopurge_disposed_samples_delay)):
             raise QosException("Reader Data Lifecycle or Qos object invalid.")
 
-        return _PolicyType.ReaderDataLifecycle, (int(self._gc_autopurge_nowriter_samples_delay), int(self._gc_autopurge_disposed_samples_delay))
+        return _PolicyType.ReaderDataLifecycle, (self._gc_autopurge_nowriter_samples_delay.value, self._gc_autopurge_disposed_samples_delay.value)
 
     def get_durability_service(self) -> Tuple[_PolicyType, Tuple[int, _QosHistory, int, int, int, int]]:
         if not self._get_durability_service(self._ref, 
@@ -441,16 +445,16 @@ class Qos(DDS):
             byref(self._gc_durservice_max_samples_per_instance)):
             raise QosException("Durability Service or Qos object invalid.")
 
-        return _PolicyType.DurabilityService, (int(self._gc_durservice_service_cleanup_delay), \
-             _QosHistory(int(self._gc_durservice_history_kind)), int(self._gc_durservice_history_depth),
-             int(self._gc_durservice_service_cleanup_delay), int(self._gc_durservice_service_cleanup_delay), \
-             int(self._gc_durservice_service_cleanup_delay))
+        return _PolicyType.DurabilityService, (self._gc_durservice_service_cleanup_delay.value, \
+             _QosHistory(self._gc_durservice_history_kind.value), self._gc_durservice_history_depth.value,
+             self._gc_durservice_max_samples.value, self._gc_durservice_max_instances.value, \
+             self._gc_durservice_max_samples_per_instance.value)
 
-    def get_ignorelocal(self) -> Tuple[_PolicyType, bool]:
+    def get_ignore_local(self) -> Tuple[_PolicyType, _QosIgnoreLocal]:
         if not self._get_ignorelocal(self._ref, byref(self._gc_ignorelocal)):
             raise QosException("Ignorelocal or Qos object invalid.")
 
-        return _PolicyType.IgnoreLocal, bool(self._gc_ignorelocal)
+        return _PolicyType.IgnoreLocal, _QosIgnoreLocal(self._gc_ignorelocal.value)
 
     def get_propnames(self) -> List[str]:
         if not self._get_propnames(self._ref, byref(self._gc_propnames_num), byref(self._gc_propnames_names)):
@@ -508,9 +512,9 @@ class Qos(DDS):
         assert(limits[0] == _PolicyType.ResourceLimits)
         self._set_resource_limits(self._ref, *limits[1])
 
-    def set_presentation(self, presentation: Tuple[_PolicyType, Tuple[_QosAccessScope, bool, bool]]) -> None:
+    def set_presentation_access_scope(self, presentation: Tuple[_PolicyType, Tuple[_QosAccessScope, bool, bool]]) -> None:
         assert(presentation[0] == _PolicyType.PresentationAccessScope)
-        self._set_presentation(self._ref, presentation[1][0].value, presentation[1][1], presentation[1][2])
+        self._set_presentation_access_scope(self._ref, presentation[1][0].value, presentation[1][1], presentation[1][2])
 
     def set_lifespan(self, lifespan: Tuple[_PolicyType, int]) -> None:
         assert(lifespan[0] == _PolicyType.Lifespan)
@@ -543,7 +547,10 @@ class Qos(DDS):
     def set_partitions(self, partitions: Tuple[_PolicyType, List[str]]) -> None:
         assert(partitions[0] == _PolicyType.Partitions)
         ps = [p.encode() for p in partitions[1]]
-        self._set_partitions(self._ref, len(ps), ps)
+        p_pt = (c_char_p * len(ps))()
+        for i, p in enumerate(ps):
+            p_pt[i] = ps[i]
+        self._set_partitions(self._ref, len(ps), p_pt)
 
     def set_reliability(self, reliability: Tuple[_PolicyType, Tuple[_QosReliability, int]]) -> None:
         assert(reliability[0] == _PolicyType.Reliability)
@@ -569,9 +576,9 @@ class Qos(DDS):
         assert(settings[0] == _PolicyType.DurabilityService)
         self._set_durability_service(self._ref, settings[1][0], settings[1][1].value, settings[1][2], settings[1][3], settings[1][4], settings[1][5])
 
-    def set_ignorelocal(self, ignorelocal: Tuple[_PolicyType, _QosIgnoreLocal]) -> None:
+    def set_ignore_local(self, ignorelocal: Tuple[_PolicyType, _QosIgnoreLocal]) -> None:
         assert(ignorelocal[0] == _PolicyType.IgnoreLocal)
-        self._set_ignorelocal(self._ref, ignorelocal[1].value)
+        self._set_ignore_local(self._ref, ignorelocal[1].value)
 
     def set_prop(self, name: str, value: str) -> None:
         self._set_prop(self._ref, name.encode(), value.encode())
@@ -605,7 +612,7 @@ class Qos(DDS):
         self._gc_deadline = dds_duration_t()
         self._gc_latency_budget = dds_duration_t()
         self._gc_ownership = dds_ownership_t()
-        self._gc_ownership_strength = dds_duration_t()
+        self._gc_ownership_strength = c_int32()
         self._gc_liveliness = dds_liveliness_t()
         self._gc_lease_duration = dds_duration_t()
         self._gc_time_based_filter = dds_duration_t()
@@ -624,7 +631,7 @@ class Qos(DDS):
         self._gc_durservice_max_samples = c_int32()
         self._gc_durservice_max_instances = c_int32()
         self._gc_durservice_max_samples_per_instance = c_int32()
-        self._gc_ignorelocal = c_bool()
+        self._gc_ignorelocal = dds_ingnorelocal_t()
         self._gc_propnames_num = c_uint32()
         self._gc_propnames_names = (POINTER(c_char_p))()
         self._gc_prop_get_value = c_char_p()
@@ -671,7 +678,7 @@ class Qos(DDS):
         pass
 
     @c_call("dds_qset_presentation")
-    def _set_presentation(self, qos: dds_qos_p_t, access_scope: dds_presentation_access_scope_t, coherent_access: c_bool, ordered_access: c_bool) -> None:
+    def _set_presentation_access_scope(self, qos: dds_qos_p_t, access_scope: dds_presentation_access_scope_t, coherent_access: c_bool, ordered_access: c_bool) -> None:
         pass
 
     @c_call("dds_qset_lifespan")
@@ -731,7 +738,7 @@ class Qos(DDS):
         pass
 
     @c_call("dds_qset_ignorelocal")
-    def _set_ignorelocal(self, qos: dds_qos_p_t, ingorelocal_kind: dds_ingnorelocal_t) -> None:
+    def _set_ignore_local(self, qos: dds_qos_p_t, ingorelocal_kind: dds_ingnorelocal_t) -> None:
         pass
 
     @c_call("dds_qset_prop")
@@ -852,6 +859,10 @@ class Qos(DDS):
 
     @c_call("dds_qget_bpropnames")
     def _get_bpropnames(self,  qos: dds_qos_p_t, size: POINTER(c_uint32), names: POINTER(POINTER(c_char_p))) -> bool:
+        pass
+
+    @c_call("dds_qos_equal")
+    def _eq(self, qos_a: dds_qos_p_t, qos_b: dds_qos_p_t) -> bool:
         pass
     
 # Set DDS qos type

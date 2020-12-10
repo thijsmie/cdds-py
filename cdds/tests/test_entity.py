@@ -1,21 +1,15 @@
 import pytest
 
-from cdds.core import Entity
+from cdds.core import Entity, Listener
 from cdds.domain import DomainParticipant
 from cdds.topic import Topic
 from cdds.sub import Subscriber, DataReader
 from cdds.pub import Publisher, DataWriter
-from cdds.core.exception import DDSException, DDS_RETCODE_PRECONDITION_NOT_MET
+from cdds.core.exception import DDSException, DDS_RETCODE_ILLEGAL_OPERATION, DDS_RETCODE_PRECONDITION_NOT_MET
+from cdds.util.entity import isgoodentity
 
 from testtopics import Message
 
-
-def isgoodentity(v):
-    return v != None and \
-           isinstance(v, Entity) and \
-           hasattr(v, "_ref") and \
-           type(v._ref) == int and \
-           v._ref > 0
 
 def test_create_entity():
     dp = DomainParticipant(0)
@@ -146,3 +140,50 @@ def test_get_children():
     del tp
 
     assert len(dp.children) == len(dp.get_children()) == 0
+
+
+def test_get_pubsub():
+    dp = DomainParticipant(0)
+    tp = Topic(dp, Message, 'Message')
+    sub = Subscriber(dp)
+    pub = Publisher(dp)
+    dr = DataReader(sub, tp)
+    dw = DataWriter(pub, tp)
+
+    assert dr.subscriber == dr.get_subscriber() == sub
+    assert dw.publisher == dw.get_publisher() == pub
+
+    with pytest.raises(DDSException) as exc:
+        dp.get_subscriber()
+
+    assert exc.value.code == DDS_RETCODE_ILLEGAL_OPERATION
+
+
+def test_get_listener():
+    dp = DomainParticipant(0, listener=Listener())
+
+    assert dp.listener
+
+
+def test_get_domainid():
+    dp = DomainParticipant(2)
+    assert dp.domainid == dp.get_domainid() == 2
+
+
+def test_get_qos():
+    dp = DomainParticipant(0)
+    qos = dp.qos 
+    assert qos == dp.get_qos()
+    dp.qos = qos
+
+def test_set_listener():
+    dp = DomainParticipant(0)
+    dp.set_listener(Listener())
+
+
+def test_get_guid():
+    dp = DomainParticipant(0)
+    dpa = DomainParticipant(1)
+    
+    assert dp.guid == dp.get_guid()
+    assert dp.guid != dpa.guid

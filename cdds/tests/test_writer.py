@@ -5,15 +5,10 @@ from cdds.core.exception import DDSException, DDS_RETCODE_UNSUPPORTED
 from cdds.domain import DomainParticipant
 from cdds.topic import Topic
 from cdds.pub import Publisher, DataWriter
+from cdds.util.entity import isgoodentity
+from cdds.util.time import duration
 
 from testtopics import Message
-
-def isgoodentity(v):
-    return v != None and \
-           isinstance(v, Entity) and \
-           hasattr(v, "_ref") and \
-           type(v._ref) == int and \
-           v._ref > 0
 
 
 def test_initialize_writer():
@@ -36,3 +31,4 @@ def test_writeto_writer():
     )
 
     dw.write(msg)
+    assert dw.wait_for_acks(duration(seconds=1))

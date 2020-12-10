@@ -3,16 +3,9 @@ import pytest
 from cdds.core import Entity
 from cdds.domain import DomainParticipant
 from cdds.topic import Topic
+from cdds.util.entity import isgoodentity
 
 from testtopics import Message
-
-
-def isgoodentity(v):
-    return v != None and \
-           isinstance(v, Entity) and \
-           hasattr(v, "_ref") and \
-           type(v._ref) == int and \
-           v._ref > 0
 
 
 def test_create_topic():

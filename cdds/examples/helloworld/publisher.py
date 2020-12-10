@@ -5,7 +5,7 @@ from cdds.core import Qos, Policy
 from cdds.domain import DomainParticipant
 from cdds.pub import Publisher, DataWriter
 from cdds.topic import Topic
-from cdds.util import duration
+from cdds.util.time import duration
 
 from vehicle import Vehicle
 

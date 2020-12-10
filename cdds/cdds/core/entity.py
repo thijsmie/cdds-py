@@ -33,6 +33,14 @@ class Entity(DDS):
 
     subscriber: 'cdds.sub.Subscriber' = property(get_subscriber, doc="Entity subscriber")
 
+    def get_publisher(self):
+        ref = self._get_publisher(self._ref)
+        if ref >= 0:
+            return self.get_entity(ref)
+        raise DDSException(ref, f"Occurred when getting the publisher for {repr(self)}")
+
+    publisher: 'cdds.sub.Publisher' = property(get_publisher, doc="Entity publisher")
+
     def get_datareader(self) -> Optional['cdds.sub.DataReader']:
         """Get the DataReader associated with this entity"""
         ref = self._get_datareader(self._ref)
@@ -40,7 +48,7 @@ class Entity(DDS):
             return self.get_entity(ref)
         raise DDSException(ref, f"Occurred when getting the datareader for {repr(self)}")
 
-    datareader: Optional['cdds.sub.DataReader'] = property(get_datareader, doc="""The DataReader associated with this entity. This is read only (maps to set_datareader). Can be None.""")
+    datareader: Optional['cdds.sub.DataReader'] = property(get_datareader, doc="""The DataReader associated with this entity. This is read only (maps to get_datareader). Can be None.""")
 
     def get_instance_handle(self):
         handle = dds_instance_handle_t()
@@ -51,41 +59,41 @@ class Entity(DDS):
 
     instance_handle: int = property(get_instance_handle, doc="Entity instance handle")
 
-    def get_guid(self):
+    def get_guid(self) -> 'uuid.UUID':
         guid = dds_guid_t()
         ret = self._get_guid(self._ref, byref(guid))
         if ret == 0:
             return guid.as_python_guid()
         raise DDSException(ret, f"Occurred when getting the GUID for {repr(self)}")
 
-    guid = property(get_guid, doc="Entity GUID")
+    guid: 'uuid.UUID' = property(get_guid, doc="Entity GUID")
 
-    def read_status(self, mask=None):
+    def read_status(self, mask=None) -> int:
         status = c_uint32()
-        ret = self._read_status(self._ref, byref(status), c_uint32(mask) if mask else None)
+        ret = self._read_status(self._ref, byref(status), c_uint32(mask) if mask else self.get_status_mask())
         if ret == 0:
-            return status
+            return status.value
         raise DDSException(ret, f"Occurred when reading the status for {repr(self)}")
 
-    def take_status(self):
+    def take_status(self, mask=None) -> int:
         status = c_uint32()
-        ret = self._take_status(self._ref, byref(status))
+        ret = self._take_status(self._ref, byref(status), c_uint32(mask) if mask else self.get_status_mask())
         if ret == 0:
-            return status
+            return status.value
         raise DDSException(ret, f"Occurred when taking the status for {repr(self)}")
 
-    def get_status_changes(self):
+    def get_status_changes(self) -> int:
         status = c_uint32()
         ret = self._get_status_changes(self._ref, byref(status))
         if ret == 0:
-            return status
+            return status.value
         raise DDSException(ret, f"Occurred when getting the status changes for {repr(self)}")
 
     def get_status_mask(self):
         mask = c_uint32()
         ret = self._get_status_mask(self._ref, byref(mask))
         if ret == 0:
-            return mask
+            return mask.value
         raise DDSException(ret, f"Occurred when getting the status mask for {repr(self)}")
 
     def set_status_mask(self, mask):
@@ -171,7 +179,7 @@ class Entity(DDS):
         domainid = dds_domainid_t()
         ret = self._get_domainid(self._ref, byref(domainid))
         if ret == 0:
-            return int(domainid)
+            return domainid.value
 
         raise DDSException(ret, f"Occurred when getting the domainid of {repr(self)}")
 
@@ -200,6 +208,10 @@ class Entity(DDS):
     def _get_datareader(self, entity: dds_entity_t) -> dds_entity_t:
         pass
 
+    @c_call("dds_get_publisher")
+    def _get_publisher(self, entity: dds_entity_t) -> dds_entity_t:
+        pass
+
     @c_call("dds_get_instance_handle")
     def _get_instance_handle(self, entity: dds_entity_t, handle: POINTER(dds_instance_handle_t)) -> dds_return_t:
         pass
@@ -213,7 +225,7 @@ class Entity(DDS):
         pass
 
     @c_call("dds_take_status")
-    def _take_status(self, entity: dds_entity_t, status: POINTER(c_uint32)) -> dds_return_t:
+    def _take_status(self, entity: dds_entity_t, status: POINTER(c_uint32), mask: c_uint32) -> dds_return_t:
         pass
 
     @c_call("dds_get_status_changes")
@@ -222,6 +234,10 @@ class Entity(DDS):
 
     @c_call("dds_get_status_mask")
     def _get_status_mask(self, entity: dds_entity_t, mask: POINTER(c_uint32)) -> dds_return_t:
+        pass
+
+    @c_call("dds_set_status_mask")
+    def _set_status_mask(self, entity: dds_entity_t, mask: c_uint32) -> dds_return_t:
         pass
 
     @c_call("dds_get_qos")

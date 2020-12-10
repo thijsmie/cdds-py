@@ -17,6 +17,8 @@ dds_offered_deadline_missed_fn = c_callable(None, [dds_entity_t, dds_offered_dea
 
 def is_override(func):
     obj = func.__self__
+    if type(obj) == Listener:
+        return False
     prntM = getattr(super(type(obj), obj), func.__name__)
 
     return func.__func__ != prntM.__func__
@@ -69,11 +71,6 @@ class Listener(DDS):
 
     def merge(self, listener: 'Listener') -> None:
         self._merge_listener(self._ref, listener._ref)
-
-    def __setattr__(self, name: str, value: Any) -> None:
-        if name in self.setters:
-            return self.setters[name](value)
-        return super().__setattr__(name, value)
 
     def on_inconsistent_topic(self, reader: 'cdds.sub.DataReader', status: dds_inconsistent_topic_status_t) -> None:
         pass
