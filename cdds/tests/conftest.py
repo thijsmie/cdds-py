@@ -1,6 +1,5 @@
 import pytest
 
-
 from cdds.core import Qos, Policy
 from cdds.domain import DomainParticipant
 from cdds.topic import Topic
@@ -8,8 +7,12 @@ from cdds.pub import Publisher, DataWriter
 from cdds.sub import Subscriber, DataReader
 from cdds.util.time import duration
 
-from testtopics import Message
+# Allow the import of support modules for tests
+import os.path as p
+import sys
+sys.path.append(p.join(p.abspath(p.dirname(__file__)), "support_modules/"))
 
+from testtopics import Message
 
 class Common:
     def __init__(self, domain_id=0):

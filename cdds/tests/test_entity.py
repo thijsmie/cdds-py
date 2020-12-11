@@ -8,7 +8,7 @@ from cdds.pub import Publisher, DataWriter
 from cdds.core.exception import DDSException, DDS_RETCODE_ILLEGAL_OPERATION, DDS_RETCODE_PRECONDITION_NOT_MET
 from cdds.util.entity import isgoodentity
 
-from testtopics import Message
+from  testtopics import Message
 
 
 def test_create_entity():

@@ -5,7 +5,7 @@ from cdds.domain import DomainParticipant
 from cdds.topic import Topic
 from cdds.util.entity import isgoodentity
 
-from testtopics import Message
+from  testtopics import Message
 
 
 def test_create_topic():

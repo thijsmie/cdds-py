@@ -3,7 +3,7 @@ import pytest
 from cdds.core import Entity, ReadCondition, SampleState, InstanceState, ViewState
 from cdds.util.entity import isgoodentity
 
-from testtopics import Message
+from  testtopics import Message
 
 
 def test_readcondition_init(common_setup):

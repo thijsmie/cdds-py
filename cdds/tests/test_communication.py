@@ -2,7 +2,7 @@ import pytest
 
 from cdds.core import Entity, DDSStatus
 
-from testtopics import Message
+from  testtopics import Message
 
 
 def test_communication_basic_read(common_setup):

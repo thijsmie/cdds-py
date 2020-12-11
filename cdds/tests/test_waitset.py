@@ -5,7 +5,7 @@ from cdds.core.exception import DDSException, DDS_RETCODE_BAD_PARAMETER
 from cdds.util.entity import isgoodentity
 from cdds.util.time import duration
 
-from testtopics import Message
+from  testtopics import Message
 
 
 def test_waitset_initialize(common_setup):

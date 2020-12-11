@@ -1,0 +1,84 @@
+name: CI automated testing
+
+on: push
+
+jobs:
+  build-cyclone:
+    runs-on: ubuntu-latest
+
+    - name: Checkout Cyclone
+      uses: actions/checkout@v2
+        with:
+          repository: eclipse-cyclonedds/cyclonedds
+          path: cyclonedds
+          ref: idl-cxx
+
+    - name: Check for Cyclone build cache
+      id: cyclone-cache
+      uses: actions/cache@2
+      with:
+        path: cyclonedds/build
+        key:  {{ runner.os }}-${{ hashFiles('cyclonedds/.git/refs/heads/idl-cxx') }}
+
+    - name: Get Java and Maven
+      if: steps.cyclone-cache.outputs.cache-hit != 'true'
+      uses: actions/setup-java@v1
+      with:
+        java-version: '9'
+        java-package: jdk
+        architecture: x64 
+
+    - name: Get latest CMake
+      if: steps.cyclone-cache.outputs.cache-hit != 'true'
+      uses: lukka/get-cmake@latest
+
+    - name: Build Cyclone
+      if: steps.cyclone-cache.outputs.cache-hit != 'true'
+      run: |
+        mkdir cyclonedds/build && cd cyclonedds/build
+        cmake ..
+        cmake --build .
+
+    - name: Build result
+      uses: actions/upload-artifact@master
+      with:
+        name: cyclone-build
+        path: cyclonedds/build
+    
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python:
+          - 3.5.10
+          - 3.6.12
+          - 3.7.9
+          - 3.9.0
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Get Cyclone
+      uses: actions/download-artifact@master
+      with:
+        name: cyclone-build
+        path: cyclonedds/build
+    
+    - name: Install python version
+      uses: gabrielfalcao/pyenv-action@v5
+      with:
+        default: "${{ matrix.python }}"
+        command: pip install -U pip
+
+    - name: Install cdds
+      working-directory: ./cdds
+      run: |
+        pip install -e . 
+        pip install pytest pytest-cov
+
+    - name: Run tests
+      working-directory: ./cdds
+      run: pytest
+      env:
+        ddsc: ../cyclonedds/build/lib/libddsc.so

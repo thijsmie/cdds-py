@@ -9,7 +9,7 @@ from cdds.util import duration
 from cdds.util.entity import isgoodentity
 
 
-from testtopics import Message
+from  testtopics import Message
 
 def test_reader_initialize():
     dp = DomainParticipant(0)

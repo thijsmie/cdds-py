@@ -5,7 +5,7 @@ from cdds.sub import DataReader
 from cdds.util.entity import isgoodentity
 from cdds.util.time import duration
 
-from testtopics import Message
+from  testtopics import Message
 
 
 def test_listener_initialize():

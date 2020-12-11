@@ -8,7 +8,7 @@ from cdds.pub import Publisher, DataWriter
 from cdds.util.entity import isgoodentity
 from cdds.util.time import duration
 
-from testtopics import Message
+from  testtopics import Message
 
 
 def test_initialize_writer():
