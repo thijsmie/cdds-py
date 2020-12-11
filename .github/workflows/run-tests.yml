@@ -79,7 +79,7 @@ jobs:
         command: pip install -U pip
 
     - name: For python 3.6 we need backported dataclasses
-      if: ${{ matrix.python }} == '3.6.12'
+      if: matrix.python == '3.6.12'
       run: pip install dataclasses
 
     - name: Install cdds
@@ -92,7 +92,7 @@ jobs:
       working-directory: ./cdds/tests/support_modules/testtopics
       run: |
         mkdir build && cd build
-        cmake .. -DCMAKE_PREFIX_PATH=../../../../../cyclonedds/install
+        cmake .. -DCMAKE_PREFIX_PATH=${{ github.workspace }}/cyclonedds/install
         cmake --build ..
 
     - name: Run tests
