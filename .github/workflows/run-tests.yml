@@ -20,7 +20,7 @@ jobs:
       uses: actions/cache@v2
       with:
         path: cyclonedds
-        key: ${{ runner.os }}-${{ hashFiles('cyclonedds/.git/refs/heads/idlcxx') }}
+        key: ${{ runner.os }}-v2-${{ hashFiles('cyclonedds/.git/refs/heads/idlcxx') }}
 
     - name: Get Java and Maven
       if: steps.cyclone-cache.outputs.cache-hit != 'true'
@@ -37,15 +37,15 @@ jobs:
     - name: Build Cyclone
       if: steps.cyclone-cache.outputs.cache-hit != 'true'
       run: |
-        mkdir cyclonedds/build && cd cyclonedds/build
-        cmake ..
-        cmake --build .
+        mkdir cyclonedds/build cyclondedds/install && cd cyclonedds/build
+        cmake .. -DCMAKE_INSTALL_PREFIX=../install
+        cmake --build . --target install
 
     - name: Build result
       uses: actions/upload-artifact@v2
       with:
         name: cyclone-build
-        path: cyclonedds/build
+        path: cyclonedds/install
     
   test:
     runs-on: ubuntu-latest
@@ -66,7 +66,11 @@ jobs:
       uses: actions/download-artifact@v2
       with:
         name: cyclone-build
-        path: cyclonedds/build
+        path: cyclonedds/install
+
+    - name: Get latest CMake
+      if: steps.cyclone-cache.outputs.cache-hit != 'true'
+      uses: lukka/get-cmake@v3.19.1
     
     - name: Install python version
       uses: gabrielfalcao/pyenv-action@v7
@@ -74,14 +78,25 @@ jobs:
         default: "${{ matrix.python }}"
         command: pip install -U pip
 
+    - name: For python 3.6 we need backported dataclasses
+      if: ${{ matrix.python }} == '3.6.12'
+      run: pip install dataclasses
+
     - name: Install cdds
       working-directory: ./cdds
       run: |
         pip install -e . 
         pip install pytest pytest-cov
 
+    - name: Generate test module with idl
+      working-directory: ./cdds/tests/support_modules/testtopics
+      run: |
+        mkdir build && cd build
+        cmake .. -DCMAKE_PREFIX_PATH=../../../../../cyclonedds/install
+        cmake --build ..
+
     - name: Run tests
       working-directory: ./cdds
       run: pytest
       env:
-        ddsc: ../cyclonedds/build/lib/libddsc.so
+        ddsc: ../cyclonedds/install/lib/libddsc.so
