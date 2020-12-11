@@ -111,10 +111,11 @@ jobs:
         ddsc: ../cyclonedds/install/lib/libddsc.so
 
     - name: Upload coverage report to codecov
+      working-directory: ./cdds
       uses: codecov/codecov-action@v1
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
-        file: ./cdds/cov.xml
+        file: cov.xml
         flags: unittests
         env_vars: OS,PYTHON
         name: codecov-umbrella
