@@ -7,9 +7,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Install Git
-      run: apt update && apt install -y git
-
     - name: Checkout Cyclone
       uses: actions/checkout@v2
       with:
@@ -26,7 +23,7 @@ jobs:
         key: ${{ runner.os }}-${{ hashFiles('cyclonedds/.git/refs/heads/idlcxx') }}
 
     - name: Get Java and Maven
-      # if: steps.cyclone-cache.outputs.cache-hit == false
+      if: steps.cyclone-cache.outputs.cache-hit != 'true'
       uses: actions/setup-java@v1
       with:
         java-version: '9'
@@ -34,11 +31,11 @@ jobs:
         architecture: x64 
 
     - name: Get latest CMake
-      # if: steps.cyclone-cache.outputs.cache-hit == false
+      if: steps.cyclone-cache.outputs.cache-hit != 'true'
       uses: lukka/get-cmake@v3.19.1
 
     - name: Build Cyclone
-      # if: steps.cyclone-cache.outputs.cache-hit == false
+      if: steps.cyclone-cache.outputs.cache-hit != 'true'
       run: |
         mkdir cyclonedds/build && cd cyclonedds/build
         cmake ..
