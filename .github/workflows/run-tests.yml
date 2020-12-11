@@ -37,7 +37,7 @@ jobs:
     - name: Build Cyclone
       if: steps.cyclone-cache.outputs.cache-hit != 'true'
       run: |
-        mkdir cyclonedds/build cyclondedds/install && cd cyclonedds/build
+        mkdir cyclonedds/build cyclonedds/install && cd cyclonedds/build
         cmake .. -DCMAKE_INSTALL_PREFIX=../install
         cmake --build . --target install
 
