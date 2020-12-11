@@ -53,10 +53,10 @@ jobs:
     strategy:
       matrix:
         python:
-          - 3.5.10
-          - 3.6.12
+          - 3.5.9
+          - 3.6.9
           - 3.7.9
-          - 3.9.0
+          - 3.9.1
 
     steps:
     - name: Checkout
@@ -73,6 +73,8 @@ jobs:
       with:
         default: "${{ matrix.python }}"
         command: pip install -U pip
+      env:
+        ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
 
     - name: Install cdds
       working-directory: ./cdds
