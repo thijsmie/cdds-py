@@ -2,7 +2,7 @@ from cdds.core import Entity
 
 
 def isgoodentity(v):
-    return v != None and \
+    return v is not None and \
            isinstance(v, Entity) and \
            hasattr(v, "_ref") and \
            type(v._ref) == int and \

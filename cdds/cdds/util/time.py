@@ -1,7 +1,5 @@
-
-
-
-def duration(*, weeks: float=0, days: float=0, hours: float=0, minutes: float=0, seconds: float=0, milliseconds: float=0, microseconds: float=0, nanoseconds: int=0) -> int:
+def duration(*, weeks: float = 0, days: float = 0, hours: float = 0, minutes: float = 0, seconds: float = 0,
+             milliseconds: float = 0, microseconds: float = 0, nanoseconds: int = 0) -> int:
     """Durations are always expressed in nanoseconds in DDS (dds_duration_t)
 
     Args:

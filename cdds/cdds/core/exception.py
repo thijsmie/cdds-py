@@ -30,7 +30,8 @@ error_message_mapping = {
     DDS_RETCODE_TIMEOUT: ("DDS_RETCODE_TIMEOUT", "A timeout has occurred"),
     DDS_RETCODE_NO_DATA: ("DDS_RETCODE_NO_DATA", "Expected data is not provided"),
     DDS_RETCODE_ILLEGAL_OPERATION: ("DDS_RETCODE_ILLEGAL_OPERATION", "A function was called when it should not be"),
-    DDS_RETCODE_NOT_ALLOWED_BY_SECURITY: ("DDS_RETCODE_NOT_ALLOWED_BY_SECURITY", "Insufficient credentials supplied to use the function")
+    DDS_RETCODE_NOT_ALLOWED_BY_SECURITY:
+        ("DDS_RETCODE_NOT_ALLOWED_BY_SECURITY", "Insufficient credentials supplied to use the function")
 }
 
 

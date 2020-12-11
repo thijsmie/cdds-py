@@ -1,10 +1,10 @@
 import cdds
 
 from cdds.internal import c_call, c_callable
-from cdds.internal.dds_types import dds_entity_t, dds_attach_t, dds_return_t, dds_duration_t, dds_time_t
+from cdds.internal.dds_types import dds_entity_t, dds_return_t
 from cdds.core import Entity, DDSException
 
-from ctypes import c_uint32, c_size_t, c_int, c_void_p, c_bool, byref, cast, POINTER
+from ctypes import c_uint32, c_void_p, c_bool, byref, cast, POINTER
 from typing import Callable, Any
 
 
@@ -44,7 +44,6 @@ class DDSStatus:
     All = (1 << 14) - 1
 
 
-
 class Condition(Entity):
     """Utility class to implement common methods between Read and Queryconditions"""
     def get_mask(self) -> int:
@@ -70,6 +69,7 @@ class Condition(Entity):
     def _triggered(self, condition: dds_entity_t) -> dds_return_t:
         pass
 
+
 class ReadCondition(Condition):
     def __init__(self, reader: 'cdds.sub.DataReader', mask: int) -> None:
         self.reader = reader
@@ -81,22 +81,24 @@ class ReadCondition(Condition):
         pass
 
 
-dds_querycondition_filter_fn = c_callable(c_bool, [c_void_p])
+querycondition_filter_fn = c_callable(c_bool, [c_void_p])
+
+
 class QueryCondition(Condition):
     def __init__(self, reader: 'cdds.sub.DataReader', mask: int, filter: Callable[[Any], bool]) -> None:
         self.reader = reader
         self.mask = mask
         self.filter = filter
-        
+
         def call(sample_pt):
             try:
                 return self.filter(cast(sample_pt, POINTER(reader.topic.data_type))[0])
-            except:
+            except Exception:  # Block any python exception from going into C
                 return False
 
-        self._filter = dds_querycondition_filter_fn(call)
+        self._filter = querycondition_filter_fn(call)
         super().__init__(self._create_querycondition(reader._ref, mask, self._filter))
 
     @c_call("dds_create_querycondition")
-    def _create_querycondition(self, reader: dds_entity_t, mask: c_uint32, filter: dds_querycondition_filter_fn) -> dds_entity_t:
+    def _create_querycondition(self, reader: dds_entity_t, mask: c_uint32, filter: querycondition_filter_fn) -> dds_entity_t:
         pass

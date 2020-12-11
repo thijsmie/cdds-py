@@ -10,7 +10,14 @@ from ctypes import c_void_p, byref
 
 class DataWriter(Entity):
     def __init__(self, publisher: 'cdds.pub.Publisher', topic: 'cdds.topic.Topic', qos=None, listener=None):
-        super().__init__(self._create_writer(publisher._ref, topic._ref, qos._ref if qos else None, listener._ref if listener else None))
+        super().__init__(
+            self._create_writer(
+                publisher._ref,
+                topic._ref,
+                qos._ref if qos else None,
+                listener._ref if listener else None
+            )
+        )
 
     def write(self, sample):
         ret = self._write(self._ref, sample.to_struct())
@@ -34,9 +41,9 @@ class DataWriter(Entity):
     # TODO: register_instance, unregister_instance
     # TODO: writedispose
 
-
     @c_call("dds_create_writer")
-    def _create_writer(self, publisher: dds_entity_t, topic: dds_entity_t, qos: dds_qos_p_t, listener: dds_listener_p_t) -> dds_entity_t:
+    def _create_writer(self, publisher: dds_entity_t, topic: dds_entity_t, qos: dds_qos_p_t,
+                       listener: dds_listener_p_t) -> dds_entity_t:
         pass
 
     @c_call("dds_write")
@@ -50,4 +57,3 @@ class DataWriter(Entity):
     @c_call("dds_wait_for_acks")
     def _wait_for_acks(self, publisher: dds_entity_t, timeout: dds_duration_t) -> dds_return_t:
         pass
-

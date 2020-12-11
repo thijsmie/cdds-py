@@ -7,7 +7,7 @@ from ctypes import c_char_p, c_size_t, POINTER, byref, cast
 
 
 class Domain(Entity):
-    def __init__(self, domainid: int, config: Optional[str]=None):
+    def __init__(self, domainid: int, config: Optional[str] = None):
         self._id = domainid
         if config is not None:
             super().__init__(self._create_domain(dds_domainid_t(domainid), config.encode("ascii")))
@@ -20,7 +20,7 @@ class Domain(Entity):
             raise DDSException(num_participants, f"Occurred when getting the number of participants of domain {self._id}")
         elif num_participants == 0:
             return []
-            
+
         participants_list = (dds_entity_t * num_participants)()
 
         ret = self._lookup_participant(self._id, cast(byref(participants_list), POINTER(dds_entity_t)), num_participants)
@@ -36,5 +36,3 @@ class Domain(Entity):
     @c_call("dds_lookup_participant")
     def _lookup_participant(self, id: dds_domainid_t, participants: POINTER(dds_entity_t), size: c_size_t) -> dds_entity_t:
         pass
-
-    

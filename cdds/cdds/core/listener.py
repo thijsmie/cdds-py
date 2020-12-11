@@ -1,11 +1,12 @@
 import cdds
 from cdds.core import Entity, DDSAPIException
 from cdds.internal import c_call, c_callable, DDS
-from cdds.internal.dds_types import dds_listener_p_t, dds_entity_t, dds_inconsistent_topic_status_t, dds_liveliness_lost_status_t, dds_liveliness_changed_status_t, \
-    dds_offered_deadline_missed_status_t
+from cdds.internal.dds_types import dds_listener_p_t, dds_entity_t, dds_inconsistent_topic_status_t, \
+                                    dds_liveliness_lost_status_t, dds_liveliness_changed_status_t, \
+                                    dds_offered_deadline_missed_status_t
 
 from ctypes import c_void_p
-from typing import Callable, Any
+from typing import Callable
 
 
 dds_inconsistent_topic_fn = c_callable(None, [dds_entity_t, dds_inconsistent_topic_status_t, c_void_p])
@@ -23,6 +24,7 @@ def is_override(func):
 
     return func.__func__ != prntM.__func__
 
+
 class Listener(DDS):
     def __init__(self, **kwargs):
         super().__init__(self._create_listener(None))
@@ -32,7 +34,7 @@ class Listener(DDS):
 
         if is_override(self.on_inconsistent_topic):
             self.set_on_inconsistent_topic(self.on_inconsistent_topic)
-        
+
         if is_override(self.on_liveliness_lost):
             self.set_on_liveliness_lost(self.on_liveliness_lost)
 
@@ -127,7 +129,8 @@ class Listener(DDS):
     def on_offered_deadline_missed(self, writer: 'cdds.sub.DataWriter', status: dds_offered_deadline_missed_status_t) -> None:
         pass
 
-    def set_on_offered_deadline_missed(self, callable: Callable[['cdds.sub.DataWriter', dds_offered_deadline_missed_status_t], None]):
+    def set_on_offered_deadline_missed(self, callable: Callable[['cdds.sub.DataWriter',
+                                                                 dds_offered_deadline_missed_status_t], None]):
         self.on_offered_deadline_missed = callable
         if callable is None:
             self._set_on_offered_deadline_missed(self._ref, None)
@@ -185,5 +188,6 @@ class Listener(DDS):
     @c_call("dds_delete_listener")
     def _delete_listener(self, listener: dds_listener_p_t) -> None:
         pass
+
 
 DDS.listener_type = Listener

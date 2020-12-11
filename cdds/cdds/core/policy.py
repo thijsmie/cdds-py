@@ -1,12 +1,12 @@
+# flake8: noqa E501
+
 from cdds.internal import DDS, c_call
-from cdds.internal.dds_types import dds_qos_p_t, dds_return_t, dds_reliability_t, dds_durability_t, dds_duration_t, dds_history_t, \
+from cdds.internal.dds_types import dds_qos_p_t, dds_reliability_t, dds_durability_t, dds_duration_t, dds_history_t, \
     dds_presentation_access_scope_t, dds_ownership_t, dds_liveliness_t, dds_destination_order_t, dds_ingnorelocal_t
-from cdds.util.time import duration
 
-from ctypes import c_void_p, c_int32, c_char_p, POINTER, c_size_t, c_uint32, c_bool, cast, byref, pointer, sizeof, Structure
+from ctypes import c_void_p, c_int32, c_char_p, POINTER, c_size_t, c_uint32, c_bool, cast, byref, sizeof, Structure
 from enum import Enum, auto
-from typing import Tuple, Callable, Optional, List, Any
-
+from typing import Tuple, List, Any
 
 
 class _QosReliability(Enum):
@@ -81,7 +81,7 @@ class Policy:
         @staticmethod
         def BestEffort(max_blocking_time: int) -> Tuple[_PolicyType, Tuple[_QosReliability, int]]:
             return _PolicyType.Reliability, (_QosReliability.BestEffort, max_blocking_time)
-            
+
         @staticmethod
         def Reliable(max_blocking_time: int) -> Tuple[_PolicyType, Tuple[_QosReliability, int]]:
             return _PolicyType.Reliability, (_QosReliability.Reliable, max_blocking_time)
@@ -91,9 +91,10 @@ class Policy:
         TransientLocal: Tuple[_PolicyType, _QosDurability] = (_PolicyType.Durability, _QosDurability.TransientLocal)
         Transient: Tuple[_PolicyType, _QosDurability] = (_PolicyType.Durability, _QosDurability.Transient)
         Persistent: Tuple[_PolicyType, _QosDurability] = (_PolicyType.Durability, _QosDurability.Persistent)
-    
+
     class History:
         KeepAll: Tuple[_PolicyType, Tuple[_QosHistory, int]] = (_PolicyType.History, (_QosHistory.KeepAll, 0))
+
         @staticmethod
         def KeepLast(amount: int) -> Tuple[_PolicyType, Tuple[_QosHistory, int]]:
             return _PolicyType.History, (_QosHistory.KeepLast, amount)
@@ -150,7 +151,7 @@ class Policy:
     @staticmethod
     def TimeBasedFilter(filter: int) -> Tuple[_PolicyType, int]:
         return _PolicyType.TimeBasedFilter, filter
-    
+
     @staticmethod
     def Partitions(*partitions: List[str]) -> Tuple[_PolicyType, List[str]]:
         return _PolicyType.Partitions, partitions
@@ -172,8 +173,7 @@ class Policy:
         return _PolicyType.ReaderDataLifecycle, (autopurge_nowriter_samples_delay, autopurge_disposed_samples_delay)
 
     @staticmethod
-    def DurabilityService(cleanup_delay: int, history: Tuple[_PolicyType, Tuple[_QosHistory, int]], max_samples: int, max_instances: int, \
-         max_samples_per_instance) -> Tuple[_PolicyType, Tuple[int, _QosHistory, int, int, int, int]]:
+    def DurabilityService(cleanup_delay: int, history: Tuple[_PolicyType, Tuple[_QosHistory, int]], max_samples: int, max_instances: int, max_samples_per_instance) -> Tuple[_PolicyType, Tuple[int, _QosHistory, int, int, int, int]]:
          assert (history[0] == _PolicyType.History)
          return _PolicyType.DurabilityService, (cleanup_delay, history[1][0], history[1][1], max_samples, max_instances, max_samples_per_instance)
 
@@ -350,7 +350,7 @@ class Qos(DDS):
     def get_presentation_access_scope(self) -> Tuple[_PolicyType, Tuple[_QosAccessScope, bool, bool]]:
         if not self._get_presentation(self._ref, byref(self._gc_access_scope), byref(self._gc_coherent_access), byref(self._gc_ordered_access)):
             raise QosException("Presentation or Qos object invalid.")
-        
+
         return _PolicyType.PresentationAccessScope, (_QosAccessScope(self._gc_access_scope.value), bool(self._gc_coherent_access), bool(self._gc_ordered_access))
 
     def get_lifespan(self) -> Tuple[_PolicyType, int]:
@@ -436,12 +436,12 @@ class Qos(DDS):
         return _PolicyType.ReaderDataLifecycle, (self._gc_autopurge_nowriter_samples_delay.value, self._gc_autopurge_disposed_samples_delay.value)
 
     def get_durability_service(self) -> Tuple[_PolicyType, Tuple[int, _QosHistory, int, int, int, int]]:
-        if not self._get_durability_service(self._ref, 
-            byref(self._gc_durservice_service_cleanup_delay), 
-            byref(self._gc_durservice_history_kind), 
-            byref(self._gc_durservice_history_depth), 
-            byref(self._gc_durservice_max_samples), 
-            byref(self._gc_durservice_max_instances), 
+        if not self._get_durability_service(self._ref,
+            byref(self._gc_durservice_service_cleanup_delay),
+            byref(self._gc_durservice_history_kind),
+            byref(self._gc_durservice_history_depth),
+            byref(self._gc_durservice_max_samples),
+            byref(self._gc_durservice_max_instances),
             byref(self._gc_durservice_max_samples_per_instance)):
             raise QosException("Durability Service or Qos object invalid.")
 
@@ -724,7 +724,7 @@ class Qos(DDS):
     @c_call("dds_qset_destination_order")
     def _set_destination_order(self, qos: dds_qos_p_t, destination_order_kind: dds_destination_order_t) -> None:
         pass
-    
+
     @c_call("dds_qset_writer_data_lifecycle")
     def _set_writer_data_lifecycle(self, qos: dds_qos_p_t, autodispose: c_bool) -> None:
         pass
@@ -828,7 +828,7 @@ class Qos(DDS):
     @c_call("dds_qget_destination_order")
     def _get_destination_order(self, qos: dds_qos_p_t, destination_order_kind: POINTER(dds_destination_order_t)) -> bool:
         pass
-    
+
     @c_call("dds_qget_writer_data_lifecycle")
     def _get_writer_data_lifecycle(self, qos: dds_qos_p_t, autodispose: POINTER(c_bool)) -> bool:
         pass
@@ -864,6 +864,7 @@ class Qos(DDS):
     @c_call("dds_qos_equal")
     def _eq(self, qos_a: dds_qos_p_t, qos_b: dds_qos_p_t) -> bool:
         pass
-    
+
+
 # Set DDS qos type
 DDS.qos_type = Qos

@@ -1,11 +1,14 @@
 import cdds
 from cdds.internal import DDS, c_call
-from cdds.internal.dds_types import dds_instance_handle_t, dds_entity_t, dds_return_t, dds_guid_t, dds_qos_p_t, dds_listener_p_t, dds_domainid_t
+from cdds.internal.dds_types import dds_instance_handle_t, dds_entity_t, dds_return_t, dds_guid_t, \
+                                    dds_qos_p_t, dds_listener_p_t, dds_domainid_t
 from cdds.core import Qos, DDSException
 
 from ctypes import POINTER, byref, c_uint32, c_size_t, cast
 from typing import Optional, Dict
 from weakref import WeakValueDictionary
+
+from uuid import UUID
 
 
 class Entity(DDS):
@@ -14,7 +17,7 @@ class Entity(DDS):
 
     def __init__(self, ref) -> None:
         if ref < 0:
-            raise DDSException(ref, f"Occurred upon initialisation of a {self.__class__.__module__}.{self.__class__.__name__}.")
+            raise DDSException(ref, f"Occurred upon initialisation of a {self.__class__.__module__}.{self.__class__.__name__}")
         super().__init__(ref)
         self._entities[self._ref] = self
 
@@ -48,7 +51,9 @@ class Entity(DDS):
             return self.get_entity(ref)
         raise DDSException(ref, f"Occurred when getting the datareader for {repr(self)}")
 
-    datareader: Optional['cdds.sub.DataReader'] = property(get_datareader, doc="""The DataReader associated with this entity. This is read only (maps to get_datareader). Can be None.""")
+    datareader: Optional['cdds.sub.DataReader'] = property(get_datareader, doc="""
+        The DataReader associated with this entity. This is read only (maps to get_datareader). Can be None.
+    """)
 
     def get_instance_handle(self):
         handle = dds_instance_handle_t()
@@ -59,14 +64,14 @@ class Entity(DDS):
 
     instance_handle: int = property(get_instance_handle, doc="Entity instance handle")
 
-    def get_guid(self) -> 'uuid.UUID':
+    def get_guid(self) -> 'UUID':
         guid = dds_guid_t()
         ret = self._get_guid(self._ref, byref(guid))
         if ret == 0:
             return guid.as_python_guid()
         raise DDSException(ret, f"Occurred when getting the GUID for {repr(self)}")
 
-    guid: 'uuid.UUID' = property(get_guid, doc="Entity GUID")
+    guid: 'UUID' = property(get_guid, doc="Entity GUID")
 
     def read_status(self, mask=None) -> int:
         status = c_uint32()
@@ -163,7 +168,7 @@ class Entity(DDS):
             raise DDSException(num_children, f"Occurred when getting the number of children of {repr(self)}")
         elif num_children == 0:
             return []
-            
+
         children_list = (dds_entity_t * int(num_children))()
         children_list_pt = cast(children_list, POINTER(dds_entity_t))
 
@@ -184,7 +189,7 @@ class Entity(DDS):
         raise DDSException(ret, f"Occurred when getting the domainid of {repr(self)}")
 
     domainid = property(get_domainid, "Entity domainid")
-       
+
     @classmethod
     def get_entity(cls, id) -> Optional['Entity']:
         return cls._entities.get(id)

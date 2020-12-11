@@ -46,7 +46,7 @@ jobs:
       with:
         name: cyclone-build
         path: cyclonedds/install
-    
+
   test:
     runs-on: ubuntu-latest
     needs: build-cyclone
@@ -87,8 +87,13 @@ jobs:
     - name: Install cdds
       working-directory: ./cdds
       run: |
-        pip install -e . 
+        pip install -e .
         pip install pytest pytest-cov flake8
+
+    - name: Lint with flake8
+      run: |
+        flake8 ./cdds --count --select=E9,F63,F7,F82 --show-source --statistics
+        flake8 ./cdds --count --exit-zero --max-complexity=10 --max-line-length=127 --per-file-ignores="__init__.py:F401" --statistics
 
     - name: Generate test module with idl
       working-directory: ./cdds/tests/support_modules/testtopics
@@ -102,3 +107,14 @@ jobs:
       run: pytest
       env:
         ddsc: ../cyclonedds/install/lib/libddsc.so
+
+    - name: Upload coverage report to codecov
+      uses: codecov/codecov-action@v1
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        file: ./cdds/cov.xml
+        flags: unittests
+        env_vars: OS,PYTHON
+        name: codecov-umbrella
+        fail_ci_if_error: true
+        verbose: true

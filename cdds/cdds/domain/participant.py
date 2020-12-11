@@ -22,7 +22,6 @@ class DomainParticipant(Entity):
 
         raise DDSException(ret, f"Occurred when getting the participant of {repr(self)}")
 
-
     @c_call("dds_create_participant")
     def _create_participant(self, domain_id: dds_domainid_t, qos: dds_qos_p_t, listener: dds_listener_p_t) -> dds_entity_t:
         pass

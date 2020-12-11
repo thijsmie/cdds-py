@@ -15,10 +15,10 @@ def load_library_with_path(name, path):
         raise MissingLibraryException(f"Failed to load requested library {name} from path {path}.")
     return lib
 
+
 def load_library(name):
     if name in os.environ:
         # library was specified in environment variables
         return load_library_with_path(name, os.environ[name])
     else:
         return load_library_with_path(name, find_library(name))
-
