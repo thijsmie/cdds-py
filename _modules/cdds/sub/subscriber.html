@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cdds.internal.clib &mdash; cyclonedds-py  documentation</title>
+  <title>cdds.sub.subscriber &mdash; cyclonedds-py  documentation</title>
   
 
   
@@ -132,7 +132,7 @@
         
           <li><a href="../../index.html">Module code</a> &raquo;</li>
         
-      <li>cdds.internal.clib</li>
+      <li>cdds.sub.subscriber</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -147,28 +147,27 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <h1>Source code for cdds.internal.clib</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">from</span> <span class="nn">ctypes</span> <span class="kn">import</span> <span class="n">CDLL</span>
-<span class="kn">from</span> <span class="nn">ctypes.util</span> <span class="kn">import</span> <span class="n">find_library</span>
+  <h1>Source code for cdds.sub.subscriber</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">cdds</span>
+
+<span class="kn">from</span> <span class="nn">cdds.core</span> <span class="kn">import</span> <span class="n">Entity</span>
+<span class="kn">from</span> <span class="nn">cdds.internal</span> <span class="kn">import</span> <span class="n">c_call</span><span class="p">,</span> <span class="n">dds_entity_t</span><span class="p">,</span> <span class="n">dds_qos_p_t</span><span class="p">,</span> <span class="n">dds_listener_p_t</span>
 
 
-<div class="viewcode-block" id="load_library_with_path"><a class="viewcode-back" href="../../../cdds.internal.html#cdds.internal.clib.load_library_with_path">[docs]</a><span class="k">def</span> <span class="nf">load_library_with_path</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
-    <span class="k">if</span> <span class="n">path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">return</span> <span class="kc">None</span>
-    <span class="n">lib</span> <span class="o">=</span> <span class="n">CDLL</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">lib</span></div>
+<div class="viewcode-block" id="Subscriber"><a class="viewcode-back" href="../../../cdds.sub.html#cdds.sub.subscriber.Subscriber">[docs]</a><span class="k">class</span> <span class="nc">Subscriber</span><span class="p">(</span><span class="n">Entity</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">domain_participant</span><span class="p">:</span> <span class="s1">&#39;cdds.domain.DomainParticipant&#39;</span><span class="p">,</span> <span class="n">qos</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">listener</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_create_subscriber</span><span class="p">(</span>
+                <span class="n">domain_participant</span><span class="o">.</span><span class="n">_ref</span><span class="p">,</span>
+                <span class="n">qos</span><span class="o">.</span><span class="n">_ref</span> <span class="k">if</span> <span class="n">qos</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="n">listener</span><span class="o">.</span><span class="n">_ref</span> <span class="k">if</span> <span class="n">listener</span> <span class="k">else</span> <span class="kc">None</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
 
-
-<div class="viewcode-block" id="load_library"><a class="viewcode-back" href="../../../cdds.internal.html#cdds.internal.clib.load_library">[docs]</a><span class="k">def</span> <span class="nf">load_library</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
-    <span class="k">if</span> <span class="s1">&#39;CDDS_NO_IMPORT_LIBS&#39;</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">:</span>
-        <span class="k">return</span> <span class="kc">None</span>
-
-    <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">:</span>
-        <span class="c1"># library was specified in environment variables</span>
-        <span class="k">return</span> <span class="n">load_library_with_path</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="n">name</span><span class="p">])</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">load_library_with_path</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">find_library</span><span class="p">(</span><span class="n">name</span><span class="p">))</span></div>
+    <span class="nd">@c_call</span><span class="p">(</span><span class="s2">&quot;dds_create_subscriber&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">_create_subscriber</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">domain_participant</span><span class="p">:</span> <span class="n">dds_entity_t</span><span class="p">,</span> <span class="n">qos</span><span class="p">:</span> <span class="n">dds_qos_p_t</span><span class="p">,</span>
+                           <span class="n">listener</span><span class="p">:</span> <span class="n">dds_listener_p_t</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dds_entity_t</span><span class="p">:</span>
+        <span class="k">pass</span></div>
 </pre></div>
 
            </div>

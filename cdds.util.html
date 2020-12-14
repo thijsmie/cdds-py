@@ -177,6 +177,24 @@ It is preferred you import the functions from the submodules directly.</p>
 </pre></div>
 </div>
 <dl class="py function">
+<dt id="cdds.util.entity.isgoodentity">
+<code class="sig-prename descclassname">cdds.util.entity.</code><code class="sig-name descname">isgoodentity</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">v</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/util/entity.html#isgoodentity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdds.util.entity.isgoodentity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper function that checks to see if an object is a valid <a class="reference internal" href="cdds.core.html#cdds.core.entity.Entity" title="cdds.core.entity.Entity"><code class="xref py py-class docutils literal notranslate"><span class="pre">Entity</span></code></a> returned from DDS.
+This function will never raise an exception.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>v</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.9)"><em>object</em></a><em>, </em><em>optional</em>) – The object to check</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Whether this entity is a valid <a class="reference internal" href="cdds.core.html#cdds.core.entity.Entity" title="cdds.core.entity.Entity"><code class="xref py py-class docutils literal notranslate"><span class="pre">Entity</span></code></a>.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt id="cdds.util.time.duration">
 <code class="sig-prename descclassname">cdds.util.time.</code><code class="sig-name descname">duration</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">weeks</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">days</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">hours</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">minutes</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">seconds</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">milliseconds</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">microseconds</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">nanoseconds</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/util/time.html#duration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdds.util.time.duration" title="Permalink to this definition">¶</a></dt>
 <dd><p>Durations are always expressed in nanoseconds in DDS (dds_duration_t). This helper function lets

@@ -1,0 +1,298 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>cdds.core.waitset &mdash; cyclonedds-py  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home" alt="Documentation Home"> cyclonedds-py
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../cdds.html">The cdds python module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../dds.html">General information about DDS</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">cyclonedds-py</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>cdds.core.waitset</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for cdds.core.waitset</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">cdds</span>
+<span class="kn">from</span> <span class="nn">cdds.core</span> <span class="kn">import</span> <span class="n">Entity</span><span class="p">,</span> <span class="n">DDSException</span>
+<span class="kn">from</span> <span class="nn">cdds.internal</span> <span class="kn">import</span> <span class="n">c_call</span>
+<span class="kn">from</span> <span class="nn">cdds.internal.dds_types</span> <span class="kn">import</span> <span class="n">dds_entity_t</span><span class="p">,</span> <span class="n">dds_attach_t</span><span class="p">,</span> <span class="n">dds_return_t</span><span class="p">,</span> <span class="n">dds_duration_t</span>
+
+<span class="kn">from</span> <span class="nn">ctypes</span> <span class="kn">import</span> <span class="n">c_size_t</span><span class="p">,</span> <span class="n">c_int</span><span class="p">,</span> <span class="n">c_void_p</span><span class="p">,</span> <span class="n">c_bool</span><span class="p">,</span> <span class="n">byref</span><span class="p">,</span> <span class="n">cast</span><span class="p">,</span> <span class="n">POINTER</span>
+
+
+<div class="viewcode-block" id="WaitSet"><a class="viewcode-back" href="../../../cdds.core.html#cdds.core.waitset.WaitSet">[docs]</a><span class="k">class</span> <span class="nc">WaitSet</span><span class="p">(</span><span class="n">Entity</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">domain_participant</span><span class="p">:</span> <span class="s1">&#39;cdds.domain.DomainParticipant&#39;</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_create_waitset</span><span class="p">(</span><span class="n">domain_participant</span><span class="o">.</span><span class="n">_ref</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attached</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">def</span> <span class="fm">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">attached</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_waitset_detach</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ref</span><span class="p">,</span> <span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">_ref</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__del__</span><span class="p">()</span>
+
+<div class="viewcode-block" id="WaitSet.attach"><a class="viewcode-back" href="../../../cdds.core.html#cdds.core.waitset.WaitSet.attach">[docs]</a>    <span class="k">def</span> <span class="nf">attach</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity</span><span class="p">:</span> <span class="n">Entity</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_attached</span><span class="p">(</span><span class="n">entity</span><span class="p">):</span>
+            <span class="k">return</span>
+
+        <span class="n">value_pt</span> <span class="o">=</span> <span class="n">c_int</span><span class="p">()</span>
+
+        <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_waitset_attach</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ref</span><span class="p">,</span> <span class="n">entity</span><span class="o">.</span><span class="n">_ref</span><span class="p">,</span> <span class="n">byref</span><span class="p">(</span><span class="n">value_pt</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">ret</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">DDSException</span><span class="p">(</span><span class="n">ret</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Occurred when trying to attach {repr(entity)} to {repr(self)}&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attached</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">entity</span><span class="p">,</span> <span class="n">value_pt</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="WaitSet.detach"><a class="viewcode-back" href="../../../cdds.core.html#cdds.core.waitset.WaitSet.detach">[docs]</a>    <span class="k">def</span> <span class="nf">detach</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity</span><span class="p">:</span> <span class="n">Entity</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">attached</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">entity</span><span class="p">:</span>
+                <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_waitset_detach</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ref</span><span class="p">,</span> <span class="n">entity</span><span class="o">.</span><span class="n">_ref</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">ret</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">DDSException</span><span class="p">(</span><span class="n">ret</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Occurred when trying to attach {repr(entity)} to {repr(self)}&quot;</span><span class="p">)</span>
+                <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">attached</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                <span class="k">break</span></div>
+
+<div class="viewcode-block" id="WaitSet.is_attached"><a class="viewcode-back" href="../../../cdds.core.html#cdds.core.waitset.WaitSet.is_attached">[docs]</a>    <span class="k">def</span> <span class="nf">is_attached</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity</span><span class="p">:</span> <span class="n">Entity</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">attached</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">entity</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="WaitSet.get_entities"><a class="viewcode-back" href="../../../cdds.core.html#cdds.core.waitset.WaitSet.get_entities">[docs]</a>    <span class="k">def</span> <span class="nf">get_entities</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Note: should spend some time on synchronisation. What if the waitset is used across threads?</span>
+        <span class="c1"># That is probably a bad idea in python, but who is going to stop the user from doing it anyway...</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">attached</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="WaitSet.wait"><a class="viewcode-back" href="../../../cdds.core.html#cdds.core.waitset.WaitSet.wait">[docs]</a>    <span class="k">def</span> <span class="nf">wait</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="n">cs</span> <span class="o">=</span> <span class="p">(</span><span class="n">c_void_p</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">attached</span><span class="p">))()</span>
+        <span class="n">pcs</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">cs</span><span class="p">,</span> <span class="n">c_void_p</span><span class="p">)</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_waitset_wait</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ref</span><span class="p">,</span> <span class="n">byref</span><span class="p">(</span><span class="n">pcs</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">attached</span><span class="p">),</span> <span class="n">timeout</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">ret</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">ret</span>
+
+        <span class="k">raise</span> <span class="n">DDSException</span><span class="p">(</span><span class="n">ret</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Occurred while waiting in {repr(self)}&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="WaitSet.wait_until"><a class="viewcode-back" href="../../../cdds.core.html#cdds.core.waitset.WaitSet.wait_until">[docs]</a>    <span class="k">def</span> <span class="nf">wait_until</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">abstime</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="n">cs</span> <span class="o">=</span> <span class="p">(</span><span class="n">c_void_p</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">attached</span><span class="p">))()</span>
+        <span class="n">pcs</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">cs</span><span class="p">,</span> <span class="n">c_void_p</span><span class="p">)</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_waitset_wait_until</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ref</span><span class="p">,</span> <span class="n">byref</span><span class="p">(</span><span class="n">pcs</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">attached</span><span class="p">),</span> <span class="n">abstime</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">ret</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">ret</span>
+
+        <span class="k">raise</span> <span class="n">DDSException</span><span class="p">(</span><span class="n">ret</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Occurred while waiting in {repr(self)}&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="WaitSet.set_trigger"><a class="viewcode-back" href="../../../cdds.core.html#cdds.core.waitset.WaitSet.set_trigger">[docs]</a>    <span class="k">def</span> <span class="nf">set_trigger</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_waitset_set_trigger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ref</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ret</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">DDSException</span><span class="p">(</span><span class="n">ret</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Occurred when setting trigger in {repr(self)}&quot;</span><span class="p">)</span></div>
+
+    <span class="nd">@c_call</span><span class="p">(</span><span class="s2">&quot;dds_create_waitset&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">_create_waitset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">domain_participant</span><span class="p">:</span> <span class="n">dds_entity_t</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dds_entity_t</span><span class="p">:</span>
+        <span class="k">pass</span>
+
+    <span class="nd">@c_call</span><span class="p">(</span><span class="s2">&quot;dds_waitset_attach&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">_waitset_attach</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">waitset</span><span class="p">:</span> <span class="n">dds_entity_t</span><span class="p">,</span> <span class="n">entity</span><span class="p">:</span> <span class="n">dds_entity_t</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">dds_attach_t</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dds_return_t</span><span class="p">:</span>
+        <span class="k">pass</span>
+
+    <span class="nd">@c_call</span><span class="p">(</span><span class="s2">&quot;dds_waitset_detach&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">_waitset_detach</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">waitset</span><span class="p">:</span> <span class="n">dds_entity_t</span><span class="p">,</span> <span class="n">entity</span><span class="p">:</span> <span class="n">dds_entity_t</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dds_return_t</span><span class="p">:</span>
+        <span class="k">pass</span>
+
+    <span class="nd">@c_call</span><span class="p">(</span><span class="s2">&quot;dds_waitset_wait&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">_waitset_wait</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">waitset</span><span class="p">:</span> <span class="n">dds_entity_t</span><span class="p">,</span> <span class="n">xs</span><span class="p">:</span> <span class="n">POINTER</span><span class="p">(</span><span class="n">dds_attach_t</span><span class="p">),</span>
+                      <span class="n">nxs</span><span class="p">:</span> <span class="n">c_size_t</span><span class="p">,</span> <span class="n">reltimeout</span><span class="p">:</span> <span class="n">dds_duration_t</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dds_return_t</span><span class="p">:</span>
+        <span class="k">pass</span>
+
+    <span class="nd">@c_call</span><span class="p">(</span><span class="s2">&quot;dds_waitset_wait_until&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">_waitset_wait_until</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">waitset</span><span class="p">:</span> <span class="n">dds_entity_t</span><span class="p">,</span> <span class="n">xs</span><span class="p">:</span> <span class="n">POINTER</span><span class="p">(</span><span class="n">dds_attach_t</span><span class="p">),</span>
+                            <span class="n">nxs</span><span class="p">:</span> <span class="n">c_size_t</span><span class="p">,</span> <span class="n">abstimeout</span><span class="p">:</span> <span class="n">dds_duration_t</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dds_return_t</span><span class="p">:</span>
+        <span class="k">pass</span>
+
+    <span class="nd">@c_call</span><span class="p">(</span><span class="s2">&quot;dds_waitset_set_trigger&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">_waitset_set_trigger</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">waitset</span><span class="p">:</span> <span class="n">dds_entity_t</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">c_bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dds_return_t</span><span class="p">:</span>
+        <span class="k">pass</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Thijs Miedema
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

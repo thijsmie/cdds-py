@@ -170,6 +170,58 @@
             
   <div class="section" id="cdds-pub">
 <h1>cdds.pub<a class="headerlink" href="#cdds-pub" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="cdds.pub.datawriter.DataWriter">
+<em class="property">class </em><code class="sig-prename descclassname">cdds.pub.datawriter.</code><code class="sig-name descname">DataWriter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">publisher</span></em>, <em class="sig-param"><span class="n">topic</span></em>, <em class="sig-param"><span class="n">qos</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">listener</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/pub/datawriter.html#DataWriter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdds.pub.datawriter.DataWriter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="cdds.core.html#cdds.core.entity.Entity" title="cdds.core.entity.Entity"><code class="xref py py-class docutils literal notranslate"><span class="pre">cdds.core.entity.Entity</span></code></a></p>
+<dl class="py method">
+<dt id="cdds.pub.datawriter.DataWriter.write">
+<code class="sig-name descname">write</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sample</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/pub/datawriter.html#DataWriter.write"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdds.pub.datawriter.DataWriter.write" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="cdds.pub.datawriter.DataWriter.wait_for_acks">
+<code class="sig-name descname">wait_for_acks</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">timeout</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/pub/datawriter.html#DataWriter.wait_for_acks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdds.pub.datawriter.DataWriter.wait_for_acks" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>timeout</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="cdds.pub.datawriter.DataWriter.dispose">
+<code class="sig-name descname">dispose</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sample</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/pub/datawriter.html#DataWriter.dispose"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdds.pub.datawriter.DataWriter.dispose" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="cdds.pub.publisher.Publisher">
+<em class="property">class </em><code class="sig-prename descclassname">cdds.pub.publisher.</code><code class="sig-name descname">Publisher</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">domain_participant</span></em>, <em class="sig-param"><span class="n">qos</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">listener</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/pub/publisher.html#Publisher"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdds.pub.publisher.Publisher" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="cdds.core.html#cdds.core.entity.Entity" title="cdds.core.entity.Entity"><code class="xref py py-class docutils literal notranslate"><span class="pre">cdds.core.entity.Entity</span></code></a></p>
+<dl class="py method">
+<dt id="cdds.pub.publisher.Publisher.suspend">
+<code class="sig-name descname">suspend</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/pub/publisher.html#Publisher.suspend"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdds.pub.publisher.Publisher.suspend" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="cdds.pub.publisher.Publisher.resume">
+<code class="sig-name descname">resume</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/pub/publisher.html#Publisher.resume"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdds.pub.publisher.Publisher.resume" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="cdds.pub.publisher.Publisher.wait_for_acks">
+<code class="sig-name descname">wait_for_acks</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">timeout</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/pub/publisher.html#Publisher.wait_for_acks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdds.pub.publisher.Publisher.wait_for_acks" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>timeout</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 
 
