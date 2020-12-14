@@ -1,0 +1,269 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>cdds.internal.dds_types &mdash; cyclonedds-py  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home" alt="Documentation Home"> cyclonedds-py
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../cdds.html">The cdds python module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../dds.html">General information about DDS</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">cyclonedds-py</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>cdds.internal.dds_types</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for cdds.internal.dds_types</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">ctypes</span> <span class="k">as</span> <span class="nn">ct</span>
+<span class="kn">from</span> <span class="nn">uuid</span> <span class="kn">import</span> <span class="n">UUID</span>
+
+
+<span class="n">dds_entity_t</span> <span class="o">=</span> <span class="n">ct</span><span class="o">.</span><span class="n">c_int32</span>
+<span class="n">dds_time_t</span> <span class="o">=</span> <span class="n">ct</span><span class="o">.</span><span class="n">c_int64</span>
+<span class="n">dds_duration_t</span> <span class="o">=</span> <span class="n">ct</span><span class="o">.</span><span class="n">c_int64</span>
+<span class="n">dds_instance_handle_t</span> <span class="o">=</span> <span class="n">ct</span><span class="o">.</span><span class="n">c_int64</span>
+<span class="n">dds_domainid_t</span> <span class="o">=</span> <span class="n">ct</span><span class="o">.</span><span class="n">c_uint32</span>
+<span class="n">dds_sample_state_t</span> <span class="o">=</span> <span class="n">ct</span><span class="o">.</span><span class="n">c_int</span>
+<span class="n">dds_view_state_t</span> <span class="o">=</span> <span class="n">ct</span><span class="o">.</span><span class="n">c_int</span>
+<span class="n">dds_instance_state_t</span> <span class="o">=</span> <span class="n">ct</span><span class="o">.</span><span class="n">c_int</span>
+<span class="n">dds_reliability_t</span> <span class="o">=</span> <span class="n">ct</span><span class="o">.</span><span class="n">c_int</span>
+<span class="n">dds_durability_t</span> <span class="o">=</span> <span class="n">ct</span><span class="o">.</span><span class="n">c_int</span>
+<span class="n">dds_history_t</span> <span class="o">=</span> <span class="n">ct</span><span class="o">.</span><span class="n">c_int</span>
+<span class="n">dds_presentation_access_scope_t</span> <span class="o">=</span> <span class="n">ct</span><span class="o">.</span><span class="n">c_int</span>
+<span class="n">dds_ingnorelocal_t</span> <span class="o">=</span> <span class="n">ct</span><span class="o">.</span><span class="n">c_int</span>
+<span class="n">dds_ownership_t</span> <span class="o">=</span> <span class="n">ct</span><span class="o">.</span><span class="n">c_int</span>
+<span class="n">dds_liveliness_t</span> <span class="o">=</span> <span class="n">ct</span><span class="o">.</span><span class="n">c_int</span>
+<span class="n">dds_destination_order_t</span> <span class="o">=</span> <span class="n">ct</span><span class="o">.</span><span class="n">c_int</span>
+<span class="n">dds_qos_p_t</span> <span class="o">=</span> <span class="n">ct</span><span class="o">.</span><span class="n">c_void_p</span>
+<span class="n">dds_attach_t</span> <span class="o">=</span> <span class="n">ct</span><span class="o">.</span><span class="n">c_void_p</span>
+<span class="n">dds_listener_p_t</span> <span class="o">=</span> <span class="n">ct</span><span class="o">.</span><span class="n">c_void_p</span>
+<span class="n">dds_topic_descriptor_p_t</span> <span class="o">=</span> <span class="n">ct</span><span class="o">.</span><span class="n">c_void_p</span>
+<span class="n">dds_return_t</span> <span class="o">=</span> <span class="n">ct</span><span class="o">.</span><span class="n">c_int32</span>
+
+
+<div class="viewcode-block" id="SampleInfo"><a class="viewcode-back" href="../../../cdds.internal.html#cdds.internal.dds_types.SampleInfo">[docs]</a><span class="k">class</span> <span class="nc">SampleInfo</span><span class="p">(</span><span class="n">ct</span><span class="o">.</span><span class="n">Structure</span><span class="p">):</span>
+    <span class="n">_fields_</span> <span class="o">=</span> <span class="p">[(</span><span class="s1">&#39;sample_state&#39;</span><span class="p">,</span> <span class="n">ct</span><span class="o">.</span><span class="n">c_uint</span><span class="p">),</span>
+                <span class="p">(</span><span class="s1">&#39;view_state&#39;</span><span class="p">,</span> <span class="n">ct</span><span class="o">.</span><span class="n">c_uint</span><span class="p">),</span>
+                <span class="p">(</span><span class="s1">&#39;instance_state&#39;</span><span class="p">,</span> <span class="n">ct</span><span class="o">.</span><span class="n">c_uint</span><span class="p">),</span>
+                <span class="p">(</span><span class="s1">&#39;valid_data&#39;</span><span class="p">,</span> <span class="n">ct</span><span class="o">.</span><span class="n">c_bool</span><span class="p">),</span>
+                <span class="p">(</span><span class="s1">&#39;source_timestamp&#39;</span><span class="p">,</span> <span class="n">ct</span><span class="o">.</span><span class="n">c_int64</span><span class="p">),</span>
+                <span class="p">(</span><span class="s1">&#39;instance_handle&#39;</span><span class="p">,</span> <span class="n">ct</span><span class="o">.</span><span class="n">c_uint64</span><span class="p">),</span>
+                <span class="p">(</span><span class="s1">&#39;pubblication_handle&#39;</span><span class="p">,</span> <span class="n">ct</span><span class="o">.</span><span class="n">c_uint64</span><span class="p">),</span>
+                <span class="p">(</span><span class="s1">&#39;disposed_generation_count&#39;</span><span class="p">,</span> <span class="n">ct</span><span class="o">.</span><span class="n">c_uint32</span><span class="p">),</span>
+                <span class="p">(</span><span class="s1">&#39;no_writer_generation_count&#39;</span><span class="p">,</span> <span class="n">ct</span><span class="o">.</span><span class="n">c_uint32</span><span class="p">),</span>
+                <span class="p">(</span><span class="s1">&#39;sample_rank&#39;</span><span class="p">,</span> <span class="n">ct</span><span class="o">.</span><span class="n">c_uint32</span><span class="p">),</span>
+                <span class="p">(</span><span class="s1">&#39;generation_rank&#39;</span><span class="p">,</span> <span class="n">ct</span><span class="o">.</span><span class="n">c_uint32</span><span class="p">),</span>
+                <span class="p">(</span><span class="s1">&#39;absolute_generation_rank&#39;</span><span class="p">,</span> <span class="n">ct</span><span class="o">.</span><span class="n">c_uint32</span><span class="p">)]</span></div>
+
+
+<div class="viewcode-block" id="dds_inconsistent_topic_status_t"><a class="viewcode-back" href="../../../cdds.internal.html#cdds.internal.dds_types.dds_inconsistent_topic_status_t">[docs]</a><span class="k">class</span> <span class="nc">dds_inconsistent_topic_status_t</span><span class="p">(</span><span class="n">ct</span><span class="o">.</span><span class="n">Structure</span><span class="p">):</span>
+    <span class="n">_fields_</span> <span class="o">=</span> <span class="p">[(</span><span class="s1">&#39;total_count&#39;</span><span class="p">,</span> <span class="n">ct</span><span class="o">.</span><span class="n">c_uint32</span><span class="p">),</span>
+                <span class="p">(</span><span class="s1">&#39;total_count_change&#39;</span><span class="p">,</span> <span class="n">ct</span><span class="o">.</span><span class="n">c_int32</span><span class="p">)]</span></div>
+
+
+<div class="viewcode-block" id="dds_liveliness_lost_status_t"><a class="viewcode-back" href="../../../cdds.internal.html#cdds.internal.dds_types.dds_liveliness_lost_status_t">[docs]</a><span class="k">class</span> <span class="nc">dds_liveliness_lost_status_t</span><span class="p">(</span><span class="n">ct</span><span class="o">.</span><span class="n">Structure</span><span class="p">):</span>
+    <span class="n">_fields_</span> <span class="o">=</span> <span class="p">[(</span><span class="s1">&#39;total_count&#39;</span><span class="p">,</span> <span class="n">ct</span><span class="o">.</span><span class="n">c_uint32</span><span class="p">),</span>
+                <span class="p">(</span><span class="s1">&#39;total_count_change&#39;</span><span class="p">,</span> <span class="n">ct</span><span class="o">.</span><span class="n">c_int32</span><span class="p">)]</span></div>
+
+
+<div class="viewcode-block" id="dds_liveliness_changed_status_t"><a class="viewcode-back" href="../../../cdds.internal.html#cdds.internal.dds_types.dds_liveliness_changed_status_t">[docs]</a><span class="k">class</span> <span class="nc">dds_liveliness_changed_status_t</span><span class="p">(</span><span class="n">ct</span><span class="o">.</span><span class="n">Structure</span><span class="p">):</span>
+    <span class="n">_fields_</span> <span class="o">=</span> <span class="p">[(</span><span class="s1">&#39;alive_count&#39;</span><span class="p">,</span> <span class="n">ct</span><span class="o">.</span><span class="n">c_uint32</span><span class="p">),</span>
+                <span class="p">(</span><span class="s1">&#39;not_alive_count&#39;</span><span class="p">,</span> <span class="n">ct</span><span class="o">.</span><span class="n">c_uint32</span><span class="p">),</span>
+                <span class="p">(</span><span class="s1">&#39;alive_count_change&#39;</span><span class="p">,</span> <span class="n">ct</span><span class="o">.</span><span class="n">c_int32</span><span class="p">),</span>
+                <span class="p">(</span><span class="s1">&#39;not_alive_count_change&#39;</span><span class="p">,</span> <span class="n">ct</span><span class="o">.</span><span class="n">c_int32</span><span class="p">)]</span></div>
+
+
+<div class="viewcode-block" id="dds_offered_deadline_missed_status_t"><a class="viewcode-back" href="../../../cdds.internal.html#cdds.internal.dds_types.dds_offered_deadline_missed_status_t">[docs]</a><span class="k">class</span> <span class="nc">dds_offered_deadline_missed_status_t</span><span class="p">(</span><span class="n">ct</span><span class="o">.</span><span class="n">Structure</span><span class="p">):</span>
+    <span class="n">_fields_</span> <span class="o">=</span> <span class="p">[(</span><span class="s1">&#39;total_count&#39;</span><span class="p">,</span> <span class="n">ct</span><span class="o">.</span><span class="n">c_uint32</span><span class="p">),</span>
+                <span class="p">(</span><span class="s1">&#39;total_count_change&#39;</span><span class="p">,</span> <span class="n">ct</span><span class="o">.</span><span class="n">c_int32</span><span class="p">),</span>
+                <span class="p">(</span><span class="s1">&#39;last_instance_handle&#39;</span><span class="p">,</span> <span class="n">dds_instance_handle_t</span><span class="p">)]</span></div>
+
+
+<div class="viewcode-block" id="dds_guid_t"><a class="viewcode-back" href="../../../cdds.internal.html#cdds.internal.dds_types.dds_guid_t">[docs]</a><span class="k">class</span> <span class="nc">dds_guid_t</span><span class="p">(</span><span class="n">ct</span><span class="o">.</span><span class="n">Structure</span><span class="p">):</span>
+    <span class="n">_fields_</span> <span class="o">=</span> <span class="p">[(</span><span class="s1">&#39;v&#39;</span><span class="p">,</span> <span class="n">ct</span><span class="o">.</span><span class="n">c_uint8</span> <span class="o">*</span> <span class="mi">16</span><span class="p">)]</span>
+
+<div class="viewcode-block" id="dds_guid_t.as_python_guid"><a class="viewcode-back" href="../../../cdds.internal.html#cdds.internal.dds_types.dds_guid_t.as_python_guid">[docs]</a>    <span class="k">def</span> <span class="nf">as_python_guid</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UUID</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">UUID</span><span class="p">(</span><span class="nb">bytes</span><span class="o">=</span><span class="nb">bytes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">v</span><span class="p">))</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Thijs Miedema
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
