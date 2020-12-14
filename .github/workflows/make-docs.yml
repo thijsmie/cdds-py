@@ -14,15 +14,16 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v1
 
+    - name: Ensure jekyll doesn't ruin static loading
+      run: |
+        mkdir ./docs/build
+        touch ./docs/build/.nojekyll
+
     - name: Sphinx build
       uses: ammaraskar/sphinx-action@master
       with:
         build-command: "sphinx-build -b html source build"
         docs-folder: "docs/"
-
-    - name: Ensure jekyll doesn't ruin static loading
-      run: |
-        touch ./docs/build/.nojekyll
 
     - name: HTML artifact creation
       uses: actions/upload-artifact@v1
