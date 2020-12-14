@@ -11,6 +11,9 @@ def load_library_with_path(name, path):
 
 
 def load_library(name):
+    if 'CDDS_NO_IMPORT_LIBS' in os.environ:
+        return None
+
     if name in os.environ:
         # library was specified in environment variables
         return load_library_with_path(name, os.environ[name])

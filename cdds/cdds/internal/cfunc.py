@@ -1,3 +1,4 @@
+import os
 from inspect import signature
 from ctypes import CFUNCTYPE
 
@@ -11,6 +12,9 @@ def c_call(cname):
 
         # This gets called when the class is finalized
         def __set_name__(self, cls, name):
+            if 'CDDS_NO_IMPORT_LIBS' in os.environ:
+                return
+
             s = signature(self.function)
 
             # Set c function types based on python type annotations
