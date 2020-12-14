@@ -11,21 +11,21 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout
+    - name: Checkout 🚨
       uses: actions/checkout@v1
 
-    - name: Ensure jekyll doesn't ruin static loading
+    - name: Ensure jekyll doesn't ruin static loading 📍
       run: |
         mkdir ./docs/build
         touch ./docs/build/.nojekyll
 
-    - name: Sphinx build
+    - name: Sphinx build 📖
       uses: ammaraskar/sphinx-action@master
       with:
         build-command: "sphinx-build -b html source build"
         docs-folder: "docs/"
 
-    - name: HTML artifact creation
+    - name: HTML artifact creation 📑
       uses: actions/upload-artifact@v1
       with:
         name: docs-html

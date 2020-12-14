@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout Cyclone
+    - name: Checkout Cyclone 🚨
       uses: actions/checkout@v2
       with:
         repository: eclipse-cyclonedds/cyclonedds
@@ -16,14 +16,14 @@ jobs:
         ref: idlcxx
         token: ${{ secrets.PAT }}
 
-    - name: Check for Cyclone build cache
+    - name: Check for Cyclone build cache 💽
       id: cyclone-cache
       uses: actions/cache@v2
       with:
         path: cyclonedds
         key: ${{ runner.os }}-v2-${{ hashFiles('cyclonedds/.git/refs/heads/idlcxx') }}
 
-    - name: Get Java and Maven
+    - name: Get Java and Maven ☕
       if: steps.cyclone-cache.outputs.cache-hit != 'true'
       uses: actions/setup-java@v1
       with:
@@ -31,18 +31,18 @@ jobs:
         java-package: jdk
         architecture: x64
 
-    - name: Get latest CMake
+    - name: Get latest CMake ⚡
       if: steps.cyclone-cache.outputs.cache-hit != 'true'
       uses: lukka/get-cmake@v3.19.1
 
-    - name: Build Cyclone
+    - name: Build Cyclone 🌀
       if: steps.cyclone-cache.outputs.cache-hit != 'true'
       run: |
         mkdir cyclonedds/build cyclonedds/install && cd cyclonedds/build
         cmake .. -DCMAKE_INSTALL_PREFIX=../install
         cmake --build . --target install
 
-    - name: Build result
+    - name: Build result upload 🚀
       uses: actions/upload-artifact@v2
       with:
         name: cyclone-build
@@ -61,56 +61,56 @@ jobs:
           - 3.9.0
 
     steps:
-    - name: Checkout
+    - name: Checkout 🚨
       uses: actions/checkout@v2
 
-    - name: Get Cyclone
+    - name: Get Cyclone 🌀
       uses: actions/download-artifact@v2
       with:
         name: cyclone-build
         path: cyclonedds/install
 
-    - name: Get latest CMake
+    - name: Get latest CMake ⚡
       if: steps.cyclone-cache.outputs.cache-hit != 'true'
       uses: lukka/get-cmake@v3.19.1
     
-    - name: Install python
+    - name: Install python 🐍
       uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python }}
 
-    - name: Update pip
+    - name: Update pip 🐍
       run: python -m pip install --upgrade pip
 
-    - name: For python 3.6 we need backported dataclasses
+    - name: For python 3.6 we need backported dataclasses 🐍
       if: matrix.python == '3.6.12'
       run: pip install dataclasses
 
-    - name: Install cdds
+    - name: Install cdds 🐍
       working-directory: ./cdds
       run: |
         pip install -e .
         pip install pytest pytest-cov flake8
 
-    - name: Lint with flake8
+    - name: Lint with flake8 ❄
       run: |
         flake8 ./cdds/cdds --count --select=E9,F63,F7,F82 --show-source --statistics
         flake8 ./cdds/cdds --count --exit-zero --max-complexity=10 --max-line-length=127 --per-file-ignores="__init__.py:F401" --statistics
 
-    - name: Generate test module with idl
+    - name: Generate test module with idl ☄
       working-directory: ./cdds/tests/support_modules/testtopics
       run: |
         mkdir build && cd build
         cmake .. -DCMAKE_PREFIX_PATH=${{ github.workspace }}/cyclonedds/install
         cmake --build .
 
-    - name: Run tests
+    - name: Run tests 🧪
       working-directory: ./cdds
       run: pytest
       env:
         ddsc: ../cyclonedds/install/lib/libddsc.so
 
-    - name: Upload coverage report to codecov
+    - name: Upload coverage report to codecov 🚀
       uses: codecov/codecov-action@v1
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
