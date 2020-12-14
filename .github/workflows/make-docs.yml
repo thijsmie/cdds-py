@@ -26,6 +26,10 @@ jobs:
         name: docs-html
         path: ./docs/build/
 
+    - name: Ensure jekyll doesn't ruin static loading
+      run: |
+        touch ./docs/build/.nojekyll
+
     - name: Deploy 🚀
       uses: JamesIves/github-pages-deploy-action@3.7.1
       with:
