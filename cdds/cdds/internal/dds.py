@@ -11,4 +11,7 @@ class DDS:
     _listener_type = None
 
     def __init__(self, reference: int) -> None:
+        if self._dll_handle is None:
+            raise Exception("The DDSC library could not be located. Check your installation. "
+                            "You can manually supply the full path by setting the environment variable 'ddsc'.")
         self._ref = reference
