@@ -1,4 +1,4 @@
-from cdds.domain import Sample
+from cdds.topic import Sample
 import os
 from ctypes import c_char_p, c_int16
 

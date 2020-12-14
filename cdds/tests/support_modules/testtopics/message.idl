@@ -3,4 +3,10 @@ module dds {
       string message;
     };
     #pragma keylist Message message
+
+    struct MessageAlt {
+      short user_id;
+      string message;
+    };
+    #pragma keylist MessageAlt message
 };

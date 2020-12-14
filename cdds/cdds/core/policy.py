@@ -77,56 +77,265 @@ class _PolicyType(Enum):
 
 
 class Policy:
+    """The Policy class is fully static and should never need to be instantiated.
+
+    See Also
+    --------
+    qoshowto: How to work with Qos and Policy, TODO.
+    """
     class Reliability:
+        """The Reliability Qos Policy
+
+        Examples
+        --------
+        >>> Policy.Reliability.BestEffort(max_blocking_time=duration(seconds=1))
+        >>> Policy.Reliability.Reliable(max_blocking_time=duration(seconds=1))
+        """
+
         @staticmethod
         def BestEffort(max_blocking_time: int) -> Tuple[_PolicyType, Tuple[_QosReliability, int]]:
+            """Use BestEffort reliability
+
+            Parameters
+            ----------
+            max_blocking_time : int
+                The number of nanoseconds the writer will bock when its history is full.
+                Use the :func:`duration<cdds.util.time.duration>` function to avoid time calculation headaches.
+
+            Returns
+            -------
+            Tuple[PolicyType, Any]
+                The return type of this entity is not publicly specified.
+            """
             return _PolicyType.Reliability, (_QosReliability.BestEffort, max_blocking_time)
 
         @staticmethod
         def Reliable(max_blocking_time: int) -> Tuple[_PolicyType, Tuple[_QosReliability, int]]:
+            """Use Reliable reliability
+
+            Parameters
+            ----------
+            max_blocking_time : int
+                The number of nanoseconds the writer will bock when its history is full.
+                Use the :func:`duration<cdds.util.time.duration>` function to avoid time calculation headaches.
+
+            Returns
+            -------
+            Tuple[PolicyType, Any]
+                The return type of this entity is not publicly specified.
+            """
             return _PolicyType.Reliability, (_QosReliability.Reliable, max_blocking_time)
 
     class Durability:
+        """ The Durability Qos Policy
+
+        Examples
+        --------
+        >>> Policy.Durability.Volatile
+        >>> Policy.Durability.TransientLocal
+        >>> Policy.Durability.Transient
+        >>> Policy.Durability.Persistent
+
+        Attributes
+        ----------
+        Volatile:       Tuple[PolicyType, Any]
+                        The type of this entity is not publicly specified.
+        TransientLocal: Tuple[PolicyType, Any]
+                        The type of this entity is not publicly specified.
+        Transient:      Tuple[PolicyType, Any]
+                        The type of this entity is not publicly specified.
+        Persistent:     Tuple[PolicyType, Any]
+                        The type of this entity is not publicly specified.
+        """
+
         Volatile: Tuple[_PolicyType, _QosDurability] = (_PolicyType.Durability, _QosDurability.Volatile)
         TransientLocal: Tuple[_PolicyType, _QosDurability] = (_PolicyType.Durability, _QosDurability.TransientLocal)
         Transient: Tuple[_PolicyType, _QosDurability] = (_PolicyType.Durability, _QosDurability.Transient)
         Persistent: Tuple[_PolicyType, _QosDurability] = (_PolicyType.Durability, _QosDurability.Persistent)
 
     class History:
+        """ The History Qos Policy
+
+        Examples
+        --------
+        >>> Policy.History.KeepAll
+        >>> Policy.History.KeepLast(amount=10)
+
+        Attributes
+        ----------
+        KeepAll: Tuple[PolicyType, Any]
+                 The type of this entity is not publicly specified.
+        """
+
         KeepAll: Tuple[_PolicyType, Tuple[_QosHistory, int]] = (_PolicyType.History, (_QosHistory.KeepAll, 0))
 
         @staticmethod
         def KeepLast(amount: int) -> Tuple[_PolicyType, Tuple[_QosHistory, int]]:
+            """
+            Parameters
+            ----------
+            amount : int
+                The amount of samples to keep in the history.
+
+            Returns
+            -------
+            Tuple[PolicyType, Any]
+                The type of this entity is not publicly specified.
+            """
             return _PolicyType.History, (_QosHistory.KeepLast, amount)
 
     @staticmethod
     def ResourceLimits(max_samples: int, max_instances: int, max_samples_per_instance: int) -> Tuple[_PolicyType, Tuple[int, int, int]]:
+        """The ResourceLimits Qos Policy
+
+        Examples
+        --------
+        >>> Policy.ResourceLimits(
+        >>>     max_samples=10,
+        >>>     max_instances=10,
+        >>>     max_samples_per_instance=2
+        >>> )
+
+        Parameters
+        ----------
+        max_samples : int
+            Max number of samples total.
+        max_instances : int
+            Max number of instances total.
+        max_samples_per_instance : int
+            Max number of samples per instance.
+
+        Returns
+        -------
+        Tuple[PolicyType, Any]
+            The type of this entity is not publicly specified.
+        """
         return _PolicyType.ResourceLimits, (max_samples, max_instances, max_samples_per_instance)
 
     class PresentationAccessScope:
+        """The Presentation Access Scope Qos Policy
+
+        Examples
+        --------
+        >>> Policy.PresentationAccessScope.Instance(coherent_access=True, ordered_access=False)
+        >>> Policy.PresentationAccessScope.Topic(coherent_access=True, ordered_access=False)
+        >>> Policy.PresentationAccessScope.Group(coherent_access=True, ordered_access=False)
+        """
+
         @staticmethod
         def Instance(coherent_access: bool, ordered_access: bool) -> Tuple[_PolicyType, Tuple[_QosAccessScope, bool, bool]]:
+            """Use Instance Presentation Access Scope
+
+            Parameters
+            ----------
+            coherent_access : bool
+                Enable coherent access
+            ordered_access : bool
+                Enable ordered access
+
+            Returns
+            -------
+            Tuple[PolicyType, Any]
+                The type of this entity is not publicly specified.
+            """
             return _PolicyType.PresentationAccessScope, (_QosAccessScope.Instance, coherent_access, ordered_access)
 
         @staticmethod
         def Topic(coherent_access: bool, ordered_access: bool) -> Tuple[_PolicyType, Tuple[_QosAccessScope, bool, bool]]:
+            """Use Topic Presentation Access Scope
+
+            Parameters
+            ----------
+            coherent_access : bool
+                Enable coherent access
+            ordered_access : bool
+                Enable ordered access
+
+            Returns
+            -------
+            Tuple[PolicyType, Any]
+                The type of this entity is not publicly specified.
+            """
             return _PolicyType.PresentationAccessScope, (_QosAccessScope.Topic, coherent_access, ordered_access)
 
         @staticmethod
         def Group(coherent_access: bool, ordered_access: bool) -> Tuple[_PolicyType, Tuple[_QosAccessScope, bool, bool]]:
+            """Use Group Presentation Access Scope
+
+            Parameters
+            ----------
+            coherent_access : bool
+                Enable coherent access
+            ordered_access : bool
+                Enable ordered access
+
+            Returns
+            -------
+            Tuple[PolicyType, Any]
+                The type of this entity is not publicly specified.
+            """
             return _PolicyType.PresentationAccessScope, (_QosAccessScope.Group, coherent_access, ordered_access)
 
     @staticmethod
     def Lifespan(lifespan: int) -> Tuple[_PolicyType, int]:
+        """The Lifespan Qos Policy
+
+        Examples
+        --------
+        >>> Policy.Lifespan(duration(seconds=2))
+
+        Parameters
+        ----------
+        lifespan : int
+            Expiration time relative to the source timestamp of a sample in nanoseconds.
+
+        Returns
+        -------
+        Tuple[PolicyType, Any]
+            The type of this entity is not publicly specified.
+        """
         return _PolicyType.Lifespan, lifespan
 
     @staticmethod
     def Deadline(deadline: int) -> Tuple[_PolicyType, int]:
+        """The Deadline Qos Policy
+
+        Examples
+        --------
+        >>> Policy.Deadline(duration(seconds=2))
+
+        Parameters
+        ----------
+        deadline : int
+            Deadline of a sample in nanoseconds.
+
+        Returns
+        -------
+        Tuple[PolicyType, Any]
+            The type of this entity is not publicly specified.
+        """
         return _PolicyType.Deadline, deadline
 
     @staticmethod
     def LatencyBudget(budget: int) -> Tuple[_PolicyType, int]:
+        """The Latency Budget Qos Policy
+
+        Examples
+        --------
+        >>> Policy.LatencyBudget(duration(seconds=2))
+
+        Parameters
+        ----------
+        budget : int
+            Latency budget in nanoseconds.
+
+        Returns
+        -------
+        Tuple[PolicyType, Any]
+            The type of this entity is not publicly specified.
+        """
         return _PolicyType.LatencyBudget, budget
+
     class Ownership:
         Shared: Tuple[_PolicyType, _QosOwnership] = (_PolicyType.Ownership, _QosOwnership.Shared)
         Exclusive: Tuple[_PolicyType, _QosOwnership] = (_PolicyType.Ownership, _QosOwnership.Exclusive)

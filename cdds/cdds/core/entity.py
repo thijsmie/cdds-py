@@ -5,17 +5,58 @@ from cdds.internal.dds_types import dds_instance_handle_t, dds_entity_t, dds_ret
 from cdds.core import Qos, DDSException
 
 from ctypes import POINTER, byref, c_uint32, c_size_t, cast
-from typing import Optional, Dict
+from typing import List, Optional, Dict
 from weakref import WeakValueDictionary
 
 from uuid import UUID
 
 
 class Entity(DDS):
-    """Maintain a global map of entities to be able to return python objects when the API hands us dds_entity_t references."""
+    """
+    Base class for all entities in the DDS API. The lifetime of the underlying DDS API object is linked to the lifetime of the Python entity object.
+
+    Attributes
+    ----------
+    subscriber:  Subscriber, optional
+                 If this entity is associated with a DataReader retrieve it. It is read-only. This is a proxy for get_subscriber().
+    publisher:   Publisher, optional
+                 If this entity is associated with a Publisher retrieve it. It is read-only. This is a proxy for get_publisher().
+    datareader:  DataReader, optional
+                 If this entity is associated with a DataReader retrieve it. It is read-only. This is a proxy for get_datareader().
+    guid:        uuid.UUID
+                 Return the globally unique identifier for this entity. It is read-only. This is a proxy for get_guid().
+    status_mask: int
+                 The status mask for this entity. It is a set of bits formed from ``DDSStatus``. This is a proxy for get/set_status_mask().
+    qos:         Qos
+                 The quality of service policies for this entity. This is a proxy for get/set_qos().
+    listener:    Listener
+                 The listener associated with this entity. This is a proxy for get/set_listener().
+    parent:      Entity, optional
+                 The entity that is this entities parent. For example: the subscriber for a datareader, the participant for a topic.
+                 It is read-only. This is a proxy for get_parent().
+    participant: DomainParticipant, optional
+                 Get the participant for any entity, will only fail for a ``Domain``. It is read-only. This is a proxy for get_participant().
+    children:    List[Entity]
+                 Get a list of children belonging to this entity. It is the opposite as ``parent``. It is read-only. This is a proxy for get_children().
+    domainid:    int
+                 Get the id of the domain this entity belongs to.
+    """
+
     _entities: Dict[dds_entity_t, 'Entity'] = WeakValueDictionary()
 
-    def __init__(self, ref) -> None:
+    def __init__(self, ref: int) -> None:
+        """Initialize an Entity. You should never need to initialize an Entity manually.
+
+        Parameters
+        ----------
+        ref: int
+            The reference id as returned by the DDS API.
+
+        Raises
+        ------
+        DDSException
+            If an invalid reference id is passed to this function this means instantiation of some other object failed.
+        """
         if ref < 0:
             raise DDSException(ref, f"Occurred upon initialisation of a {self.__class__.__module__}.{self.__class__.__name__}")
         super().__init__(ref)
@@ -28,52 +69,120 @@ class Entity(DDS):
         del self._entities[self._ref]
         self._delete(self._ref)
 
-    def get_subscriber(self):
+    def get_subscriber(self) -> Optional['cdds.sub.subscriber.Subscriber']:
+        """Retrieve the subscriber associated with this entity.
+
+        Returns
+        -------
+        Subscriber, optional
+            Not all entities are associated with a subscriber, so this method may return None.
+
+        Raises
+        ------
+        DDSException
+        """
         ref = self._get_subscriber(self._ref)
         if ref >= 0:
             return self.get_entity(ref)
         raise DDSException(ref, f"Occurred when getting the subscriber for {repr(self)}")
 
-    subscriber: 'cdds.sub.Subscriber' = property(get_subscriber, doc="Entity subscriber")
+    subscriber: 'cdds.sub.subscriber.Subscriber' = property(get_subscriber, doc=None)
 
-    def get_publisher(self):
+    def get_publisher(self) -> Optional['cdds.pub.Publisher']:
+        """Retrieve the publisher associated with this entity.
+
+        Returns
+        -------
+        Publisher, optional
+            Not all entities are associated with a publisher, so this method may return None.
+
+        Raises
+        ------
+        DDSException
+        """
         ref = self._get_publisher(self._ref)
         if ref >= 0:
             return self.get_entity(ref)
         raise DDSException(ref, f"Occurred when getting the publisher for {repr(self)}")
 
-    publisher: 'cdds.sub.Publisher' = property(get_publisher, doc="Entity publisher")
+    publisher: 'cdds.sub.Publisher' = property(get_publisher)
 
     def get_datareader(self) -> Optional['cdds.sub.DataReader']:
-        """Get the DataReader associated with this entity"""
+        """Retrieve the datareader associated with this entity.
+
+        Returns
+        -------
+        DataReader, optional
+            Not all entities are associated with a datareader, so this method may return None.
+
+        Raises
+        ------
+        DDSException
+        """
         ref = self._get_datareader(self._ref)
         if ref >= 0:
             return self.get_entity(ref)
         raise DDSException(ref, f"Occurred when getting the datareader for {repr(self)}")
 
-    datareader: Optional['cdds.sub.DataReader'] = property(get_datareader, doc="""
-        The DataReader associated with this entity. This is read only (maps to get_datareader). Can be None.
-    """)
+    datareader: Optional['cdds.sub.DataReader'] = property(get_datareader)
 
-    def get_instance_handle(self):
+    def get_instance_handle(self) -> int:
+        """Retrieve the instance associated with this entity.
+
+        Returns
+        -------
+        int
+            TODO: replace this with some mechanism for an Instance class
+
+        Raises
+        ------
+        DDSException
+        """
         handle = dds_instance_handle_t()
         ret = self._get_instance_handle(self._ref, byref(handle))
         if ret == 0:
             return int(handle)
         raise DDSException(ret, f"Occurred when getting the instance handle for {repr(self)}")
 
-    instance_handle: int = property(get_instance_handle, doc="Entity instance handle")
+    instance_handle: int = property(get_instance_handle)
 
-    def get_guid(self) -> 'UUID':
+    def get_guid(self) -> UUID:
+        """Get a globally unique identifier for this entity.
+
+        Returns
+        -------
+        uuid.UUID
+            View the python documentation for this class for detailed usage.
+
+        Raises
+        ------
+        DDSException
+        """
         guid = dds_guid_t()
         ret = self._get_guid(self._ref, byref(guid))
         if ret == 0:
             return guid.as_python_guid()
         raise DDSException(ret, f"Occurred when getting the GUID for {repr(self)}")
 
-    guid: 'UUID' = property(get_guid, doc="Entity GUID")
+    guid: 'UUID' = property(get_guid)
 
-    def read_status(self, mask=None) -> int:
+    def read_status(self, mask: int = None) -> int:
+        """Read the status bits set on this Entity. You can build a mask by using ``cdds.core.DDSStatus``.
+
+        Parameters
+        ----------
+        mask : int, optional
+            The ``DDSStatus`` mask. If not supplied the mask is used that was set on this Entity using set_status_mask.
+
+        Returns
+        -------
+        int
+            The `DDSStatus`` bits that were set.
+
+        Raises
+        ------
+        DDSException
+        """
         status = c_uint32()
         ret = self._read_status(self._ref, byref(status), c_uint32(mask) if mask else self.get_status_mask())
         if ret == 0:
@@ -81,6 +190,23 @@ class Entity(DDS):
         raise DDSException(ret, f"Occurred when reading the status for {repr(self)}")
 
     def take_status(self, mask=None) -> int:
+        """Take the status bits set on this Entity, after which they will be set to 0 again.
+        You can build a mask by using ``cdds.core.DDSStatus``.
+
+        Parameters
+        ----------
+        mask : int, optional
+            The ``DDSStatus`` mask. If not supplied the mask is used that was set on this Entity using set_status_mask.
+
+        Returns
+        -------
+        int
+            The `DDSStatus`` bits that were set.
+
+        Raises
+        ------
+        DDSException
+        """
         status = c_uint32()
         ret = self._take_status(self._ref, byref(status), c_uint32(mask) if mask else self.get_status_mask())
         if ret == 0:
@@ -88,28 +214,74 @@ class Entity(DDS):
         raise DDSException(ret, f"Occurred when taking the status for {repr(self)}")
 
     def get_status_changes(self) -> int:
+        """Get all status changes since the last read_status() or take_status().
+
+        Returns
+        -------
+        int
+            The `DDSStatus`` bits that were set.
+
+        Raises
+        ------
+        DDSException
+        """
         status = c_uint32()
         ret = self._get_status_changes(self._ref, byref(status))
         if ret == 0:
             return status.value
         raise DDSException(ret, f"Occurred when getting the status changes for {repr(self)}")
 
-    def get_status_mask(self):
+    def get_status_mask(self) -> int:
+        """Get the status mask for this Entity.
+
+        Returns
+        -------
+        int
+            The `DDSStatus`` bits that are enabled.
+
+        Raises
+        ------
+        DDSException
+        """
         mask = c_uint32()
         ret = self._get_status_mask(self._ref, byref(mask))
         if ret == 0:
             return mask.value
         raise DDSException(ret, f"Occurred when getting the status mask for {repr(self)}")
 
-    def set_status_mask(self, mask):
+    def set_status_mask(self, mask: int) -> None:
+        """Set the status mask for this Entity. By default the mask is 0. Only the status changes for the bits in this mask are tracked on this entity.
+
+        Parameters
+        ----------
+        mask : int
+            The ``DDSStatus`` bits to track.
+
+        Raises
+        ------
+        DDSException
+        """
         ret = self._set_status_mask(self._ref, c_uint32(mask))
         if ret == 0:
             return
         raise DDSException(ret, f"Occurred when setting the status mask for {repr(self)}")
 
-    status_mask = property(get_status_mask, set_status_mask, doc="Entity status mask")
+    status_mask = property(get_status_mask, set_status_mask)
 
     def get_qos(self) -> Qos:
+        """Get the set of ``Qos`` policies associated with this entity. Note that the object returned is not
+        the same python object that you used to set the ``Qos`` on this object. Modifications to the ``Qos`` object
+        that is returned does _not_ modify the Qos of the Entity.
+
+        Returns
+        -------
+        Qos
+            The Qos policies associated with this entity.
+
+        Raises
+        ------
+        DDSException
+        """
         qos = Qos()
         ret = self._get_qos(self._ref, qos._ref)
         if ret == 0:
@@ -117,29 +289,80 @@ class Entity(DDS):
         raise DDSException(ret, f"Occurred when getting the Qos Policies for {repr(self)}")
 
     def set_qos(self, qos: Qos) -> None:
+        """Set ``Qos`` policies on this entity. Note, only a limited number of ``Qos`` policies can be set after
+        the object is created (``Policy.LatencyBudget`` and ``Policy.OwnershipStrength``). Any policies not set
+        explicitly in the supplied ``Qos`` remain.
+
+        Parameters
+        ----------
+        qos : Qos
+            The ``Qos`` to apply to this entity.
+
+        Raises
+        ------
+        DDSException
+            If you pass an immutable policy or cause the total collection of qos policies to become inconsistent
+            an exception will be raised.
+        """
         ret = self._set_qos(self._ref, qos._ref)
         if ret == 0:
             return
         raise DDSException(ret, f"Occurred when setting the Qos Policies for {repr(self)}")
 
-    qos = property(get_qos, set_qos, doc="Entity QOS")
+    qos = property(get_qos, set_qos)
 
-    def get_listener(self) -> 'cdds.core.listener.Listener':
+    def get_listener(self) -> 'cdds.core.Listener':
+        """Return a listener associated with this object. Modifying the returned listener object does not modify
+        this entity, you will have to call set_listener() with the changed object.
+
+        Returns
+        -------
+        Listener
+            A listener with which you can add additional callbacks.
+
+        Raises
+        ------
+        DDSException
+        """
         listener = self.listener_type()
         ret = self._get_listener(self._ref, listener._ref)
         if ret == 0:
             return listener
         raise DDSException(ret, f"Occurred when getting the Listener for {repr(self)}")
 
-    def set_listener(self, listener: 'cdds.core.listener.Listener') -> None:
+    def set_listener(self, listener: 'cdds.core.Listener') -> None:
+        """Set the listener for this object. If a listener already exist for this object only the fields you explicitly
+        have set on your new listener are overwritten.
+
+        Parameters
+        ----------
+        listener : Listener
+            The listener object to use.
+
+        Raises
+        ------
+        DDSException
+        """
         ret = self._set_listener(self._ref, listener._ref)
         if ret == 0:
             return
         raise DDSException(ret, f"Occurred when setting the Listener for {repr(self)}")
 
-    listener = property(get_listener, set_listener, doc="Entity Listener")
+    listener = property(get_listener, set_listener)
 
-    def get_parent(self):
+    def get_parent(self) -> Optional['Entity']:
+        """Get the parent entity associated with this entity. A ``Domain`` object is the only object without parent, but if the domain is
+        not created through the Python API this call won't find it and return None from the DomainParticipant.
+
+        Returns
+        -------
+        Entity, optional
+            The parent of this entity. This would be the Subscriber for a DataReader, DomainParticipant for a Topic etc.
+
+        Raises
+        ------
+        DDSException
+        """
         ret = self._get_parent(self._ref)
         if ret > 0:
             return self.get_entity(ret)
@@ -148,9 +371,20 @@ class Entity(DDS):
 
         raise DDSException(ret, f"Occurred when getting the parent of {repr(self)}")
 
-    parent = property(get_parent, doc="Entity parent")
+    parent = property(get_parent)
 
-    def get_participant(self):
+    def get_participant(self) -> Optional['cdds.domain.DomainParticipant']:
+        """Get the domain participant for this entity. This should work on all valid Entity objects except a Domain.
+
+        Returns
+        -------
+        DomainParticipant, optional
+            Only fails for a Domain object.
+
+        Raises
+        ------
+        DDSException
+        """
         ret = self._get_participant(self._ref)
         if ret > 0:
             return self.get_entity(ret)
@@ -159,10 +393,20 @@ class Entity(DDS):
 
         raise DDSException(ret, f"Occurred when getting the participant of {repr(self)}")
 
-    participant = property(get_participant, doc="Entity Domain Participant")
-    domain_participant = property(get_participant, doc="Entity Domain Participant")
+    participant = property(get_participant)
 
-    def get_children(self):
+    def get_children(self) -> List['Entity']:
+        """Get the list of children of this entity. For example, the list of datareaders belonging to a subscriber. Opposite of parent.
+
+        Returns
+        -------
+        List[Entity]
+            All the entities considered children of this entity.
+
+        Raises
+        ------
+        DDSException
+        """
         num_children = self._get_children(self._ref, None, 0)
         if num_children < 0:
             raise DDSException(num_children, f"Occurred when getting the number of children of {repr(self)}")
@@ -178,9 +422,20 @@ class Entity(DDS):
 
         raise DDSException(ret, f"Occurred when getting the children of {repr(self)}")
 
-    children = property(get_children, "Entity Children")
+    children = property(get_children)
 
-    def get_domainid(self):
+    def get_domainid(self) -> int:
+        """Get the id of the domain this entity resides in.
+
+        Returns
+        -------
+        int
+            The domain id.
+
+        Raises
+        ------
+        DDSException
+        """
         domainid = dds_domainid_t()
         ret = self._get_domainid(self._ref, byref(domainid))
         if ret == 0:
@@ -188,7 +443,7 @@ class Entity(DDS):
 
         raise DDSException(ret, f"Occurred when getting the domainid of {repr(self)}")
 
-    domainid = property(get_domainid, "Entity domainid")
+    domainid = property(get_domainid)
 
     @classmethod
     def get_entity(cls, id) -> Optional['Entity']:
@@ -196,7 +451,6 @@ class Entity(DDS):
 
     @classmethod
     def _init_from_retcode(cls, code):
-        """ This method is called when we are instantiating a code from a dds_entity_t instead of user initialized python. """
         entity = cls.__new__(cls)
         Entity.__init__(entity, code)
         return entity
@@ -278,7 +532,12 @@ class Entity(DDS):
         pass
 
     def __repr__(self) -> str:
-        return f"<Entity, type={self.__class__.__module__}.{self.__class__.__name__}, addr={hex(id(self))}, id={self._ref}>"
+        ref = None
+        try:
+            ref = self._ref
+        except Exception:
+            pass
+        return f"<Entity, type={self.__class__.__module__}.{self.__class__.__name__}, addr={hex(id(self))}, id={ref}>"
 
 
 DDS.entity_type = Entity

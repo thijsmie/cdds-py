@@ -1,11 +1,13 @@
 import pytest
 
 from cdds.core import Entity, Listener
+from cdds.pub.datawriter import DataWriter
 from cdds.sub import DataReader
+from cdds.topic.topic import Topic
 from cdds.util.entity import isgoodentity
 from cdds.util.time import duration
 
-from  testtopics import Message
+from  testtopics import Message, MessageAlt
 
 
 def test_listener_initialize():
@@ -32,3 +34,4 @@ def test_listener_data_available(common_setup, capfd):
 
     out, err = capfd.readouterr()
     assert "CHECK" in out
+

@@ -12,7 +12,6 @@ Core functionality
 .. automodule:: cdds.core
    :members:
    :imported-members:
-   :undoc-members:
 
 Domain module
 =============
@@ -20,7 +19,6 @@ Domain module
 .. automodule:: cdds.domain
    :members:
    :imported-members:
-   :undoc-members:
 
 Topic module
 ============
@@ -28,7 +26,6 @@ Topic module
 .. automodule:: cdds.topic
    :members:
    :imported-members:
-   :undoc-members:
 
 Publication module
 ==================
@@ -44,7 +41,6 @@ Subscription module
 .. automodule:: cdds.sub
    :members:
    :imported-members:
-   :undoc-members:
 
 Contents
 --------
