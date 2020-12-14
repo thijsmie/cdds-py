@@ -29,7 +29,7 @@ jobs:
       with:
         java-version: '9'
         java-package: jdk
-        architecture: x64 
+        architecture: x64
 
     - name: Get latest CMake
       if: steps.cyclone-cache.outputs.cache-hit != 'true'
@@ -111,11 +111,10 @@ jobs:
         ddsc: ../cyclonedds/install/lib/libddsc.so
 
     - name: Upload coverage report to codecov
-      working-directory: ./cdds
       uses: codecov/codecov-action@v1
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
-        file: cov.xml
+        file: ./cdds/cov.xml
         flags: unittests
         env_vars: OS,PYTHON
         name: codecov-umbrella
