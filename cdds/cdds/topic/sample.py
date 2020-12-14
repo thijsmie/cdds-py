@@ -1,4 +1,4 @@
-from cdds.internal.clib import load_library, load_library_with_path, MissingLibraryException
+from cdds.internal.clib import load_library, load_library_with_path
 from cdds.internal.dds_types import dds_topic_descriptor_p_t
 from ctypes import Structure, c_char_p, byref, cast, string_at
 from dataclasses import dataclass, fields, asdict
@@ -23,11 +23,12 @@ def Sample(_lib):
 
     def DDSEntity(clso):
         if lib not in loaded_libs:
-            try:
-                loaded_libs[lib] = load_library(lib)
-            except MissingLibraryException:
+            loaded_libs[lib] = load_library(lib)
+            if loaded_libs[lib] == None:
                 path = os.path.join(os.path.abspath(os.path.dirname(getabsfile(clso))), f"build/lib{lib}.so")
                 loaded_libs[lib] = load_library_with_path(lib, path)
+            if loaded_libs[lib] == None:
+                raise Exception(f"The library this entity belongs to could not be loaded. Please ensure {lib} is available.")
         mlib = loaded_libs[lib]
 
         clso = dataclass(clso)
