@@ -26,20 +26,10 @@ jobs:
         name: docs-html
         path: ./docs/build/
 
-    - name: Commit documentation changes
-      run: |
-        git clone https://github.com/${{ github.repository }}.git --branch gh-pages --single-branch gh-pages
-        cp -r docs/build/* gh-pages/
-        cd gh-pages
-        touch .nojekyll
-        git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Action"
-        git add .
-        git commit -m "Update documentation" -a || true
-
-    - name: Push changes
-      uses: ad-m/github-push-action@master
-      with:
-        branch: gh-pages
-        directory: gh-pages
-        github_token: ${{ secrets.GITHUB_TOKEN }}
+    - name: Deploy 🚀
+        uses: JamesIves/github-pages-deploy-action@3.7.1
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH: gh-pages
+          FOLDER: ./docs/build
+          CLEAN: true
