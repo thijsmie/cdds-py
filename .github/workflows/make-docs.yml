@@ -11,17 +11,25 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v1
-    - uses: ammaraskar/sphinx-action@master
+    - name: Checkout
+      uses: actions/checkout@v1
+
+    - name: Pip install requirements
+      run: |
+        pip3 install sphinx-rtd-theme
+
+    - name: Sphinx build
+      uses: ammaraskar/sphinx-action@master
       with:
         build-command: "sphinx-build -b html source build"
         docs-folder: "docs/"
-    - uses: actions/upload-artifact@v1
+
+    - name: HTML artifact creation
+      uses: actions/upload-artifact@v1
       with:
         name: docs-html
         path: docs/_build/html/
-    # Publish built docs to gh-pages branch.
-    # ===============================
+
     - name: Commit documentation changes
       run: |
         git clone https://github.com/${{ github.repository }}.git --branch gh-pages --single-branch gh-pages
@@ -32,10 +40,10 @@ jobs:
         git config --local user.name "GitHub Action"
         git add .
         git commit -m "Update documentation" -a || true
+
     - name: Push changes
       uses: ad-m/github-push-action@master
       with:
         branch: gh-pages
         directory: gh-pages
         github_token: ${{ secrets.GITHUB_TOKEN }}
-    # ===============================
