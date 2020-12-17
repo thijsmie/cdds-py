@@ -159,18 +159,61 @@
 
 
 <div class="viewcode-block" id="SampleState"><a class="viewcode-back" href="../../../cdds.core.html#cdds.core.status_conditions.SampleState">[docs]</a><span class="k">class</span> <span class="nc">SampleState</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;SampleState constants for building condition masks. This class is static and</span>
+<span class="sd">    there should never be a need to instantiate it. It operates on the state of </span>
+<span class="sd">    a single sample.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    Read: int</span>
+<span class="sd">        Only consider samples that have already been read.</span>
+<span class="sd">    NotRead: int</span>
+<span class="sd">        Only consider unread samples.</span>
+<span class="sd">    Any: int</span>
+<span class="sd">        Ignore the read/unread state of samples.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">Read</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span>
     <span class="n">NotRead</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span>
     <span class="n">Any</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span></div>
 
 
 <div class="viewcode-block" id="ViewState"><a class="viewcode-back" href="../../../cdds.core.html#cdds.core.status_conditions.ViewState">[docs]</a><span class="k">class</span> <span class="nc">ViewState</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;ViewState constants for building condition masks. This class is static and</span>
+<span class="sd">    there should never be a need to instantiate it. It operates on the state of</span>
+<span class="sd">    an instance.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    New: int</span>
+<span class="sd">        Only consider samples belonging to newly created instances.</span>
+<span class="sd">    Old: int</span>
+<span class="sd">        Only consider samples belonging to previously created instances.</span>
+<span class="sd">    Any: int</span>
+<span class="sd">        Ignore the fact whether instances are new or not.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">New</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4</span>
     <span class="n">Old</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">8</span>
     <span class="n">Any</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">12</span></div>
 
 
 <div class="viewcode-block" id="InstanceState"><a class="viewcode-back" href="../../../cdds.core.html#cdds.core.status_conditions.InstanceState">[docs]</a><span class="k">class</span> <span class="nc">InstanceState</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;InstanceState constants for building condition masks. This class is static and</span>
+<span class="sd">    there should never be a need to instantiate it. It operates on the state of</span>
+<span class="sd">    an instance.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    Alive: int</span>
+<span class="sd">        Only consider samples belonging to an alive instance (it has alive writer(s))</span>
+<span class="sd">    NotAliveDisposed: int</span>
+<span class="sd">        Only consider samples belonging to an instance that is not alive because it was actively disposed.</span>
+<span class="sd">    NotAliveNoWriters: int</span>
+<span class="sd">        Only consider samples belonging to an instance that is not alive because it has no writers.</span>
+<span class="sd">    Any: int</span>
+<span class="sd">        Ignore the liveliness status of the instance.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">Alive</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">16</span>
     <span class="n">NotAliveDisposed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">32</span>
     <span class="n">NotAliveNoWriters</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">64</span>
@@ -178,6 +221,27 @@
 
 
 <div class="viewcode-block" id="DDSStatus"><a class="viewcode-back" href="../../../cdds.core.html#cdds.core.status_conditions.DDSStatus">[docs]</a><span class="k">class</span> <span class="nc">DDSStatus</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;DDSStatus contains constants to build status masks. It is static and should never</span>
+<span class="sd">    need to be instantiated.</span>
+<span class="sd">    </span>
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    InconsistentTopic: int</span>
+<span class="sd">    OfferedDeadlineMissed: int</span>
+<span class="sd">    RequestedDeadlineMissed: int</span>
+<span class="sd">    OfferedIncompatibleQos: int</span>
+<span class="sd">    RequestedIncompatibleQos: int</span>
+<span class="sd">    SampleLost: int</span>
+<span class="sd">    SampleRejected: int</span>
+<span class="sd">    DataOnReaders: int</span>
+<span class="sd">    DataAvailable: int</span>
+<span class="sd">    LivelinessLost: int</span>
+<span class="sd">    LivelinessChanged: int</span>
+<span class="sd">    PublicationMatched: int</span>
+<span class="sd">    SubscriptionMatched: int</span>
+<span class="sd">    All = (1 &lt;&lt; 14) - 1</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">InconsistentTopic</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="mi">1</span>
     <span class="n">OfferedDeadlineMissed</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="mi">2</span>
     <span class="n">RequestedDeadlineMissed</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="mi">3</span>
@@ -196,18 +260,18 @@
 
 <div class="viewcode-block" id="Condition"><a class="viewcode-back" href="../../../cdds.core.html#cdds.core.status_conditions.Condition">[docs]</a><span class="k">class</span> <span class="nc">Condition</span><span class="p">(</span><span class="n">Entity</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Utility class to implement common methods between Read and Queryconditions&quot;&quot;&quot;</span>
-<div class="viewcode-block" id="Condition.get_mask"><a class="viewcode-back" href="../../../cdds.core.html#cdds.core.status_conditions.Condition.get_mask">[docs]</a>    <span class="k">def</span> <span class="nf">get_mask</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">get_mask</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="n">mask</span><span class="p">:</span> <span class="n">c_uint32</span> <span class="o">=</span> <span class="n">c_uint32</span><span class="p">()</span>
         <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_mask</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ref</span><span class="p">,</span> <span class="n">byref</span><span class="p">(</span><span class="n">mask</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">ret</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">mask</span><span class="o">.</span><span class="n">value</span>
-        <span class="k">raise</span> <span class="n">DDSException</span><span class="p">(</span><span class="n">ret</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Occurred when obtaining the mask of {repr(self)}&quot;</span><span class="p">)</span></div>
+        <span class="k">raise</span> <span class="n">DDSException</span><span class="p">(</span><span class="n">ret</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Occurred when obtaining the mask of {repr(self)}&quot;</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Condition.is_triggered"><a class="viewcode-back" href="../../../cdds.core.html#cdds.core.status_conditions.Condition.is_triggered">[docs]</a>    <span class="k">def</span> <span class="nf">is_triggered</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">is_triggered</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_triggered</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ref</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">ret</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">DDSException</span><span class="p">(</span><span class="n">ret</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Occurred when checking if {repr(self)} was triggered&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">ret</span> <span class="o">==</span> <span class="mi">1</span></div>
+        <span class="k">return</span> <span class="n">ret</span> <span class="o">==</span> <span class="mi">1</span>
 
     <span class="n">triggered</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">is_triggered</span><span class="p">)</span>
 

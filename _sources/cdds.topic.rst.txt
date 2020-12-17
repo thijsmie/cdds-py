@@ -6,7 +6,4 @@ cdds.topic
    :undoc-members:
    :show-inheritance:
 
-.. autoclass:: cdds.topic.sample.Sample
-   :members:
-   :undoc-members:
-   :show-inheritance:
+.. autodecorator:: cdds.topic.sample.Sample

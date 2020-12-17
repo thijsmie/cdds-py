@@ -20,7 +20,6 @@ cdds.core
 
 .. automodule:: cdds.core.status_conditions
    :members:
-   :undoc-members:
    :show-inheritance:
 
 .. automodule:: cdds.core.waitset

@@ -157,7 +157,19 @@
 
 
 <div class="viewcode-block" id="WaitSet"><a class="viewcode-back" href="../../../cdds.core.html#cdds.core.waitset.WaitSet">[docs]</a><span class="k">class</span> <span class="nc">WaitSet</span><span class="p">(</span><span class="n">Entity</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A WaitSet is a way to provide synchronous access to events happening in the DDS system. You can attach almost any kind</span>
+<span class="sd">    of entity to a WaitSet and then perform a blocking wait on the waitset. When one or more of the entities in the waitset </span>
+<span class="sd">    trigger the wait is unblocked. What a &#39;trigger&#39; is depends on the type of entity, you can find out more in ``todo(DDS) triggers``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">domain_participant</span><span class="p">:</span> <span class="s1">&#39;cdds.domain.DomainParticipant&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Make a new WaitSet. It starts of empty. An empty waitset will never trigger.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        domain_participant: DomainParticipant</span>
+<span class="sd">            The domain in which you want to make a WaitSet</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_create_waitset</span><span class="p">(</span><span class="n">domain_participant</span><span class="o">.</span><span class="n">_ref</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">attached</span> <span class="o">=</span> <span class="p">[]</span>
 
@@ -167,6 +179,22 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__del__</span><span class="p">()</span>
 
 <div class="viewcode-block" id="WaitSet.attach"><a class="viewcode-back" href="../../../cdds.core.html#cdds.core.waitset.WaitSet.attach">[docs]</a>    <span class="k">def</span> <span class="nf">attach</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity</span><span class="p">:</span> <span class="n">Entity</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Attach an entity to this WaitSet. This is a no-op if the entity was already attached.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        entity: Entity</span>
+<span class="sd">            The entity you wish to attach.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        DDSException: When you try to attach a non-triggerable entity.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_attached</span><span class="p">(</span><span class="n">entity</span><span class="p">):</span>
             <span class="k">return</span>
 
@@ -178,6 +206,20 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">attached</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">entity</span><span class="p">,</span> <span class="n">value_pt</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="WaitSet.detach"><a class="viewcode-back" href="../../../cdds.core.html#cdds.core.waitset.WaitSet.detach">[docs]</a>    <span class="k">def</span> <span class="nf">detach</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity</span><span class="p">:</span> <span class="n">Entity</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Detach an entity from this WaitSet. If it was not attach this is a no-op.</span>
+<span class="sd">        Note that this operation is not atomic, a trigger for the detached entity could still occurr right</span>
+<span class="sd">        after detaching it.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        entity: Entity</span>
+<span class="sd">            The entity you wish to attach</span>
+<span class="sd">        </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">attached</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">entity</span><span class="p">:</span>
                 <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_waitset_detach</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ref</span><span class="p">,</span> <span class="n">entity</span><span class="o">.</span><span class="n">_ref</span><span class="p">)</span>
@@ -187,17 +229,51 @@
                 <span class="k">break</span></div>
 
 <div class="viewcode-block" id="WaitSet.is_attached"><a class="viewcode-back" href="../../../cdds.core.html#cdds.core.waitset.WaitSet.is_attached">[docs]</a>    <span class="k">def</span> <span class="nf">is_attached</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity</span><span class="p">:</span> <span class="n">Entity</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Check whether an entity is attached.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        entity: Entity</span>
+<span class="sd">            Check the attachment of this entity.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        bool</span>
+<span class="sd">            Whether this entity is attached</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">attached</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">entity</span><span class="p">:</span>
                 <span class="k">return</span> <span class="kc">True</span>
         <span class="k">return</span> <span class="kc">False</span></div>
 
 <div class="viewcode-block" id="WaitSet.get_entities"><a class="viewcode-back" href="../../../cdds.core.html#cdds.core.waitset.WaitSet.get_entities">[docs]</a>    <span class="k">def</span> <span class="nf">get_entities</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get all the attached entities</span>
+<span class="sd">        </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        List[Entity]</span>
+<span class="sd">            The attached entities</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Note: should spend some time on synchronisation. What if the waitset is used across threads?</span>
         <span class="c1"># That is probably a bad idea in python, but who is going to stop the user from doing it anyway...</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">attached</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="WaitSet.wait"><a class="viewcode-back" href="../../../cdds.core.html#cdds.core.waitset.WaitSet.wait">[docs]</a>    <span class="k">def</span> <span class="nf">wait</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+<div class="viewcode-block" id="WaitSet.wait"><a class="viewcode-back" href="../../../cdds.core.html#cdds.core.waitset.WaitSet.wait">[docs]</a>    <span class="k">def</span> <span class="nf">wait</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Block execution and wait for one of the entities in this waitset to trigger.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        timeout: int</span>
+<span class="sd">            The maximum number of nanoseconds to block. Use the function :func:`duration&lt;cdds.util.time.duration&gt;`</span>
+<span class="sd">            to write that in a human readable format.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        int</span>
+<span class="sd">            The number of triggered entities. This will be 0 when a timeout occurred.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="n">cs</span> <span class="o">=</span> <span class="p">(</span><span class="n">c_void_p</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">attached</span><span class="p">))()</span>
         <span class="n">pcs</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">cs</span><span class="p">,</span> <span class="n">c_void_p</span><span class="p">)</span>
         <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_waitset_wait</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ref</span><span class="p">,</span> <span class="n">byref</span><span class="p">(</span><span class="n">pcs</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">attached</span><span class="p">),</span> <span class="n">timeout</span><span class="p">)</span>
@@ -208,6 +284,21 @@
         <span class="k">raise</span> <span class="n">DDSException</span><span class="p">(</span><span class="n">ret</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Occurred while waiting in {repr(self)}&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="WaitSet.wait_until"><a class="viewcode-back" href="../../../cdds.core.html#cdds.core.waitset.WaitSet.wait_until">[docs]</a>    <span class="k">def</span> <span class="nf">wait_until</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">abstime</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Block execution and wait for one of the entities in this waitset to trigger.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        abstime: int</span>
+<span class="sd">            The absolute time in nanoseconds since the start of the program (TODO CONFIRM THIS) </span>
+<span class="sd">            to block. Use the function :func:`duration&lt;cdds.util.time.duration&gt;` to write that in</span>
+<span class="sd">            a human readable format.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        int</span>
+<span class="sd">            The number of triggered entities. This will be 0 when a timeout occurred.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="n">cs</span> <span class="o">=</span> <span class="p">(</span><span class="n">c_void_p</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">attached</span><span class="p">))()</span>
         <span class="n">pcs</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">cs</span><span class="p">,</span> <span class="n">c_void_p</span><span class="p">)</span>
         <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_waitset_wait_until</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ref</span><span class="p">,</span> <span class="n">byref</span><span class="p">(</span><span class="n">pcs</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">attached</span><span class="p">),</span> <span class="n">abstime</span><span class="p">)</span>
@@ -217,7 +308,18 @@
 
         <span class="k">raise</span> <span class="n">DDSException</span><span class="p">(</span><span class="n">ret</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Occurred while waiting in {repr(self)}&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="WaitSet.set_trigger"><a class="viewcode-back" href="../../../cdds.core.html#cdds.core.waitset.WaitSet.set_trigger">[docs]</a>    <span class="k">def</span> <span class="nf">set_trigger</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
+<div class="viewcode-block" id="WaitSet.set_trigger"><a class="viewcode-back" href="../../../cdds.core.html#cdds.core.waitset.WaitSet.set_trigger">[docs]</a>    <span class="k">def</span> <span class="nf">set_trigger</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Manually trigger a WaitSet. It is unlikely you would need this.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        value: bool</span>
+<span class="sd">            The trigger value.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_waitset_set_trigger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ref</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">ret</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">DDSException</span><span class="p">(</span><span class="n">ret</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Occurred when setting trigger in {repr(self)}&quot;</span><span class="p">)</span></div>
