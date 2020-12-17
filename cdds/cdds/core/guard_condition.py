@@ -7,7 +7,7 @@ from ctypes import POINTER, c_bool, byref
 class GuardCondition(Entity):
     """ A GuardCondition is a manually triggered condition that can be added to a :class:`WaitSet<cdds.core.waitset.WaitSet>`."""
 
-    def __init__(self, domain_participant: 'DomainParticipant'):
+    def __init__(self, domain_participant: 'cdds.domain.DomainParticipant'):
         """Initialize a GuardCondition
         
         Parameters
