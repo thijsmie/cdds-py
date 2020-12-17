@@ -388,6 +388,7 @@
 <span class="sd">            Tuple[PolicyType, Any]</span>
 <span class="sd">                The type of this entity is not publicly specified.</span>
 <span class="sd">            &quot;&quot;&quot;</span>
+
             <span class="k">return</span> <span class="n">_PolicyType</span><span class="o">.</span><span class="n">PresentationAccessScope</span><span class="p">,</span> <span class="p">(</span><span class="n">_QosAccessScope</span><span class="o">.</span><span class="n">Instance</span><span class="p">,</span> <span class="n">coherent_access</span><span class="p">,</span> <span class="n">ordered_access</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Policy.PresentationAccessScope.Topic"><a class="viewcode-back" href="../../../cdds.core.html#cdds.core.policy.Policy.PresentationAccessScope.Topic">[docs]</a>        <span class="nd">@staticmethod</span>
@@ -406,6 +407,7 @@
 <span class="sd">            Tuple[PolicyType, Any]</span>
 <span class="sd">                The type of this entity is not publicly specified.</span>
 <span class="sd">            &quot;&quot;&quot;</span>
+
             <span class="k">return</span> <span class="n">_PolicyType</span><span class="o">.</span><span class="n">PresentationAccessScope</span><span class="p">,</span> <span class="p">(</span><span class="n">_QosAccessScope</span><span class="o">.</span><span class="n">Topic</span><span class="p">,</span> <span class="n">coherent_access</span><span class="p">,</span> <span class="n">ordered_access</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Policy.PresentationAccessScope.Group"><a class="viewcode-back" href="../../../cdds.core.html#cdds.core.policy.Policy.PresentationAccessScope.Group">[docs]</a>        <span class="nd">@staticmethod</span>
@@ -424,6 +426,7 @@
 <span class="sd">            Tuple[PolicyType, Any]</span>
 <span class="sd">                The type of this entity is not publicly specified.</span>
 <span class="sd">            &quot;&quot;&quot;</span>
+
             <span class="k">return</span> <span class="n">_PolicyType</span><span class="o">.</span><span class="n">PresentationAccessScope</span><span class="p">,</span> <span class="p">(</span><span class="n">_QosAccessScope</span><span class="o">.</span><span class="n">Group</span><span class="p">,</span> <span class="n">coherent_access</span><span class="p">,</span> <span class="n">ordered_access</span><span class="p">)</span></div></div>
 
 <div class="viewcode-block" id="Policy.Lifespan"><a class="viewcode-back" href="../../../cdds.core.html#cdds.core.policy.Policy.Lifespan">[docs]</a>    <span class="nd">@staticmethod</span>
@@ -444,6 +447,7 @@
 <span class="sd">        Tuple[PolicyType, Any]</span>
 <span class="sd">            The type of this entity is not publicly specified.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="k">return</span> <span class="n">_PolicyType</span><span class="o">.</span><span class="n">Lifespan</span><span class="p">,</span> <span class="n">lifespan</span></div>
 
 <div class="viewcode-block" id="Policy.Deadline"><a class="viewcode-back" href="../../../cdds.core.html#cdds.core.policy.Policy.Deadline">[docs]</a>    <span class="nd">@staticmethod</span>
@@ -464,6 +468,7 @@
 <span class="sd">        Tuple[PolicyType, Any]</span>
 <span class="sd">            The type of this entity is not publicly specified.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+    
         <span class="k">return</span> <span class="n">_PolicyType</span><span class="o">.</span><span class="n">Deadline</span><span class="p">,</span> <span class="n">deadline</span></div>
 
 <div class="viewcode-block" id="Policy.LatencyBudget"><a class="viewcode-back" href="../../../cdds.core.html#cdds.core.policy.Policy.LatencyBudget">[docs]</a>    <span class="nd">@staticmethod</span>
@@ -484,36 +489,156 @@
 <span class="sd">        Tuple[PolicyType, Any]</span>
 <span class="sd">            The type of this entity is not publicly specified.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="k">return</span> <span class="n">_PolicyType</span><span class="o">.</span><span class="n">LatencyBudget</span><span class="p">,</span> <span class="n">budget</span></div>
 
-    <span class="k">class</span> <span class="nc">Ownership</span><span class="p">:</span>
+<div class="viewcode-block" id="Policy.Ownership"><a class="viewcode-back" href="../../../cdds.core.html#cdds.core.policy.Policy.Ownership">[docs]</a>    <span class="k">class</span> <span class="nc">Ownership</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;The Ownership Qos Policy</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; Policy.Ownership.Shared</span>
+<span class="sd">        &gt;&gt;&gt; Policy.Ownership.Exclusive</span>
+
+<span class="sd">        Attributes</span>
+<span class="sd">        ----------</span>
+<span class="sd">        Shared:    Tuple[PolicyType, Any]</span>
+<span class="sd">                   The type of this entity is not publicly specified.</span>
+<span class="sd">        Exclusive: Tuple[PolicyType, Any]</span>
+<span class="sd">                   The type of this entity is not publicly specified.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="n">Shared</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">_PolicyType</span><span class="p">,</span> <span class="n">_QosOwnership</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">_PolicyType</span><span class="o">.</span><span class="n">Ownership</span><span class="p">,</span> <span class="n">_QosOwnership</span><span class="o">.</span><span class="n">Shared</span><span class="p">)</span>
-        <span class="n">Exclusive</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">_PolicyType</span><span class="p">,</span> <span class="n">_QosOwnership</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">_PolicyType</span><span class="o">.</span><span class="n">Ownership</span><span class="p">,</span> <span class="n">_QosOwnership</span><span class="o">.</span><span class="n">Exclusive</span><span class="p">)</span>
+        <span class="n">Exclusive</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">_PolicyType</span><span class="p">,</span> <span class="n">_QosOwnership</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">_PolicyType</span><span class="o">.</span><span class="n">Ownership</span><span class="p">,</span> <span class="n">_QosOwnership</span><span class="o">.</span><span class="n">Exclusive</span><span class="p">)</span></div>
 
-    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Policy.OwnershipStrength"><a class="viewcode-back" href="../../../cdds.core.html#cdds.core.policy.Policy.OwnershipStrength">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">OwnershipStrength</span><span class="p">(</span><span class="n">strength</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">_PolicyType</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
-        <span class="k">return</span> <span class="n">_PolicyType</span><span class="o">.</span><span class="n">OwnershipStrength</span><span class="p">,</span> <span class="n">strength</span>
+        <span class="sd">&quot;&quot;&quot;The Ownership Strength Qos Policy</span>
 
-    <span class="k">class</span> <span class="nc">Liveliness</span><span class="p">:</span>
-        <span class="nd">@staticmethod</span>
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; Policy.OwnershipStrength(2)</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        strength : int</span>
+<span class="sd">            Ownership strength as integer.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Tuple[PolicyType, Any]</span>
+<span class="sd">            The type of this entity is not publicly specified.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="n">_PolicyType</span><span class="o">.</span><span class="n">OwnershipStrength</span><span class="p">,</span> <span class="n">strength</span></div>
+
+<div class="viewcode-block" id="Policy.Liveliness"><a class="viewcode-back" href="../../../cdds.core.html#cdds.core.policy.Policy.Liveliness">[docs]</a>    <span class="k">class</span> <span class="nc">Liveliness</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;The Liveliness Qos Policy</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; Policy.Liveliness.Automatic(lease_duration=duration(seconds=10))</span>
+<span class="sd">        &gt;&gt;&gt; Policy.Liveliness.ManualByParticipant(lease_duration=duration(seconds=10))</span>
+<span class="sd">        &gt;&gt;&gt; Policy.Liveliness.ManualByTopic(lease_duration=duration(seconds=10))</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Policy.Liveliness.Automatic"><a class="viewcode-back" href="../../../cdds.core.html#cdds.core.policy.Policy.Liveliness.Automatic">[docs]</a>        <span class="nd">@staticmethod</span>
         <span class="k">def</span> <span class="nf">Automatic</span><span class="p">(</span><span class="n">lease_duration</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">_PolicyType</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">_QosLiveliness</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]:</span>
-            <span class="k">return</span> <span class="n">_PolicyType</span><span class="o">.</span><span class="n">Liveliness</span><span class="p">,</span> <span class="p">(</span><span class="n">_QosLiveliness</span><span class="o">.</span><span class="n">Automatic</span><span class="p">,</span> <span class="n">lease_duration</span><span class="p">)</span>
+            <span class="sd">&quot;&quot;&quot;Use Automatic Liveliness</span>
 
-        <span class="nd">@staticmethod</span>
+<span class="sd">            Parameters</span>
+<span class="sd">            ----------</span>
+<span class="sd">            lease_duration: int</span>
+<span class="sd">                The lease duration in nanoseconds. Use the helper function :func:`duration&lt;cdds.util.time.duration&gt;` to write</span>
+<span class="sd">                the duration in a human readable format.</span>
+
+<span class="sd">            Returns</span>
+<span class="sd">            -------</span>
+<span class="sd">            Tuple[PolicyType, Any]</span>
+<span class="sd">                The type of this entity is not publicly specified.</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+
+            <span class="k">return</span> <span class="n">_PolicyType</span><span class="o">.</span><span class="n">Liveliness</span><span class="p">,</span> <span class="p">(</span><span class="n">_QosLiveliness</span><span class="o">.</span><span class="n">Automatic</span><span class="p">,</span> <span class="n">lease_duration</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Policy.Liveliness.ManualByParticipant"><a class="viewcode-back" href="../../../cdds.core.html#cdds.core.policy.Policy.Liveliness.ManualByParticipant">[docs]</a>        <span class="nd">@staticmethod</span>
         <span class="k">def</span> <span class="nf">ManualByParticipant</span><span class="p">(</span><span class="n">lease_duration</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">_PolicyType</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">_QosLiveliness</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]:</span>
-            <span class="k">return</span> <span class="n">_PolicyType</span><span class="o">.</span><span class="n">Liveliness</span><span class="p">,</span> <span class="p">(</span><span class="n">_QosLiveliness</span><span class="o">.</span><span class="n">ManualByParticipant</span><span class="p">,</span> <span class="n">lease_duration</span><span class="p">)</span>
+            <span class="sd">&quot;&quot;&quot;Use ManualByParticipant Liveliness</span>
 
-        <span class="nd">@staticmethod</span>
+<span class="sd">            Parameters</span>
+<span class="sd">            ----------</span>
+<span class="sd">            lease_duration: int</span>
+<span class="sd">                The lease duration in nanoseconds. Use the helper function :func:`duration&lt;cdds.util.time.duration&gt;` to write</span>
+<span class="sd">                the duration in a human readable format.</span>
+<span class="sd">                </span>
+<span class="sd">            Returns</span>
+<span class="sd">            -------</span>
+<span class="sd">            Tuple[PolicyType, Any]</span>
+<span class="sd">                The type of this entity is not publicly specified.</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+
+            <span class="k">return</span> <span class="n">_PolicyType</span><span class="o">.</span><span class="n">Liveliness</span><span class="p">,</span> <span class="p">(</span><span class="n">_QosLiveliness</span><span class="o">.</span><span class="n">ManualByParticipant</span><span class="p">,</span> <span class="n">lease_duration</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Policy.Liveliness.ManualByTopic"><a class="viewcode-back" href="../../../cdds.core.html#cdds.core.policy.Policy.Liveliness.ManualByTopic">[docs]</a>        <span class="nd">@staticmethod</span>
         <span class="k">def</span> <span class="nf">ManualByTopic</span><span class="p">(</span><span class="n">lease_duration</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">_PolicyType</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">_QosLiveliness</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]:</span>
-            <span class="k">return</span> <span class="n">_PolicyType</span><span class="o">.</span><span class="n">Liveliness</span><span class="p">,</span> <span class="p">(</span><span class="n">_QosLiveliness</span><span class="o">.</span><span class="n">ManualByTopic</span><span class="p">,</span> <span class="n">lease_duration</span><span class="p">)</span>
+            <span class="sd">&quot;&quot;&quot;Use ManualByTopic Liveliness</span>
 
-    <span class="nd">@staticmethod</span>
+<span class="sd">            Parameters</span>
+<span class="sd">            ----------</span>
+<span class="sd">            lease_duration: int</span>
+<span class="sd">                The lease duration in nanoseconds. Use the helper function :func:`duration&lt;cdds.util.time.duration&gt;` to write</span>
+<span class="sd">                the duration in a human readable format.</span>
+<span class="sd">                </span>
+<span class="sd">            Returns</span>
+<span class="sd">            -------</span>
+<span class="sd">            Tuple[PolicyType, Any]</span>
+<span class="sd">                The type of this entity is not publicly specified.</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+
+            <span class="k">return</span> <span class="n">_PolicyType</span><span class="o">.</span><span class="n">Liveliness</span><span class="p">,</span> <span class="p">(</span><span class="n">_QosLiveliness</span><span class="o">.</span><span class="n">ManualByTopic</span><span class="p">,</span> <span class="n">lease_duration</span><span class="p">)</span></div></div>
+
+<div class="viewcode-block" id="Policy.TimeBasedFilter"><a class="viewcode-back" href="../../../cdds.core.html#cdds.core.policy.Policy.TimeBasedFilter">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">TimeBasedFilter</span><span class="p">(</span><span class="nb">filter</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">_PolicyType</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
-        <span class="k">return</span> <span class="n">_PolicyType</span><span class="o">.</span><span class="n">TimeBasedFilter</span><span class="p">,</span> <span class="nb">filter</span>
+        <span class="sd">&quot;&quot;&quot;The TimeBasedFilter Qos Policy</span>
 
-    <span class="nd">@staticmethod</span>
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; Policy.TimeBasedFilter(filter=duration(seconds=2))</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        filter : int</span>
+<span class="sd">            Minimum time between samples in nanoseconds.  Use the helper function :func:`duration&lt;cdds.util.time.duration&gt;` </span>
+<span class="sd">            to write the duration in a human readable format.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Tuple[PolicyType, Any]</span>
+<span class="sd">            The type of this entity is not publicly specified.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="n">_PolicyType</span><span class="o">.</span><span class="n">TimeBasedFilter</span><span class="p">,</span> <span class="nb">filter</span></div>
+
+<div class="viewcode-block" id="Policy.Partitions"><a class="viewcode-back" href="../../../cdds.core.html#cdds.core.policy.Policy.Partitions">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">Partitions</span><span class="p">(</span><span class="o">*</span><span class="n">partitions</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">_PolicyType</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
-        <span class="k">return</span> <span class="n">_PolicyType</span><span class="o">.</span><span class="n">Partitions</span><span class="p">,</span> <span class="n">partitions</span>
+        <span class="sd">&quot;&quot;&quot;The Partitions Qos Policy</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; Policy.Partitions(&quot;partition_a&quot;, &quot;partition_b&quot;, &quot;partition_c&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; Policy.Partitions(*[f&quot;partition_{i}&quot; for i in range(100)])</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        *partitions : str</span>
+<span class="sd">            Each argument is a partition this Qos will be active in.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Tuple[PolicyType, Any]</span>
+<span class="sd">            The type of this entity is not publicly specified.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="n">_PolicyType</span><span class="o">.</span><span class="n">Partitions</span><span class="p">,</span> <span class="n">partitions</span></div>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">TransportPriority</span><span class="p">(</span><span class="n">priority</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">_PolicyType</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
@@ -541,7 +666,11 @@
         <span class="n">Participant</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">_PolicyType</span><span class="p">,</span> <span class="n">_QosDestinationOrder</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">_PolicyType</span><span class="o">.</span><span class="n">IgnoreLocal</span><span class="p">,</span> <span class="n">_QosIgnoreLocal</span><span class="o">.</span><span class="n">Participant</span><span class="p">)</span>
         <span class="n">Process</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">_PolicyType</span><span class="p">,</span> <span class="n">_QosIgnoreLocal</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">_PolicyType</span><span class="o">.</span><span class="n">IgnoreLocal</span><span class="p">,</span> <span class="n">_QosIgnoreLocal</span><span class="o">.</span><span class="n">Process</span><span class="p">)</span></div>
 
+
 <span class="k">class</span> <span class="nc">QosException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;This exception is thrown when you try to set a Qos with something that is not a Policy or other invalid usage</span>
+<span class="sd">    of the Qos object&quot;&quot;&quot;</span>
+    
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>

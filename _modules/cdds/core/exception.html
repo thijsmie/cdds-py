@@ -186,6 +186,16 @@
 
 
 <div class="viewcode-block" id="DDSException"><a class="viewcode-back" href="../../../cdds.core.html#cdds.core.exception.DDSException">[docs]</a><span class="k">class</span> <span class="nc">DDSException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;This exception is thrown when a return code from the underlying C api indicates non-valid use of the API. </span>
+<span class="sd">    Print the exception directly or convert it to string for a detailed description. </span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    code: int</span>
+<span class="sd">        One of the DDS_RETCODE_ constants that indicates the type of error.</span>
+<span class="sd">    msg: str</span>
+<span class="sd">        A human readable description of where the error occurred</span>
+<span class="sd">    &quot;&quot;&quot;</span>  
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">code</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">code</span> <span class="o">=</span> <span class="n">code</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span>
@@ -203,6 +213,15 @@
 
 
 <div class="viewcode-block" id="DDSAPIException"><a class="viewcode-back" href="../../../cdds.core.html#cdds.core.exception.DDSAPIException">[docs]</a><span class="k">class</span> <span class="nc">DDSAPIException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;This exception is thrown when misuse of the Python API is detected that are not explicitly bound to </span>
+<span class="sd">    any C API functions.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    msg: str</span>
+<span class="sd">        A human readable description of what went wrong.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>

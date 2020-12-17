@@ -155,15 +155,51 @@
 
 
 <div class="viewcode-block" id="GuardCondition"><a class="viewcode-back" href="../../../cdds.core.html#cdds.core.guard_condition.GuardCondition">[docs]</a><span class="k">class</span> <span class="nc">GuardCondition</span><span class="p">(</span><span class="n">Entity</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">domain_participant</span><span class="p">:</span> <span class="s1">&#39;cdds.domain.DomainParticipant&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; A GuardCondition is a manually triggered condition that can be added to a :class:`WaitSet&lt;cdds.core.waitset.WaitSet&gt;`.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">domain_participant</span><span class="p">:</span> <span class="s1">&#39;DomainParticipant&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initialize a GuardCondition</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        domain_participant: DomainParticipant</span>
+<span class="sd">            The domain in which the GuardCondition should be active.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_create_guardcondition</span><span class="p">(</span><span class="n">domain_participant</span><span class="o">.</span><span class="n">_ref</span><span class="p">))</span>
 
 <div class="viewcode-block" id="GuardCondition.set"><a class="viewcode-back" href="../../../cdds.core.html#cdds.core.guard_condition.GuardCondition.set">[docs]</a>    <span class="k">def</span> <span class="nf">set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triggered</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Set the status of the GuardCondition to triggered or untriggered.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        triggered: bool</span>
+<span class="sd">            Wether to trigger this condition.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        DDSException</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_set_guardcondition</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ref</span><span class="p">,</span> <span class="n">triggered</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">ret</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">DDSException</span><span class="p">(</span><span class="n">ret</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Occurred when calling set on {repr(self)}&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="GuardCondition.read"><a class="viewcode-back" href="../../../cdds.core.html#cdds.core.guard_condition.GuardCondition.read">[docs]</a>    <span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Read the status of the GuardCondition.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        ----------</span>
+<span class="sd">        bool</span>
+<span class="sd">            Wether this condition is triggered.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        DDSException</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">triggered</span> <span class="o">=</span> <span class="n">c_bool</span><span class="p">()</span>
         <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_guardcondition</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ref</span><span class="p">,</span> <span class="n">byref</span><span class="p">(</span><span class="n">triggered</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">ret</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
@@ -171,6 +207,17 @@
         <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">triggered</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="GuardCondition.take"><a class="viewcode-back" href="../../../cdds.core.html#cdds.core.guard_condition.GuardCondition.take">[docs]</a>    <span class="k">def</span> <span class="nf">take</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Take the status of the GuardCondition. If it is True it will be False on the next call.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        ----------</span>
+<span class="sd">        bool</span>
+<span class="sd">            Wether this condition is triggered.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        DDSException</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">triggered</span> <span class="o">=</span> <span class="n">c_bool</span><span class="p">()</span>
         <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_take_guardcondition</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ref</span><span class="p">,</span> <span class="n">byref</span><span class="p">(</span><span class="n">triggered</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">ret</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
