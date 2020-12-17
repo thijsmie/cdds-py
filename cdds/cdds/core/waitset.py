@@ -7,7 +7,19 @@ from ctypes import c_size_t, c_int, c_void_p, c_bool, byref, cast, POINTER
 
 
 class WaitSet(Entity):
+    """A WaitSet is a way to provide synchronous access to events happening in the DDS system. You can attach almost any kind
+    of entity to a WaitSet and then perform a blocking wait on the waitset. When one or more of the entities in the waitset 
+    trigger the wait is unblocked. What a 'trigger' is depends on the type of entity, you can find out more in ``todo(DDS) triggers``.
+    """
     def __init__(self, domain_participant: 'cdds.domain.DomainParticipant'):
+        """Make a new WaitSet. It starts of empty. An empty waitset will never trigger.
+        
+        Parameters
+        ----------
+        domain_participant: DomainParticipant
+            The domain in which you want to make a WaitSet
+        """
+
         super().__init__(self._create_waitset(domain_participant._ref))
         self.attached = []
 
@@ -17,6 +29,22 @@ class WaitSet(Entity):
         super().__del__()
 
     def attach(self, entity: Entity) -> None:
+        """Attach an entity to this WaitSet. This is a no-op if the entity was already attached.
+        
+        Parameters
+        ----------
+        entity: Entity
+            The entity you wish to attach.
+
+        Returns
+        -------
+        None
+
+        Raises
+        ------
+        DDSException: When you try to attach a non-triggerable entity.
+        """
+
         if self.is_attached(entity):
             return
 
@@ -28,6 +56,20 @@ class WaitSet(Entity):
         self.attached.append((entity, value_pt))
 
     def detach(self, entity: Entity) -> None:
+        """Detach an entity from this WaitSet. If it was not attach this is a no-op.
+        Note that this operation is not atomic, a trigger for the detached entity could still occurr right
+        after detaching it.
+
+        Parameters
+        ----------
+        entity: Entity
+            The entity you wish to attach
+        
+        Returns
+        -------
+        None
+        """
+
         for i, v in enumerate(self.attached):
             if v[0] == entity:
                 ret = self._waitset_detach(self._ref, entity._ref)
@@ -37,17 +79,51 @@ class WaitSet(Entity):
                 break
 
     def is_attached(self, entity: Entity) -> bool:
+        """Check whether an entity is attached.
+
+        Parameters
+        ----------
+        entity: Entity
+            Check the attachment of this entity.
+
+        Returns
+        -------
+        bool
+            Whether this entity is attached
+        """
+
         for v in self.attached:
             if v[0] == entity:
                 return True
         return False
 
     def get_entities(self):
+        """Get all the attached entities
+        
+        Returns
+        -------
+        List[Entity]
+            The attached entities
+        """
         # Note: should spend some time on synchronisation. What if the waitset is used across threads?
         # That is probably a bad idea in python, but who is going to stop the user from doing it anyway...
         return [v[0] for v in self.attached]
 
-    def wait(self, timeout: int):
+    def wait(self, timeout: int) -> int:
+        """Block execution and wait for one of the entities in this waitset to trigger.
+
+        Parameters
+        ----------
+        timeout: int
+            The maximum number of nanoseconds to block. Use the function :func:`duration<cdds.util.time.duration>`
+            to write that in a human readable format.
+
+        Returns
+        -------
+        int
+            The number of triggered entities. This will be 0 when a timeout occurred.
+        """
+
         cs = (c_void_p * len(self.attached))()
         pcs = cast(cs, c_void_p)
         ret = self._waitset_wait(self._ref, byref(pcs), len(self.attached), timeout)
@@ -58,6 +134,21 @@ class WaitSet(Entity):
         raise DDSException(ret, f"Occurred while waiting in {repr(self)}")
 
     def wait_until(self, abstime: int):
+        """Block execution and wait for one of the entities in this waitset to trigger.
+
+        Parameters
+        ----------
+        abstime: int
+            The absolute time in nanoseconds since the start of the program (TODO CONFIRM THIS) 
+            to block. Use the function :func:`duration<cdds.util.time.duration>` to write that in
+            a human readable format.
+
+        Returns
+        -------
+        int
+            The number of triggered entities. This will be 0 when a timeout occurred.
+        """
+
         cs = (c_void_p * len(self.attached))()
         pcs = cast(cs, c_void_p)
         ret = self._waitset_wait_until(self._ref, byref(pcs), len(self.attached), abstime)
@@ -67,7 +158,18 @@ class WaitSet(Entity):
 
         raise DDSException(ret, f"Occurred while waiting in {repr(self)}")
 
-    def set_trigger(self, value: bool):
+    def set_trigger(self, value: bool) -> None:
+        """Manually trigger a WaitSet. It is unlikely you would need this.
+
+        Parameters
+        ----------
+        value: bool
+            The trigger value.
+
+        Returns
+        -------
+        None
+        """
         ret = self._waitset_set_trigger(self._ref, value)
         if ret < 0:
             raise DDSException(ret, f"Occurred when setting trigger in {repr(self)}")

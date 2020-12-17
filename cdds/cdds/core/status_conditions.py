@@ -9,18 +9,61 @@ from typing import Callable, Any
 
 
 class SampleState:
+    """SampleState constants for building condition masks. This class is static and
+    there should never be a need to instantiate it. It operates on the state of 
+    a single sample.
+
+    Attributes
+    ----------
+    Read: int
+        Only consider samples that have already been read.
+    NotRead: int
+        Only consider unread samples.
+    Any: int
+        Ignore the read/unread state of samples.
+    """
     Read: int = 1
     NotRead: int = 2
     Any: int = 3
 
 
 class ViewState:
+    """ViewState constants for building condition masks. This class is static and
+    there should never be a need to instantiate it. It operates on the state of
+    an instance.
+
+    Attributes
+    ----------
+    New: int
+        Only consider samples belonging to newly created instances.
+    Old: int
+        Only consider samples belonging to previously created instances.
+    Any: int
+        Ignore the fact whether instances are new or not.
+    """
+
     New: int = 4
     Old: int = 8
     Any: int = 12
 
 
 class InstanceState:
+    """InstanceState constants for building condition masks. This class is static and
+    there should never be a need to instantiate it. It operates on the state of
+    an instance.
+
+    Attributes
+    ----------
+    Alive: int
+        Only consider samples belonging to an alive instance (it has alive writer(s))
+    NotAliveDisposed: int
+        Only consider samples belonging to an instance that is not alive because it was actively disposed.
+    NotAliveNoWriters: int
+        Only consider samples belonging to an instance that is not alive because it has no writers.
+    Any: int
+        Ignore the liveliness status of the instance.
+    """
+
     Alive: int = 16
     NotAliveDisposed: int = 32
     NotAliveNoWriters: int = 64
@@ -28,6 +71,27 @@ class InstanceState:
 
 
 class DDSStatus:
+    """DDSStatus contains constants to build status masks. It is static and should never
+    need to be instantiated.
+    
+    Attributes
+    ----------
+    InconsistentTopic: int
+    OfferedDeadlineMissed: int
+    RequestedDeadlineMissed: int
+    OfferedIncompatibleQos: int
+    RequestedIncompatibleQos: int
+    SampleLost: int
+    SampleRejected: int
+    DataOnReaders: int
+    DataAvailable: int
+    LivelinessLost: int
+    LivelinessChanged: int
+    PublicationMatched: int
+    SubscriptionMatched: int
+    All = (1 << 14) - 1
+    """
+
     InconsistentTopic = 1 << 1
     OfferedDeadlineMissed = 1 << 2
     RequestedDeadlineMissed = 1 << 3

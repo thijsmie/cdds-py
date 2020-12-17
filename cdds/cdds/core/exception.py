@@ -42,10 +42,11 @@ class DDSException(Exception):
     Attributes
     ----------
     code: int
-        One of the DDS_RETCODE_ constants that indicates the type of error.
+        One of the ``DDS_RETCODE_`` constants that indicates the type of error.
     msg: str
         A human readable description of where the error occurred
     """  
+
     def __init__(self, code, msg=None, *args, **kwargs):
         self.code = code
         self.msg = msg or ""
