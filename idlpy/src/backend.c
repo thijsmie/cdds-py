@@ -29,6 +29,7 @@ struct idl_backend_ctx_s
   idl_ostream_t * ostream;
   const char    * target_file;
   void *          custom_context;
+  idl_walkAction * walk_fctn;
 };
 
 idl_backend_ctx
@@ -41,6 +42,7 @@ idl_backend_context_new(uint32_t indent_size, const char *target_file, void *cus
   ctx->ostream = create_idl_ostream(NULL);
   ctx->target_file = target_file;
   ctx->custom_context = custom_context;
+  ctx->walk_fctn = NULL;
   return ctx;
 }
 
@@ -61,7 +63,7 @@ idl_file_out_new(idl_backend_ctx ctx, const char *file_name)
 
   if (ctx->output)
   {
-    result = IDL_RETCODE_CANNOT_OPEN_FILE;
+    result = IDL_RETCODE_NO_ENTRY;
   }
   else
   {
@@ -72,7 +74,7 @@ idl_file_out_new(idl_backend_ctx ctx, const char *file_name)
     {
         free(ctx->output);
         ctx->output = NULL;
-        result = IDL_RETCODE_CANNOT_OPEN_FILE;
+        result = IDL_RETCODE_NO_ENTRY;
     }
   }
   return result;
@@ -139,6 +141,26 @@ idl_set_custom_context(idl_backend_ctx ctx, void *custom_context)
   return IDL_RETCODE_OK;
 }
 
+idl_walkAction*
+idl_get_walk_function(idl_backend_ctx ctx)
+{
+  return ctx->walk_fctn;
+}
+
+idl_retcode_t
+idl_set_walk_function(idl_backend_ctx ctx, idl_walkAction* fctn)
+{
+  assert(!ctx->walk_fctn);
+  ctx->walk_fctn = fctn;
+  return IDL_RETCODE_OK;
+}
+
+void
+idl_reset_walk_function(idl_backend_ctx ctx)
+{
+  ctx->walk_fctn = NULL;
+}
+
 void
 idl_file_out_printf (
     idl_backend_ctx ctx,
@@ -173,9 +195,9 @@ bool
 idl_is_reference(const idl_node_t *node)
 {
   bool result = false;
-  if (node->mask & IDL_TEMPL_TYPE)
+  if (idl_is_masked(node, IDL_TEMPL_TYPE))
   {
-    switch(node->mask & IDL_TEMPL_TYPE_MASK)
+    switch(idl_mask(node) & IDL_TEMPL_TYPE_MASK)
     {
     case IDL_SEQUENCE:
     case IDL_STRING:
@@ -193,18 +215,18 @@ idl_is_reference(const idl_node_t *node)
 bool
 idl_declarator_is_array(const idl_declarator_t *declarator)
 {
-  assert(declarator->node.mask & IDL_DECLARATOR);
+  assert(idl_mask(declarator) & IDL_DECLARATOR);
   return (declarator->const_expr) ? true : false;
 }
 
 bool
 idl_declarator_is_primitive(const idl_declarator_t *declarator)
 {
-  assert(declarator->node.mask & IDL_DECLARATOR);
+  assert(idl_mask(declarator) & IDL_DECLARATOR);
   const idl_member_t *member = (const idl_member_t *) declarator->node.parent;
   const idl_node_t *member_type = member->type_spec;
   /* Unwind any typedefs to their original type. */
-  while (member_type->mask & IDL_TYPEDEF)
+  while (idl_mask(member_type) & IDL_TYPEDEF)
   {
     const idl_typedef_t *typedef_node = (const idl_typedef_t *) member_type;
     /* If this is a typedef to an array (no matter its type), then it is not a primitive. */
@@ -214,7 +236,7 @@ idl_declarator_is_primitive(const idl_declarator_t *declarator)
         member_type = typedef_node->type_spec;
     }
   }
-  bool is_primitive = (member_type->mask & (IDL_BASE_TYPE | IDL_ENUM));
+  bool is_primitive = (idl_mask(member_type) & (IDL_BASE_TYPE | IDL_ENUM));
   return (is_primitive & !idl_declarator_is_array(declarator));
 }
 
@@ -242,7 +264,7 @@ node_matches_target_file(idl_backend_ctx ctx, const idl_node_t *node)
     if (idl_is_struct(node) || idl_is_union(node) ||
         idl_is_enum(node) || idl_is_typedef(node) || idl_is_const(node))
     {
-      matches_target_file = (strcmp(ctx->target_file, node->location.first.file) == 0);
+      matches_target_file = (strcmp(ctx->target_file, node->symbol.location.first.file->name) == 0);
     }
     else if (idl_is_module(node))
     {
@@ -272,7 +294,7 @@ idl_walk_node_list(
   while (target_node && result == IDL_RETCODE_OK) {
     bool matches_target_file = node_matches_target_file(ctx, target_node);
 
-    if ((target_node->mask & mask) && matches_target_file)
+    if ((idl_mask(target_node) & mask) && matches_target_file)
     {
       result = action(ctx, target_node);
     }
@@ -294,17 +316,20 @@ idl_walk_tree(
   while (target_node && result == IDL_RETCODE_OK) {
     bool matches_target_file = node_matches_target_file(ctx, target_node);
 
-    if (matches_target_file && (target_node->mask & mask))
+    if (matches_target_file && (idl_mask(target_node) & mask))
     {
       result = action(ctx, target_node);
-      switch (target_node->mask & IDL_CATEGORY_MASK)
+      switch (idl_mask(target_node) & IDL_CATEGORY_MASK)
       {
       case IDL_MODULE:
         sub_node = ((const idl_module_t *) target_node)->definitions;
         break;
       case IDL_STRUCT:
-        sub_node = (const idl_node_t *)((const idl_struct_t *) target_node)->base_type;
-        if (sub_node && (sub_node->mask & mask)) {
+        if (((const idl_struct_t*)target_node)->inherit_spec)
+          sub_node = (const idl_node_t*)((const idl_struct_t*)target_node)->inherit_spec->base;
+        else
+          sub_node = NULL;
+        if (sub_node && (idl_mask(sub_node) & mask)) {
           result = action(ctx, sub_node);
         }
         if (result == IDL_RETCODE_OK) {
@@ -312,8 +337,8 @@ idl_walk_tree(
         }
         break;
       case IDL_UNION:
-        sub_node = ((const idl_union_t *) target_node)->switch_type_spec;
-        if (sub_node->mask & mask) {
+        sub_node = (const idl_node_t*)((const idl_union_t *) target_node)->switch_type_spec;
+        if (idl_mask(sub_node) & mask) {
           result = action(ctx, sub_node);
         }
         if (result == IDL_RETCODE_OK) {
@@ -325,7 +350,7 @@ idl_walk_tree(
         break;
       case IDL_TYPEDEF:
         sub_node = ((const idl_typedef_t *) target_node)->type_spec;
-        if (sub_node->mask & mask) {
+        if (idl_mask(sub_node) & mask) {
           result = action(ctx, sub_node);
         }
         /* To prevent potential infinite recursion, do not dive into the referred type. */
@@ -333,7 +358,7 @@ idl_walk_tree(
         break;
       case IDL_CONST:
         sub_node = ((const idl_const_t *) target_node)->type_spec;
-        if (sub_node->mask & mask) {
+        if (idl_mask(sub_node) & mask) {
           result = action(ctx, sub_node);
         }
         /* To prevent potential infinite recursion, do not dive into the referred type. */
@@ -341,7 +366,7 @@ idl_walk_tree(
         break;
       case IDL_MEMBER:
         sub_node = ((const idl_member_t *) target_node)->type_spec;
-        if (sub_node->mask & mask) {
+        if (idl_mask(sub_node) & mask) {
           result = action(ctx, sub_node);
         }
         if (result == IDL_RETCODE_OK) {
@@ -350,7 +375,7 @@ idl_walk_tree(
         break;
       case IDL_CASE:
         sub_node = ((const idl_case_t *) target_node)->type_spec;
-        if (sub_node->mask & mask) {
+        if (idl_mask(sub_node) & mask) {
           result = action(ctx, sub_node);
         }
         if (result == IDL_RETCODE_OK) {
@@ -374,12 +399,12 @@ static idl_retcode_t
 prune_include_list(idl_backend_ctx ctx, const idl_node_t *node)
 {
   /* If you find a dependency to another file than your own, prune it form the include list. */
-  if (node->location.first.file != ctx->target_file &&
-      strcmp(node->location.first.file, ctx->target_file) != 0)
+  if (node->symbol.location.first.file->name != ctx->target_file &&
+      strcmp(node->symbol.location.first.file->name, ctx->target_file) != 0)
   {
     idl_include_t *include = ctx->custom_context;
     for (; include; include = include->next) {
-      if (strcmp(include->file->name, node->location.first.file) == 0)
+      if (strcmp(include->file->name, node->symbol.location.first.file->name) == 0)
         include->indirect = true;
     }
   }
@@ -388,7 +413,7 @@ prune_include_list(idl_backend_ctx ctx, const idl_node_t *node)
 }
 
 idl_include_t *
-idl_get_include_list(idl_backend_ctx ctx, const idl_tree_t *tree)
+idl_get_include_list(idl_backend_ctx ctx, const idl_pstate_t *tree)
 {
   const char *org_target_file = ctx->target_file;
 

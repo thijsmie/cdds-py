@@ -18,7 +18,7 @@ os.environ['CDDS_NO_IMPORT_LIBS'] = "1"
 # -- Project information -----------------------------------------------------
 
 project = 'cyclonedds-py'
-copyright = '2020, Thijs Miedema'
+copyright = '2020, Thijs Miedema, ADLINK Technology Inc.'
 author = 'Thijs Miedema'
 
 

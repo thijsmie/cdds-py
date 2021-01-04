@@ -25,7 +25,7 @@ def test_readcondition_get_mask(common_setup):
 
     assert rc.mask == rc.get_mask() == mask
 
-    
+
 def test_readcondition_get_reader(common_setup):
     rc = ReadCondition(common_setup.dr, SampleState.Any | InstanceState.Any | ViewState.Any)
     assert rc.get_datareader() == common_setup.dr
@@ -46,11 +46,10 @@ def test_readcondtion_read(common_setup):
 
     common_setup.dw.dispose(messages[1])
     assert rc.triggered
-    
+
     received = common_setup.dr.read(condition=rc)
 
     assert len(received) == 1 and received[0] == messages[1]
 
-    
 
-    
+

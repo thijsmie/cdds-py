@@ -10,7 +10,6 @@
 # SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
 #
 
-
 function(IDLPY_GENERATE)
   cmake_parse_arguments(IDLPY "" "TARGET" "FILES" "" ${ARGN})
 
@@ -21,25 +20,18 @@ function(IDLPY_GENERATE)
     message(FATAL_ERROR "idlpy_generate was called without FILES")
   endif()
 
-  # Run idlc first
-  idlc_generate(${IDLPY_TARGET} ${IDLPY_FILES})
-
   set(_dir ${CMAKE_CURRENT_BINARY_DIR})
-  set(_target ${IDLCPY_TARGET})
-  foreach(_file ${IDLCPY_FILES})
+  set(_target ${IDLPY_TARGET})
+  foreach(_file ${IDLPY_FILES})
     get_filename_component(_path ${_file} ABSOLUTE)
     get_filename_component(_name ${_file} NAME_WE)
-    set(_pyfile "${_dir}/${_name}.py")
-    list(APPEND _pyfiles "$(_pyfile}")
+    set(_source "${_dir}/${_name}/__init__.py")
+    list(APPEND _sources "${_source}")
     add_custom_command(
-      OUTPUT "${_pyfile}"
+      OUTPUT "${_source}"
       COMMAND $<TARGET_FILE:CycloneDDS::idlc>
-      ARGS -l $<TARGET_FILE:CycloneDDS-PY::idlpy> ${_path})
+      ARGS -l $<TARGET_FILE:CycloneDDS-Py::idlpy> ${_path})
   endforeach()
 
-  add_custom_target("${_target}_generate" DEPENDS ${_pyfiles})
-  add_library(${_target} INTERFACE)
-  target_sources(${_target} INTERFACE ${_pyfiles})
-  target_include_directories(${_target} INTERFACE "${_dir}")
+  add_custom_target("${_target}" ALL DEPENDS ${_sources})
 endfunction()
-

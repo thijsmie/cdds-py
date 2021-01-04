@@ -12,30 +12,18 @@
 #include <inttypes.h>
 #include "idlpy/backend.h"
 
-// replace the definitions below (PY_...) with your own custom classes and includes.
+#define PY_SEQUENCE_TEMPLATE(type)                 "List[%s]", type
+#define PY_BOUNDED_SEQUENCE_TEMPLATE(type, bound)  "Annotated[List[%s], MaxLen(%s)]", type, bound
+#define PY_ARRAY_TEMPLATE(element, const_expr)     "Annotated[List[%s], Len[%s]]", element, const_expr
+#define PY_STRING_TEMPLATE()                       "str"
+#define PY_BOUNDED_STRING_TEMPLATE(bound)          "Annotated[str, MaxLen[%s]]", bound
 
-#define PY_SEQUENCE_TEMPLATE(type)                 "c_list[%s]", type
-
-// default (C++ STL) container definitions
-// bounded sequences require a template class taking a single typename and a single size
-// E.G. custom_bounded_vector<custom_class,255>
-//#define PY_BOUNDED_SEQUENCE_TEMPLATE(type, bound)  "non_std::vector<%s, %" PRIu64 ">", type, bound
-#define PY_BOUNDED_SEQUENCE_TEMPLATE(type, bound)  "c_list[%s]", type
-
-// array templates
-// arrays require a template class taking a with a single typename and a single size
-// E.G. custom_array<custom_class,16>
-#define PY_ARRAY_TEMPLATE(element, const_expr)     "c_list[%s, %s]", element, const_expr
-
-// string templates
-// unbounded strings require just a class name
-// E.G. std::string
-#define PY_STRING_TEMPLATE()                       "c_char_p"
-
-// bounded strings require a template class with a single size
-// E.G. custom_bounded_string<127>
-//#define PY_BOUNDED_STRING_TEMPLATE(bound)          "non_std::string<%" PRIu64 ">", bound
-#define PY_BOUNDED_STRING_TEMPLATE(bound)          "c_char_p[%s]", bound
+#ifdef WIN32
+#include <direct.h>
+#define mkdir(dir, mode) _mkdir(dir)
+#else
+#include <sys/stat.h>
+#endif
 
 char*
 get_py_name(const char* name);
@@ -52,6 +40,10 @@ get_default_value(idl_backend_ctx ctx, const idl_node_t *node);
 char *
 get_py_const_value(const idl_constval_t *literal);
 
-char *
-get_py_literal_value(const idl_literal_t *literal);
+void
+print_py_imports(idl_backend_ctx ctx);
 
+typedef struct idl_backend_py_ctx_s {
+    const char *basedir;
+    const char *target_file;
+} *idl_backend_py_ctx;

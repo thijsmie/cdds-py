@@ -18,6 +18,7 @@
 
 #include "idlpy/backendPyUtils.h"
 #include "idlpy/backendPyType.h"
+#include "idlpy/backend.h"
 #include "idl/string.h"
 
 typedef struct py_member_state_s
@@ -68,7 +69,7 @@ get_py_declarator_array_expr(idl_backend_ctx ctx, const idl_node_t *node, const 
     element_expr = idl_strdup(member_type);
   }
   const_expr = get_py_const_value((const idl_constval_t *)node);
-  idl_asprintf(&array_expr, py_ARRAY_TEMPLATE(element_expr, const_expr));
+  idl_asprintf(&array_expr, PY_ARRAY_TEMPLATE(element_expr, const_expr));
   free(const_expr);
   free(element_expr);
   return array_expr;
@@ -123,6 +124,9 @@ struct_generate_variables(idl_backend_ctx ctx)
 static idl_retcode_t
 struct_generate_body(idl_backend_ctx ctx, const idl_struct_t *struct_node)
 {
+  void* out_ctx = idl_get_custom_context(ctx);
+  idl_reset_custom_context(ctx);
+
   idl_retcode_t result = IDL_RETCODE_OK;
 
   uint32_t nr_members = 0;
@@ -136,25 +140,27 @@ struct_generate_body(idl_backend_ctx ctx, const idl_struct_t *struct_node)
   struct_ctx.members = malloc(sizeof(py_member_state) * nr_members);
   struct_ctx.member_count = 0;
   struct_ctx.name = get_py_name(idl_identifier(struct_node));
-  if (struct_node->base_type)
+
+  if (struct_node->inherit_spec)
   {
-    const idl_node_t *base_node = (const idl_node_t *) struct_node->base_type;
+    const idl_node_t *base_node = (const idl_node_t *) struct_node->inherit_spec->base;
     struct_ctx.base_type = get_py_fully_scoped_name(base_node);
   }
   else
   {
     struct_ctx.base_type = NULL;
   }
+  
   result = idl_set_custom_context(ctx, &struct_ctx);
   if (result) return result;
   idl_walk_node_list(ctx, members, get_py_member_data, IDL_MEMBER);
 
   /* Create class declaration. */
   if (struct_ctx.base_type) {
-    idl_file_out_printf(ctx, "@DDSEntity\n");
+    idl_file_out_printf(ctx, "@cdr\n");
     idl_file_out_printf(ctx, "class %s(%s):\n", struct_ctx.name, struct_ctx.base_type);
   } else {
-    idl_file_out_printf(ctx, "@DDSEntity\n");
+    idl_file_out_printf(ctx, "@cdr\n");
     idl_file_out_printf(ctx, "class %s:\n", struct_ctx.name);
   }
 
@@ -171,6 +177,7 @@ struct_generate_body(idl_backend_ctx ctx, const idl_struct_t *struct_node)
   free(struct_ctx.members);
   if (struct_ctx.base_type) free(struct_ctx.base_type);
   free(struct_ctx.name);
+  idl_set_custom_context(ctx, out_ctx);
 
   return result;
 }
@@ -221,11 +228,12 @@ get_label_value(const idl_case_label_t *label)
 {
   char *label_value;
 
-  if (label->const_expr->mask & IDL_ENUMERATOR) {
+  if (idl_mask(label->const_expr) & IDL_ENUMERATOR) {
     label_value = get_py_fully_scoped_name(label->const_expr);
   } else {
     label_value = get_py_const_value((const idl_constval_t *) label->const_expr);
   }
+
   return label_value;
 }
 
@@ -290,31 +298,33 @@ get_py_case_data(idl_backend_ctx ctx, const idl_node_t *node)
   ++(union_ctx->case_count);
   return IDL_RETCODE_OK;
 }
-
 static uint64_t
 get_potential_nr_discr_values(const idl_union_t *union_node)
 {
   uint64_t nr_discr_values = 0;
-  const idl_node_t *node = union_node->switch_type_spec;
+  const idl_type_spec_t *node = union_node->switch_type_spec ? union_node->switch_type_spec->type_spec : NULL;
 
-  switch (node->mask & (IDL_BASE_TYPE | IDL_CONSTR_TYPE))
+  switch (idl_mask(node) & (IDL_BASE_TYPE | IDL_CONSTR_TYPE))
   {
   case IDL_BASE_TYPE:
-    switch (node->mask & IDL_BASE_TYPE_MASK)
+    switch (idl_mask(node) & IDL_BASE_TYPE_MASK)
     {
     case IDL_INTEGER_TYPE:
-      switch(node->mask & IDL_INTEGER_MASK_IGNORE_SIGN)
+      switch(idl_mask(node) & IDL_INTEGER_MASK_IGNORE_SIGN)
       {
       case IDL_INT8:
         nr_discr_values = UINT8_MAX;
         break;
       case IDL_INT16:
+      case IDL_SHORT:
         nr_discr_values = UINT16_MAX;
         break;
       case IDL_INT32:
+      case IDL_LONG:
         nr_discr_values = UINT32_MAX;
         break;
       case IDL_INT64:
+      case IDL_LLONG:
         nr_discr_values = UINT64_MAX;
         break;
       default:
@@ -323,7 +333,7 @@ get_potential_nr_discr_values(const idl_union_t *union_node)
       }
       break;
     default:
-      switch(node->mask & IDL_BASE_OTHERS_MASK)
+      switch(idl_mask(node) & IDL_BASE_OTHERS_MASK)
       {
       case IDL_CHAR:
       case IDL_OCTET:
@@ -343,18 +353,18 @@ get_potential_nr_discr_values(const idl_union_t *union_node)
     }
     break;
   case IDL_CONSTR_TYPE:
-    switch (node->mask & IDL_ENUM)
+    switch (idl_mask(node) & IDL_ENUM)
     {
     case IDL_ENUM:
     {
       /* Pick the first of the available enumerators. */
       const idl_enum_t *enumeration = (const idl_enum_t *) node;
-      const idl_node_t *enumerator = (const idl_node_t *) enumeration->enumerators;
+      const idl_enumerator_t* enumerator = enumeration->enumerators;
       nr_discr_values = 0;
       while(enumerator)
       {
         ++nr_discr_values;
-        enumerator = enumerator->next;
+        enumerator = (const idl_enumerator_t*)enumerator->node.next;
       }
       break;
     }
@@ -369,7 +379,6 @@ get_potential_nr_discr_values(const idl_union_t *union_node)
   }
   return nr_discr_values;
 }
-
 static idl_constval_t
 get_min_value(const idl_node_t *node)
 {
@@ -377,44 +386,51 @@ get_min_value(const idl_node_t *node)
   static const idl_mask_t mask = (IDL_BASE_TYPE|(IDL_BASE_TYPE-1));
 
   result.node = *node;
-  result.node.mask &= mask;
-  switch (node->mask & mask)
+  result.node.symbol.mask &= mask;
+  switch (idl_mask(node) & mask)
   {
   case IDL_BOOL:
     result.value.bln = false;
     break;
-  case IDL_OCTET:
-    result.value.oct = 0;
+  case IDL_CHAR:
+    result.value.chr = 0;
     break;
   case IDL_INT8:
     result.value.int8 = INT8_MIN;
     break;
   case IDL_UINT8:
+  case IDL_OCTET:
     result.value.uint8 = 0;
     break;
   case IDL_INT16:
+  case IDL_SHORT:
     result.value.int16 = INT16_MIN;
     break;
   case IDL_UINT16:
+  case IDL_USHORT:
     result.value.uint16 = 0;
     break;
   case IDL_INT32:
+  case IDL_LONG:
     result.value.int32 = INT32_MIN;
     break;
   case IDL_UINT32:
+  case IDL_ULONG:
     result.value.uint32 = 0;
     break;
   case IDL_INT64:
+  case IDL_LLONG:
     result.value.int64 = INT64_MIN;
     break;
   case IDL_UINT64:
+  case IDL_ULLONG:
     result.value.uint64 = 0ULL;
     break;
   default:
     assert(0);
     break;
   }
-  result.node.mask |= IDL_CONST;
+  result.node.symbol.mask |= IDL_CONST;
   return result;
 }
 
@@ -431,7 +447,7 @@ constval_incr_value(void *val)
   idl_constval_t *cv = (idl_constval_t *)val;
   static const idl_mask_t mask = (IDL_BASE_TYPE|(IDL_BASE_TYPE-1));
 
-  switch (cv->node.mask & mask)
+  switch (idl_mask(&cv->node) & mask)
   {
   case IDL_BOOL:
     cv->value.bln = true;
@@ -491,26 +507,33 @@ compare_const_elements(const void *element1, const void *element2)
   const idl_constval_t *cv2 = (const idl_constval_t *) element2;
   static const idl_mask_t mask = IDL_BASE_TYPE|(IDL_BASE_TYPE-1);
 
-  assert((cv1->node.mask & mask) == (cv2->node.mask & mask));
-  switch (cv1->node.mask & mask)
+  assert((idl_mask(&cv1->node) & mask) == (idl_mask(&cv2->node) & mask));
+  switch (idl_mask(&cv1->node) & mask)
   {
   case IDL_BOOL:
     return EQ(cv1->value.bln, cv2->value.bln);
   case IDL_INT8:
     return EQ(cv1->value.int8, cv2->value.int8);
   case IDL_UINT8:
+  case IDL_OCTET:
     return EQ(cv1->value.uint8, cv2->value.uint8);
   case IDL_INT16:
+  case IDL_SHORT:
     return EQ(cv1->value.int16, cv2->value.int16);
   case IDL_UINT16:
+  case IDL_USHORT:
     return EQ(cv1->value.uint16, cv2->value.uint16);
   case IDL_INT32:
+  case IDL_LONG:
     return EQ(cv1->value.int32, cv2->value.int32);
   case IDL_UINT32:
+  case IDL_ULONG:
     return EQ(cv1->value.uint32, cv2->value.uint32);
   case IDL_INT64:
+  case IDL_LLONG:
     return EQ(cv1->value.int64, cv2->value.int64);
   case IDL_UINT64:
+  case IDL_ULLONG:
     return EQ(cv1->value.uint64, cv2->value.uint64);
   default:
     assert(0);
@@ -606,14 +629,14 @@ get_default_discr_value(idl_backend_ctx ctx, const idl_union_t *union_node)
       }
       case_data = (const idl_case_t *) case_data->node.next;
     }
-    if (union_node->switch_type_spec->mask & IDL_ENUM) {
+    if (idl_mask(union_node->switch_type_spec->type_spec) & IDL_ENUM) {
       compare_elements = compare_enum_elements;
       incr_element = enumerator_incr_value;
       min_value = ((const idl_enum_t *)union_ctx->discr_node)->enumerators;
     } else {
       compare_elements = compare_const_elements;
       incr_element = constval_incr_value;
-      min_const_value = get_min_value(union_node->switch_type_spec);
+      min_const_value = get_min_value((idl_node_t*)union_node->switch_type_spec->type_spec);
       min_value = &min_const_value;
     }
     quick_sort(all_labels, 0, union_ctx->total_label_count - 1, compare_elements);
@@ -639,32 +662,37 @@ union_generate_attributes(idl_backend_ctx ctx)
 {
   py_union_context *union_ctx = (py_union_context *) idl_get_custom_context(ctx);
 
-  idl_file_out_printf(ctx, "private:\n");
   idl_indent_incr(ctx);
 
-  /* Declare a union attribute representing the discriminator. */
-  idl_file_out_printf(ctx, "%s m__d;\n", union_ctx->discr_type);
-
   /* Declare a union attribute comprising of all the branch types. */
-  idl_file_out_printf(ctx, py_UNION_TEMPLATE "<\n");
-  idl_indent_double_incr(ctx);
+
   for (uint32_t i = 0; i < union_ctx->case_count; ++i) {
     idl_file_out_printf(
         ctx,
-        "%s%s\n",
-        union_ctx->cases[i].type_name,
-        i == (union_ctx->case_count - 1) ? "" : ",");
-  }
-  idl_indent_double_decr(ctx);
-  idl_file_out_printf(ctx, ">");
-  for (uint32_t i = 0; i < union_ctx->case_count; ++i) {
-    idl_file_out_printf_no_indent(
-        ctx,
-        " %s%s",
+        "%s: %s = case(",
         union_ctx->cases[i].name,
-        (i ==  (union_ctx->case_count - 1)) ? ";" : ",");
+        union_ctx->cases[i].type_name);
+
+    for (int32_t j = 0; j < union_ctx->cases[i].label_count; ++j) {
+      idl_file_out_printf_no_indent(ctx,
+        "%s%s",
+        union_ctx->cases[i].labels[j],
+        (j ==  (union_ctx->cases[i].label_count - 1)) ? "" : ", "
+      );
+    }
+
+    idl_file_out_printf_no_indent(ctx, ")\n");
   }
-  idl_file_out_printf_no_indent(ctx, "\n\n");
+
+  idl_file_out_printf(
+    ctx,
+    "%s: %s = default(%s)",
+    union_ctx->default_case->name,
+    union_ctx->default_case->type_name,
+    union_ctx->default_label
+  );
+
+  idl_file_out_printf_no_indent(ctx, ")\n");
   idl_indent_decr(ctx);
 }
 
@@ -673,306 +701,15 @@ union_generate_constructor(idl_backend_ctx ctx)
 {
   py_union_context *union_ctx = (py_union_context *) idl_get_custom_context(ctx);
 
-  idl_file_out_printf(ctx, "public:\n");
   idl_indent_incr(ctx);
 
   /* Start building default (empty) constructor. */
-  idl_file_out_printf(ctx, "%s() :\n", union_ctx->name);
-  idl_indent_double_incr(ctx);
-  idl_file_out_printf(ctx, "m__d(%s)", union_ctx->default_label);
-  if (!union_ctx->has_impl_default)
-  {
-    idl_file_out_printf_no_indent(ctx, ",\n");
-    idl_file_out_printf(ctx, "%s()", union_ctx->default_case->name);
-  }
-  idl_file_out_printf_no_indent(ctx, " {}\n\n");
-  idl_indent_double_decr(ctx);
-  idl_indent_decr(ctx);
-}
-static void
-union_generate_discr_getter_setter(idl_backend_ctx ctx)
-{
-  py_union_context *union_ctx = (py_union_context *) idl_get_custom_context(ctx);
-
+  idl_file_out_printf(ctx, "def __init__(self):\n");
   idl_indent_incr(ctx);
-  /* Generate a getter for the discriminator. */
-  idl_file_out_printf(ctx, "%s _d() const\n", union_ctx->discr_type);
-  idl_file_out_printf(ctx, "{\n");
-  idl_indent_incr(ctx);
-  idl_file_out_printf(ctx, "return m__d;\n");
+  idl_file_out_printf(ctx, "self.discriminator = %s\n", union_ctx->default_label);
+  idl_file_out_printf(ctx, "self.value = None\n");
   idl_indent_decr(ctx);
-  idl_file_out_printf(ctx, "}\n\n");
-
-  /* Generate a setter for the discriminator. */
-  idl_file_out_printf(ctx, "void _d(%s val)\n", union_ctx->discr_type);
-  idl_file_out_printf(ctx, "{\n");
-  idl_indent_incr(ctx);
-
-  if ((union_ctx->discr_node->mask & IDL_BOOL) == IDL_BOOL) {
-    idl_file_out_printf(ctx, "bool valid = (val == m__d);\n\n");
-  } else {
-    idl_file_out_printf(ctx, "bool valid = true;\n");
-    idl_file_out_printf(ctx, "switch (val) {\n");
-    for (uint32_t i = 0; i < union_ctx->case_count; ++i) {
-      if (&union_ctx->cases[i] == union_ctx->default_case)
-      {
-        continue;
-      }
-      else
-      {
-        for (uint32_t j = 0; j < union_ctx->cases[i].label_count; ++j) {
-          idl_file_out_printf(ctx, "case %s:\n", union_ctx->cases[i].labels[j]);
-        }
-        idl_indent_incr(ctx);
-        for (uint32_t j = 0; j < union_ctx->cases[i].label_count; ++j) {
-          if (j == 0) {
-            idl_file_out_printf(ctx, "if (m__d != %s", union_ctx->cases[i].labels[j]);
-            idl_indent_double_incr(ctx);
-          } else {
-            idl_file_out_printf_no_indent(ctx, " &&\n");
-            idl_file_out_printf(ctx, "m__d != %s", union_ctx->cases[i].labels[j]);
-          }
-        }
-        idl_indent_decr(ctx);
-        idl_file_out_printf_no_indent(ctx, ") {\n");
-        idl_file_out_printf(ctx, "valid = false;\n");
-        idl_indent_decr(ctx);
-        idl_file_out_printf(ctx, "}\n");
-        idl_file_out_printf(ctx, "break;\n");
-        idl_indent_decr(ctx);
-      }
-    }
-    if (union_ctx->default_case || union_ctx->has_impl_default) {
-      idl_file_out_printf(ctx, "default:\n");
-      idl_indent_incr(ctx);
-      for (uint32_t i = 0; i < union_ctx->case_count; ++i) {
-        for (uint32_t j = 0; j < union_ctx->cases[i].label_count; ++j) {
-          if (i == 0 && j == 0) {
-            idl_file_out_printf(ctx, "if (m__d == %s", union_ctx->cases[i].labels[j]);
-            idl_indent_double_incr(ctx);
-          }
-          else
-          {
-            idl_file_out_printf_no_indent(ctx, " ||\n");
-            idl_file_out_printf(ctx, "m__d == %s", union_ctx->cases[i].labels[j]);
-          }
-        }
-      }
-      idl_file_out_printf_no_indent(ctx, ") {\n");
-      idl_indent_decr(ctx);
-      idl_file_out_printf(ctx, "valid = false;\n");
-      idl_indent_decr(ctx);
-      idl_file_out_printf(ctx, "}\n");
-      idl_file_out_printf(ctx, "break;\n");
-    }
-
-    idl_indent_decr(ctx);
-    idl_file_out_printf(ctx, "}\n\n");
-  }
-
-  idl_file_out_printf(ctx, "if (!valid) {\n");
-  idl_indent_incr(ctx);
-  idl_file_out_printf(ctx, "throw dds::core::InvalidArgumentError(\"New discriminator value does not match current discriminator\");\n");
   idl_indent_decr(ctx);
-  idl_file_out_printf(ctx, "}\n\n");
-  idl_file_out_printf(ctx, "m__d = val;\n");
-  idl_indent_decr(ctx);
-  idl_file_out_printf(ctx, "}\n\n");
-  idl_indent_decr(ctx);
-}
-
-static void
-union_generate_getter_body(idl_backend_ctx ctx, uint32_t i)
-{
-  py_union_context *union_ctx = (py_union_context *) idl_get_custom_context(ctx);
-
-  idl_file_out_printf(ctx, "{\n");
-  idl_indent_incr(ctx);
-  if (&union_ctx->cases[i] != union_ctx->default_case) {
-    for (uint32_t j = 0; j < union_ctx->cases[i].label_count; ++j) {
-      if (j == 0) {
-        idl_file_out_printf(ctx, "if (m__d == %s", union_ctx->cases[i].labels[j]);
-        idl_indent_double_incr(ctx);
-      } else {
-        idl_file_out_printf_no_indent(ctx, " || \n");
-        idl_file_out_printf(ctx, "m__d == %s", union_ctx->cases[i].labels[j]);
-      }
-    }
-    idl_file_out_printf_no_indent(ctx, ") {\n");
-  } else {
-    for (uint32_t j = 0; j < union_ctx->case_count; ++j) {
-      for (uint32_t k = 0; k < union_ctx->cases[j].label_count; k++) {
-        if (j == 0 && k == 0) {
-          idl_file_out_printf(ctx, "if (m__d != %s", union_ctx->cases[j].labels[k]);
-          idl_indent_double_incr(ctx);
-        } else {
-          idl_file_out_printf_no_indent(ctx, " && \n");
-          idl_file_out_printf(ctx, "m__d != %s", union_ctx->cases[j].labels[k]);
-        }
-      }
-    }
-    idl_file_out_printf_no_indent(ctx, ") {\n");
-    idl_indent_decr(ctx);
-  }
-  idl_indent_decr(ctx);
-  idl_file_out_printf(ctx, "return " py_UNION_GETTER_TEMPLATE "<%s>(%s);\n", union_ctx->cases[i].type_name, union_ctx->cases[i].name);
-  idl_indent_decr(ctx);
-  idl_file_out_printf(ctx, "} else {\n");
-  idl_indent_incr(ctx);
-  idl_file_out_printf(ctx, "throw dds::core::InvalidArgumentError(\"Requested branch does not match current discriminator\");\n");
-  idl_indent_decr(ctx);
-  idl_file_out_printf(ctx, "}\n");
-  idl_indent_decr(ctx);
-  idl_file_out_printf(ctx, "}\n\n");
-}
-
-static void
-union_generate_setter_body(idl_backend_ctx ctx, uint32_t i)
-{
-  py_union_context *union_ctx = (py_union_context *) idl_get_custom_context(ctx);
-
-  idl_file_out_printf(ctx, "{\n");
-  idl_indent_incr(ctx);
-  /* Check if a setter with optional discriminant value is present (when more than 1 label). */
-  if (union_ctx->cases[i].label_count < 2)
-  {
-    const char *new_discr_value;
-
-    /* If not, check whether the current case is the default case. */
-    if (&union_ctx->cases[i] != union_ctx->default_case) {
-      /* If not the default case, pick the first available value. */
-      new_discr_value = union_ctx->cases[i].labels[0];
-    } else {
-      /* If it is the default case, pick the default label. */
-      new_discr_value = union_ctx->default_label;
-    }
-    idl_file_out_printf(ctx, "m__d = %s;\n", new_discr_value);
-  }
-  else
-  {
-    /* In case the discriminant is explicitly passed, check its validity and then take that value. */
-    for (uint32_t j = 0; j < union_ctx->cases[i].label_count; ++j) {
-      if (j == 0) {
-        idl_file_out_printf(ctx, "if (m__d != %s", union_ctx->cases[i].labels[j]);
-        idl_indent_double_incr(ctx);
-      } else {
-        idl_file_out_printf_no_indent(ctx, " &&\n");
-        idl_file_out_printf(ctx, "m__d != %s", union_ctx->cases[i].labels[j]);
-      }
-    }
-    idl_indent_decr(ctx);
-    idl_file_out_printf_no_indent(ctx, ") {\n");
-    idl_file_out_printf(ctx, "throw dds::core::InvalidArgumentError(\"Provided discriminator does not match selected branch\");\n");
-    idl_indent_decr(ctx);
-    idl_file_out_printf(ctx, "} else {\n");
-    idl_indent_incr(ctx);
-    idl_file_out_printf(ctx, "m__d = _d;\n");
-    idl_indent_decr(ctx);
-    idl_file_out_printf(ctx, "}\n");
-  }
-  idl_file_out_printf(ctx, "%s = val;\n", union_ctx->cases[i].name);
-  idl_indent_decr(ctx);
-  idl_file_out_printf(ctx, "}\n\n");
-}
-
-static void
-union_generate_branch_getters_setters(idl_backend_ctx ctx)
-{
-  py_union_context *union_ctx = (py_union_context *) idl_get_custom_context(ctx);
-
-  /* Start building the getter/setter methods for each attribute. */
-  idl_indent_incr(ctx);
-  for (uint32_t i = 0; i < union_ctx->case_count; ++i) {
-    bool is_primitive = idl_declarator_is_primitive(union_ctx->cases[i].declarator_node);
-    const py_case_state *case_state = &union_ctx->cases[i];
-
-    /* Build const-getter. */
-    idl_file_out_printf(ctx, "%s%s%s %s() const\n",
-        is_primitive ? "" : "const ",
-        case_state->type_name,
-        is_primitive ? "" : "&",
-        case_state->name);
-    union_generate_getter_body(ctx, i);
-
-    /* Build ref-getter. */
-    idl_file_out_printf(ctx, "%s& %s()\n",
-        case_state->type_name, case_state->name);
-    union_generate_getter_body(ctx, i);
-
-    /* Build setter. */
-    if (case_state->label_count < 2)
-    {
-      /* No need for optional discriminant parameter if there is only one applicable label. */
-      idl_file_out_printf(ctx, "void %s(%s%s%s val)\n",
-          case_state->name,
-          is_primitive ? "": "const ",
-          case_state->type_name,
-          is_primitive ? "" : "&");
-    }
-    else
-    {
-      /* Use optional discriminant parameter if there is more than one applicable label. */
-      idl_file_out_printf(ctx, "void %s(%s%s%s val, %s _d = %s)\n",
-          case_state->name,
-          is_primitive ? "": "const ",
-          case_state->type_name,
-          is_primitive ? "" : "&",
-          union_ctx->discr_type,
-          case_state->labels[0]);
-    }
-    union_generate_setter_body(ctx, i);
-
-    /* When appropriate, build setter with move semantics. */
-    if (!is_primitive) {
-      if (case_state->label_count < 2)
-      {
-        idl_file_out_printf(ctx, "void %s(%s&& val)\n",
-            case_state->name,
-            case_state->type_name);
-      }
-      else
-      {
-        idl_file_out_printf(ctx, "void %s(%s&& val, %s _d = %s)\n",
-            case_state->name,
-            case_state->type_name,
-            union_ctx->discr_type,
-            case_state->labels[0]);
-      }
-      union_generate_setter_body(ctx, i);
-    }
-  }
-  idl_indent_decr(ctx);
-}
-
-static void
-union_generate_implicit_default_setter(idl_backend_ctx ctx)
-{
-  py_union_context *union_ctx = (py_union_context *) idl_get_custom_context(ctx);
-  const char *discr_value;
-
-  /* Check if all possible discriminant values are covered. */
-  if (union_ctx->has_impl_default)
-  {
-    idl_indent_incr(ctx);
-    if (union_ctx->nr_unused_discr_values < 2)
-    {
-      idl_file_out_printf(ctx, "void _default()\n");
-      discr_value = union_ctx->default_label;
-    }
-    else
-    {
-      idl_file_out_printf(ctx, "void _default(%s _d = %s)\n",
-          union_ctx->discr_type,
-          discr_value = union_ctx->default_label);
-      discr_value = "_d";
-    }
-    idl_file_out_printf(ctx, "{\n");
-    idl_indent_incr(ctx);
-    idl_file_out_printf(ctx, "m__d = %s;\n", discr_value);
-    idl_indent_decr(ctx);
-    idl_file_out_printf(ctx, "}\n\n");
-    idl_indent_decr(ctx);
-  }
 }
 
 static idl_retcode_t
@@ -980,9 +717,8 @@ union_generate_body(idl_backend_ctx ctx, const idl_union_t *union_node)
 {
   idl_retcode_t result = IDL_RETCODE_OK;
   char *pyName = get_py_name(idl_identifier(union_node));
-
-  idl_file_out_printf(ctx, "class %s\n", pyName);
-  idl_file_out_printf(ctx, "{\n");
+  void *out_ctx = idl_get_custom_context(ctx);
+  idl_reset_custom_context(ctx);
 
   uint32_t nr_cases = 0;
   const idl_node_t *cases = (const idl_node_t *) union_node->cases;
@@ -994,8 +730,8 @@ union_generate_body(idl_backend_ctx ctx, const idl_union_t *union_node)
 
   union_ctx.cases = malloc(sizeof(py_case_state) * nr_cases);
   union_ctx.case_count = 0;
-  union_ctx.discr_node = union_node->switch_type_spec;
-  union_ctx.discr_type = get_py_type(union_node->switch_type_spec);
+  union_ctx.discr_node = (idl_node_t*)union_node->switch_type_spec->type_spec;
+  union_ctx.discr_type = get_py_type((idl_node_t*)union_node->switch_type_spec->type_spec);
   union_ctx.name = pyName;
   union_ctx.default_case = NULL;
   union_ctx.has_impl_default = false;
@@ -1005,13 +741,13 @@ union_generate_body(idl_backend_ctx ctx, const idl_union_t *union_node)
   idl_walk_node_list(ctx, cases, get_py_case_data, IDL_CASE);
   union_ctx.default_label = get_default_discr_value(ctx, union_node);
 
+
+  idl_file_out_printf(ctx, "@union(%s)\n", union_ctx.discr_type);
+  idl_file_out_printf(ctx, "class %s:\n", pyName);
+
   /* Generate the union content. */
   union_generate_attributes(ctx);
   union_generate_constructor(ctx);
-  union_generate_discr_getter_setter(ctx);
-  union_generate_branch_getters_setters(ctx);
-  union_generate_implicit_default_setter(ctx);
-  generate_streamer_interfaces(ctx);
 
   idl_file_out_printf(ctx, "};\n\n");
   idl_reset_custom_context(ctx);
@@ -1031,6 +767,8 @@ union_generate_body(idl_backend_ctx ctx, const idl_union_t *union_node)
   free(union_ctx.default_label);
   free(pyName);
 
+  idl_set_custom_context(ctx, out_ctx);
+
   return result;
 }
 
@@ -1039,7 +777,7 @@ enumerator_generate_identifier(idl_backend_ctx ctx, const idl_node_t *enumerator
 {
   const idl_enumerator_t *enumerator = (const idl_enumerator_t *) enumerator_node;
   char *pyName = get_py_name(idl_identifier(enumerator));
-  idl_file_out_printf(ctx, "%s,\n", pyName);
+  idl_file_out_printf(ctx, "%s = auto()\n", pyName);
   free(pyName);
   return IDL_RETCODE_OK;
 }
@@ -1051,12 +789,11 @@ enum_generate_body(idl_backend_ctx ctx, const idl_enum_t *enum_node)
   char *pyName = get_py_name(idl_identifier(enum_node));
   const idl_node_t *enumerators = (const idl_node_t *) enum_node->enumerators;
 
-  idl_file_out_printf(ctx, "enum class %s\n", pyName);
-  idl_file_out_printf(ctx, "{\n", pyName);
+  idl_file_out_printf(ctx, "class %s (Enum):\n", pyName);
   idl_indent_incr(ctx);
   result = idl_walk_node_list(ctx, enumerators, enumerator_generate_identifier, IDL_ENUMERATOR);
   idl_indent_decr(ctx);
-  idl_file_out_printf(ctx, "};\n\n");
+  idl_file_out_printf(ctx, "\n");
   free(pyName);
   return result;
 }
@@ -1067,7 +804,7 @@ typedef_generate_body(idl_backend_ctx ctx, const idl_typedef_t *typedef_node)
   char *pyName = get_py_name(idl_identifier(typedef_node->declarators));
   char *pyType = get_py_type(typedef_node->type_spec);
 
-  idl_file_out_printf(ctx, "typedef %s %s;\n\n", pyType, pyName);
+  idl_file_out_printf(ctx, "%s = %s\n\n", pyName, pyType);
 
   free(pyType);
   free(pyName);
@@ -1077,33 +814,43 @@ typedef_generate_body(idl_backend_ctx ctx, const idl_typedef_t *typedef_node)
 static idl_retcode_t
 module_generate_body(idl_backend_ctx ctx, const idl_module_t *module_node)
 {
+  idl_backend_py_ctx pctx = (idl_backend_py_ctx) idl_get_custom_context(ctx);
   idl_retcode_t result;
   char *pyName = get_py_name(idl_identifier(module_node));
+  char *dname = NULL;
+  char *fname = NULL;
 
-  idl_file_out_printf(ctx, "namespace %s\n", pyName);
-  idl_file_out_printf(ctx, "{\n", pyName);
-  idl_indent_incr(ctx);
-  result = idl_walk_node_list(ctx, module_node->definitions, py_scope_walk, IDL_MASK_ALL);
-  idl_indent_decr(ctx);
-  idl_file_out_printf(ctx, "}\n\n");
+  if (idl_asprintf(&dname, "%s/%s", pctx->basedir, pyName) == -1)
+    return IDL_RETCODE_NO_MEMORY;
 
+  if (idl_asprintf(&fname, "%s/__init__.py", dname) == -1)
+    return IDL_RETCODE_NO_MEMORY;
+
+  mkdir(dname, 0770);
+
+  idl_backend_ctx mod_ctx = idl_backend_context_new(4, NULL, NULL);
+  idl_backend_py_ctx mod_pctx = (idl_backend_py_ctx) malloc(sizeof(struct idl_backend_py_ctx_s));
+  mod_pctx->basedir = dname;
+  mod_pctx->target_file = pctx->target_file;
+  idl_set_custom_context(mod_ctx, mod_pctx);
+  idl_file_out_new(mod_ctx, fname);
+
+  print_py_imports(mod_ctx);
+
+  result = idl_walk_node_list(mod_ctx, module_node->definitions, py_scope_walk, IDL_MASK_ALL);
+
+  idl_file_out_printf(mod_ctx, "\n");
+  idl_file_out_close(mod_ctx);
+  idl_reset_custom_context(mod_ctx);
+
+  free(mod_pctx);
   free(pyName);
+  free(fname);
+  free(dname);
+
+  idl_backend_context_free(mod_ctx);
 
   return result;
-}
-
-static idl_retcode_t
-forward_decl_generate_body(idl_backend_ctx ctx, const idl_forward_t *forward_node)
-{
-  char *pyName = get_py_name(idl_identifier(forward_node));
-  assert(forward_node->node.mask & (IDL_STRUCT | IDL_UNION));
-  idl_file_out_printf(
-      ctx,
-      "%s %s;\n\n",
-      (forward_node->node.mask & IDL_STRUCT) ? "struct" : "union",
-      pyName);
-  free(pyName);
-  return IDL_RETCODE_OK;
 }
 
 static idl_retcode_t
@@ -1114,9 +861,9 @@ const_generate_body(idl_backend_ctx ctx, const idl_const_t *const_node)
   char *pyValue = get_py_const_value((const idl_constval_t *) const_node->const_expr);
   idl_file_out_printf(
       ctx,
-      "const %s %s = %s;\n\n",
-      pyType,
+      "%s: %s = %s;\n\n",
       pyName,
+      pyType,
       pyValue);
   free(pyValue);
   free(pyType);
@@ -1129,13 +876,13 @@ py_scope_walk(idl_backend_ctx ctx, const idl_node_t *node)
 {
   idl_retcode_t result = IDL_RETCODE_OK;
 
-  if (node->mask & IDL_FORWARD)
+  if (idl_mask(node) & IDL_FORWARD)
   {
-    result = forward_decl_generate_body(ctx, (const idl_forward_t *) node);
+    //result = forward_decl_generate_body(ctx, (const idl_forward_t *) node);
   }
   else
   {
-    switch (node->mask & IDL_CATEGORY_MASK)
+    switch (idl_mask(node) & IDL_CATEGORY_MASK)
     {
     case IDL_MODULE:
       result = module_generate_body(ctx, (const idl_module_t *) node);
@@ -1164,138 +911,9 @@ py_scope_walk(idl_backend_ctx ctx, const idl_node_t *node)
   return result;
 }
 
-typedef enum
-{
-  idl_no_dep                = 0x0,
-  idl_string_bounded_dep    = 0x01 << 0,
-  idl_string_unbounded_dep  = 0x01 << 1,
-  idl_array_dep             = 0x01 << 2,
-  idl_vector_bounded_dep    = 0x01 << 3,
-  idl_vector_unbounded_dep  = 0x01 << 4,
-  idl_variant_dep           = 0x01 << 5,
-  idl_optional_dep          = 0x01 << 6
-} idl_include_dep;
-
-static idl_retcode_t
-get_util_dependencies(idl_backend_ctx ctx, const idl_node_t *node)
-{
-  idl_retcode_t result = IDL_RETCODE_OK;
-  idl_include_dep *dependency_mask = (idl_include_dep *) idl_get_custom_context(ctx);
-
-  switch (node->mask & IDL_CATEGORY_MASK)
-  {
-  case IDL_UNION:
-    (*dependency_mask) |= idl_variant_dep;
-    break;
-  case IDL_TEMPL_TYPE:
-    switch (node->mask & IDL_TEMPL_TYPE_MASK)
-    {
-    case IDL_SEQUENCE:
-      if (((const idl_sequence_t*)node)->maximum)
-        (*dependency_mask) |= idl_vector_bounded_dep;
-      else
-        (*dependency_mask) |= idl_vector_unbounded_dep;
-      result = get_util_dependencies(ctx, ((const idl_sequence_t *)node)->type_spec);
-      break;
-    case IDL_STRING:
-      if (((const idl_string_t*)node)->maximum)
-        (*dependency_mask) |= idl_string_bounded_dep;
-      else
-        (*dependency_mask) |= idl_string_unbounded_dep;
-      break;
-    default:
-      break;
-    }
-    break;
-  case IDL_DECLARATOR:
-    if (((const idl_declarator_t *)node)->const_expr) {
-      (*dependency_mask) |= idl_array_dep;
-    }
-    break;
-  default:
-    break;
-  }
-  return result;
-}
-
-static void
-idl_generate_include_statements(idl_backend_ctx ctx, const idl_tree_t *parse_tree)
-{
-  idl_include_dep util_depencencies = idl_no_dep;
-  uint32_t nr_includes = 0;
-
-  /* First determine the list of files included by our IDL file itself. */
-  idl_include_t *include, *next;
-  include = idl_get_include_list(ctx, parse_tree);
-  for (; include; include = next, ++nr_includes) {
-    char *file, *dot;
-    file = include->file->name;
-    dot = strrchr(file, '.');
-    if (!dot) dot = file + strlen(file);
-    if (!include->indirect)
-      idl_file_out_printf(ctx, "#include \"%.*s.hpp\"\n", dot - file, file);
-    next = include->next;
-    free(include);
-  }
-  if (nr_includes == 0) {
-    idl_file_out_printf(ctx, "#include <cstddef>\n");
-    idl_file_out_printf(ctx, "#include <cstdint>\n\n");
-    idl_file_out_printf(ctx, "#include \"dds/ddsi/ddsi_keyhash.h\"\n");
-  }
-  idl_file_out_printf(ctx, "\n");
-
-  /* Next determine if we need to include any utility libraries... */
-  idl_set_custom_context(ctx, &util_depencencies);
-  idl_walk_tree(ctx, parse_tree->root, get_util_dependencies, IDL_MASK_ALL);
-  idl_reset_custom_context(ctx);
-  if (util_depencencies) {
-    if (strcmp(py_BOUNDED_SEQUENCE_INCLUDE, py_SEQUENCE_INCLUDE))
-    {
-      if (util_depencencies & idl_vector_bounded_dep) {
-        idl_file_out_printf(ctx, "#include " py_BOUNDED_SEQUENCE_INCLUDE "\n");
-      }
-      if (util_depencencies & idl_vector_unbounded_dep) {
-        idl_file_out_printf(ctx, "#include " py_SEQUENCE_INCLUDE "\n");
-      }
-    }
-    else
-    {
-      if (util_depencencies & (idl_vector_bounded_dep | idl_vector_unbounded_dep)) {
-        idl_file_out_printf(ctx, "#include " py_SEQUENCE_INCLUDE "\n");
-      }
-    }
-    if (strcmp(py_BOUNDED_STRING_INCLUDE, py_STRING_INCLUDE))
-    {
-      if (util_depencencies & idl_string_bounded_dep) {
-        idl_file_out_printf(ctx, "#include " py_BOUNDED_STRING_INCLUDE "\n");
-      }
-      if (util_depencencies & idl_string_unbounded_dep) {
-        idl_file_out_printf(ctx, "#include " py_STRING_INCLUDE "\n");
-      }
-    }
-    else
-    {
-      if (util_depencencies & (idl_string_bounded_dep | idl_string_unbounded_dep)) {
-        idl_file_out_printf(ctx, "#include " py_STRING_INCLUDE "\n");
-      }
-    }
-    if (util_depencencies & idl_variant_dep) {
-      idl_file_out_printf(ctx, "#include " py_UNION_INCLUDE "\n");
-    }
-    if (util_depencencies & idl_array_dep) {
-      idl_file_out_printf(ctx, "#include " py_ARRAY_INCLUDE "\n");
-    }
-    idl_file_out_printf(ctx, "\n");
-  }
-}
-
 idl_retcode_t
-idl_backendGenerateType(idl_backend_ctx ctx, const idl_tree_t *parse_tree)
+idl_backendGenerateType(idl_backend_ctx ctx, const idl_pstate_t *parse_tree)
 {
-  /* If input comes from a file, generate appropriate include statements. */
-  if (parse_tree->files) idl_generate_include_statements(ctx, parse_tree);
-
-  /* Next, generate the C++ representation for all nodes in the list. */
   return idl_walk_node_list(ctx, parse_tree->root, py_scope_walk, IDL_MASK_ALL);
 }
 

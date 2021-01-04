@@ -22,14 +22,14 @@
 #pragma warning(disable : 4996)
 #endif
 
-/* Specify a list of all C++11 keywords */
+/* Specify a list of all Python keywords */
 static const char* py_keywords[] =
 {
   /* QAC EXPECT 5007; Bypass qactools error */
-  "False", "None", "True", "__peg_parser__", "and", "as", 
-  "assert", "async", "await", "break", "class", "continue", 
-  "def", "del", "elif", "else", "except", "finally", "for", 
-  "from", "global", "if", "import", "in", "is", "lambda", "nonlocal", 
+  "False", "None", "True", "__peg_parser__", "and", "as",
+  "assert", "async", "await", "break", "class", "continue",
+  "def", "del", "elif", "else", "except", "finally", "for",
+  "from", "global", "if", "import", "in", "is", "lambda", "nonlocal",
   "not", "or", "pass", "raise", "return", "try", "while", "with", "yield"
 };
 
@@ -39,14 +39,14 @@ get_py_name(const char* name)
   char* pyName;
   size_t i;
 
-  /* search through the C++ keyword list */
+  /* search through the Python keyword list */
   for (i = 0; i < sizeof(py_keywords) / sizeof(char*); i++) {
     if (strcmp(py_keywords[i], name) == 0) {
-      /* If a keyword matches the specified identifier, prepend _py_ */
+      /* If a keyword matches the specified identifier, prepend py_ */
       /* QAC EXPECT 5007; will not use wrapper */
       size_t pyNameLen = strlen(name) + 5 + 1;
       pyName = malloc(pyNameLen);
-      snprintf(pyName, pyNameLen, "_py_%s", name);
+      snprintf(pyName, pyNameLen, "py_%s", name);
       return pyName;
     }
   }
@@ -60,37 +60,39 @@ get_py_base_type(const idl_node_t *node)
 {
   static const idl_mask_t mask = (IDL_BASE_TYPE|(IDL_BASE_TYPE-1));
 
-  switch (node->mask & mask)
+  switch (idl_mask(node) & mask)
   {
   case IDL_CHAR:
-    return idl_strdup("c_char");
+    return idl_strdup("char");
   case IDL_WCHAR:
-    return idl_strdup("c_wchar");
+    return idl_strdup("wchar");
   case IDL_BOOL:
-    return idl_strdup("c_bool");
+    return idl_strdup("bool");
   case IDL_INT8:
-    return idl_strdup("c_int8_t");
+    return idl_strdup("int8");
   case IDL_UINT8:
   case IDL_OCTET:
-    return idl_strdup("c_uint8_t");
+    return idl_strdup("uint8");
   case IDL_INT16:
-    return idl_strdup("c_int16_t");
+    return idl_strdup("int16");
   case IDL_UINT16:
-    return idl_strdup("c_uint16_t");
+    return idl_strdup("uint16");
   case IDL_INT32:
-    return idl_strdup("c_int32_t");
+    return idl_strdup("int32");
   case IDL_UINT32:
-    return idl_strdup("c_uint32_t");
+    return idl_strdup("uint32");
   case IDL_INT64:
-    return idl_strdup("c_int64_t");
+    return idl_strdup("int64");
   case IDL_UINT64:
-    return idl_strdup("c_uint64_t");
+    return idl_strdup("uint64");
   case IDL_FLOAT:
-    return idl_strdup("c_float");
+    return idl_strdup("float32");
   case IDL_DOUBLE:
-    return idl_strdup("c_double");
+    return idl_strdup("float64");
   case IDL_LDOUBLE:
-    return idl_strdup("c_long_double");
+    /// Python has no way to represent this type properly
+    assert(0);
+    break;
   default:
     assert(0);
     break;
@@ -103,16 +105,16 @@ get_py_templ_type(const idl_node_t *node)
 {
   char *pyType = NULL;
 
-  switch (node->mask & IDL_TEMPL_TYPE_MASK)
+  switch (idl_mask(node) & IDL_TEMPL_TYPE_MASK)
   {
   case IDL_SEQUENCE:
     {
       uint64_t bound = ((const idl_sequence_t*)node)->maximum;
       char* vector_element = get_py_type(((const idl_sequence_t*)node)->type_spec);
       if (bound)
-        idl_asprintf(&pyType, py_BOUNDED_SEQUENCE_TEMPLATE(vector_element, bound));
+        idl_asprintf(&pyType, PY_BOUNDED_SEQUENCE_TEMPLATE(vector_element, bound));
       else
-        idl_asprintf(&pyType, py_SEQUENCE_TEMPLATE(vector_element));
+        idl_asprintf(&pyType, PY_SEQUENCE_TEMPLATE(vector_element));
       free(vector_element);
     }
     break;
@@ -120,9 +122,9 @@ get_py_templ_type(const idl_node_t *node)
     {
       uint64_t bound = ((const idl_string_t*)node)->maximum;
       if (bound)
-        idl_asprintf(&pyType, py_BOUNDED_STRING_TEMPLATE(bound));
+        idl_asprintf(&pyType, PY_BOUNDED_STRING_TEMPLATE(bound));
       else
-        idl_asprintf(&pyType, py_STRING_TEMPLATE());
+        idl_asprintf(&pyType, PY_STRING_TEMPLATE());
     }
     break;
   case IDL_WSTRING:
@@ -144,7 +146,7 @@ get_py_templ_type(const idl_node_t *node)
 char *
 get_py_type(const idl_node_t *node)
 {
-  assert(node->mask & (IDL_BASE_TYPE|IDL_TEMPL_TYPE|IDL_CONSTR_TYPE|IDL_TYPEDEF));
+  assert(idl_mask(node) & (IDL_BASE_TYPE|IDL_TEMPL_TYPE|IDL_CONSTR_TYPE|IDL_TYPEDEF));
   if (idl_is_base_type(node))
     return get_py_base_type(node);
   else if (idl_is_templ_type(node))
@@ -171,7 +173,7 @@ get_py_fully_scoped_name(const idl_node_t *node)
   current_node = node;
   for (uint32_t i = 0; i < nr_scopes; ++i)
   {
-    scope_type = current_node->mask & (IDL_MODULE | IDL_ENUMERATOR | IDL_ENUM | IDL_STRUCT | IDL_UNION | IDL_TYPEDEF);
+    scope_type = idl_mask(current_node) & (IDL_MODULE | IDL_ENUMERATOR | IDL_ENUM | IDL_STRUCT | IDL_UNION | IDL_TYPEDEF);
     assert(scope_type);
     switch (scope_type)
     {
@@ -194,7 +196,7 @@ get_py_fully_scoped_name(const idl_node_t *node)
       scope_names[i] = get_py_name(idl_identifier(((const idl_typedef_t *)current_node)->declarators));
       break;
     }
-    scoped_enumerator_len += (strlen(scope_names[i]) + 2); /* scope + "::" */
+    scoped_enumerator_len += (strlen(scope_names[i]) + 1); /* scope + "." */
     current_node = current_node->parent;
   }
   scoped_enumerator = malloc(++scoped_enumerator_len); /* Add one for '\0' */
@@ -218,7 +220,7 @@ get_default_value(idl_backend_ctx ctx, const idl_node_t *node)
   if (idl_is_enum(node))
     return get_py_fully_scoped_name((idl_node_t*)((idl_enum_t*)node)->enumerators);
 
-  switch (node->mask & mask)
+  switch (idl_mask(node) & mask)
   {
   case IDL_BOOL:
     return idl_strdup("False");
@@ -252,35 +254,39 @@ get_py_base_type_const_value(const idl_constval_t *constval)
   char *str = NULL;
   static const idl_mask_t mask = (IDL_BASE_TYPE_MASK|(IDL_BASE_TYPE_MASK-1));
 
-  switch (constval->node.mask & mask)
+  switch (idl_mask(&constval->node) & mask)
   {
   case IDL_BOOL:
-    return idl_strdup(constval->value.bln ? "True" : "False");
-  case IDL_OCTET:
-    cnt = idl_asprintf(&str, "%" PRIu8, constval->value.oct);
-    break;
+    return idl_strdup(constval->value.bln ? "true" : "false");
   case IDL_INT8:
     cnt = idl_asprintf(&str, "%" PRId8, constval->value.int8);
     break;
   case IDL_UINT8:
+  case IDL_OCTET:
     cnt = idl_asprintf(&str, "%" PRIu8, constval->value.uint8);
     break;
   case IDL_INT16:
+  case IDL_SHORT:
     cnt = idl_asprintf(&str, "%" PRId16, constval->value.int16);
     break;
   case IDL_UINT16:
+  case IDL_USHORT:
     cnt = idl_asprintf(&str, "%" PRIu16, constval->value.uint16);
     break;
   case IDL_INT32:
+  case IDL_LONG:
     cnt = idl_asprintf(&str, "%" PRId32, constval->value.int32);
     break;
   case IDL_UINT32:
+  case IDL_ULONG:
     cnt = idl_asprintf(&str, "%" PRIu32, constval->value.uint32);
     break;
   case IDL_INT64:
+  case IDL_LLONG:
     cnt = idl_asprintf(&str, "%" PRId64, constval->value.int64);
     break;
   case IDL_UINT64:
+  case IDL_ULLONG:
     cnt = idl_asprintf(&str, "%" PRIu64, constval->value.uint64);
     break;
   case IDL_FLOAT:
@@ -291,6 +297,12 @@ get_py_base_type_const_value(const idl_constval_t *constval)
     break;
   case IDL_LDOUBLE:
     cnt = idl_asprintf(&str, "%Lf", constval->value.ldbl);
+    break;
+  case IDL_CHAR:
+    cnt = idl_asprintf(&str, "\'%c\'", constval->value.chr);
+    break;
+  case IDL_STRING:
+    cnt = idl_asprintf(&str, "\"%s\"", constval->value.str);
     break;
   default:
     assert(0);
@@ -324,7 +336,7 @@ get_py_const_value(const idl_constval_t *constval)
 {
   static const idl_mask_t mask = IDL_BASE_TYPE | IDL_TEMPL_TYPE | IDL_ENUMERATOR;
 
-  switch (constval->node.mask & mask) {
+  switch (idl_mask(&constval->node) & mask) {
   case IDL_BASE_TYPE:
     return get_py_base_type_const_value(constval);
   case IDL_TEMPL_TYPE:
@@ -336,4 +348,14 @@ get_py_const_value(const idl_constval_t *constval)
     break;
   }
   return NULL;
+}
+
+void
+print_py_imports(idl_backend_ctx ctx)
+{
+  idl_file_out_printf(ctx, "from enum import Enum, auto\n");
+  idl_file_out_printf(ctx, "from typing import List, Annotated\n");
+  idl_file_out_printf(ctx, "from pycdr import cdr\n");
+  idl_file_out_printf(ctx, "from pycdr.types import union, int8, int16, int32, int64, char, wchar,\\\n");
+  idl_file_out_printf(ctx, "\t\tuint8, uint16, uint32, uint64, float32, float64\n\n\n");
 }
