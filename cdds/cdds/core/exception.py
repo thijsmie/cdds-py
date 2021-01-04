@@ -36,6 +36,17 @@ error_message_mapping = {
 
 
 class DDSException(Exception):
+    """This exception is thrown when a return code from the underlying C api indicates non-valid use of the API. 
+    Print the exception directly or convert it to string for a detailed description. 
+
+    Attributes
+    ----------
+    code: int
+        One of the ``DDS_RETCODE_`` constants that indicates the type of error.
+    msg: str
+        A human readable description of where the error occurred
+    """  
+
     def __init__(self, code, msg=None, *args, **kwargs):
         self.code = code
         self.msg = msg or ""
@@ -53,6 +64,15 @@ class DDSException(Exception):
 
 
 class DDSAPIException(Exception):
+    """This exception is thrown when misuse of the Python API is detected that are not explicitly bound to 
+    any C API functions.
+
+    Attributes
+    ----------
+    msg: str
+        A human readable description of what went wrong.
+    """
+    
     def __init__(self, msg):
         self.msg = msg
         super().__init__()

@@ -238,6 +238,7 @@ class Policy:
             Tuple[PolicyType, Any]
                 The type of this entity is not publicly specified.
             """
+
             return _PolicyType.PresentationAccessScope, (_QosAccessScope.Instance, coherent_access, ordered_access)
 
         @staticmethod
@@ -256,6 +257,7 @@ class Policy:
             Tuple[PolicyType, Any]
                 The type of this entity is not publicly specified.
             """
+
             return _PolicyType.PresentationAccessScope, (_QosAccessScope.Topic, coherent_access, ordered_access)
 
         @staticmethod
@@ -274,6 +276,7 @@ class Policy:
             Tuple[PolicyType, Any]
                 The type of this entity is not publicly specified.
             """
+
             return _PolicyType.PresentationAccessScope, (_QosAccessScope.Group, coherent_access, ordered_access)
 
     @staticmethod
@@ -294,6 +297,7 @@ class Policy:
         Tuple[PolicyType, Any]
             The type of this entity is not publicly specified.
         """
+
         return _PolicyType.Lifespan, lifespan
 
     @staticmethod
@@ -314,6 +318,7 @@ class Policy:
         Tuple[PolicyType, Any]
             The type of this entity is not publicly specified.
         """
+    
         return _PolicyType.Deadline, deadline
 
     @staticmethod
@@ -334,35 +339,155 @@ class Policy:
         Tuple[PolicyType, Any]
             The type of this entity is not publicly specified.
         """
+
         return _PolicyType.LatencyBudget, budget
 
     class Ownership:
+        """The Ownership Qos Policy
+
+        Examples
+        --------
+        >>> Policy.Ownership.Shared
+        >>> Policy.Ownership.Exclusive
+
+        Attributes
+        ----------
+        Shared:    Tuple[PolicyType, Any]
+                   The type of this entity is not publicly specified.
+        Exclusive: Tuple[PolicyType, Any]
+                   The type of this entity is not publicly specified.
+        """
+
         Shared: Tuple[_PolicyType, _QosOwnership] = (_PolicyType.Ownership, _QosOwnership.Shared)
         Exclusive: Tuple[_PolicyType, _QosOwnership] = (_PolicyType.Ownership, _QosOwnership.Exclusive)
 
     @staticmethod
     def OwnershipStrength(strength: int) -> Tuple[_PolicyType, int]:
+        """The Ownership Strength Qos Policy
+
+        Examples
+        --------
+        >>> Policy.OwnershipStrength(2)
+
+        Parameters
+        ----------
+        strength : int
+            Ownership strength as integer.
+
+        Returns
+        -------
+        Tuple[PolicyType, Any]
+            The type of this entity is not publicly specified.
+        """
+
         return _PolicyType.OwnershipStrength, strength
 
     class Liveliness:
+        """The Liveliness Qos Policy
+
+        Examples
+        --------
+        >>> Policy.Liveliness.Automatic(lease_duration=duration(seconds=10))
+        >>> Policy.Liveliness.ManualByParticipant(lease_duration=duration(seconds=10))
+        >>> Policy.Liveliness.ManualByTopic(lease_duration=duration(seconds=10))
+        """
+
         @staticmethod
         def Automatic(lease_duration: int) -> Tuple[_PolicyType, Tuple[_QosLiveliness, int]]:
+            """Use Automatic Liveliness
+
+            Parameters
+            ----------
+            lease_duration: int
+                The lease duration in nanoseconds. Use the helper function :func:`duration<cdds.util.time.duration>` to write
+                the duration in a human readable format.
+
+            Returns
+            -------
+            Tuple[PolicyType, Any]
+                The type of this entity is not publicly specified.
+            """
+
             return _PolicyType.Liveliness, (_QosLiveliness.Automatic, lease_duration)
 
         @staticmethod
         def ManualByParticipant(lease_duration: int) -> Tuple[_PolicyType, Tuple[_QosLiveliness, int]]:
+            """Use ManualByParticipant Liveliness
+
+            Parameters
+            ----------
+            lease_duration: int
+                The lease duration in nanoseconds. Use the helper function :func:`duration<cdds.util.time.duration>` to write
+                the duration in a human readable format.
+                
+            Returns
+            -------
+            Tuple[PolicyType, Any]
+                The type of this entity is not publicly specified.
+            """
+
             return _PolicyType.Liveliness, (_QosLiveliness.ManualByParticipant, lease_duration)
 
         @staticmethod
         def ManualByTopic(lease_duration: int) -> Tuple[_PolicyType, Tuple[_QosLiveliness, int]]:
+            """Use ManualByTopic Liveliness
+
+            Parameters
+            ----------
+            lease_duration: int
+                The lease duration in nanoseconds. Use the helper function :func:`duration<cdds.util.time.duration>` to write
+                the duration in a human readable format.
+                
+            Returns
+            -------
+            Tuple[PolicyType, Any]
+                The type of this entity is not publicly specified.
+            """
+
             return _PolicyType.Liveliness, (_QosLiveliness.ManualByTopic, lease_duration)
 
     @staticmethod
     def TimeBasedFilter(filter: int) -> Tuple[_PolicyType, int]:
+        """The TimeBasedFilter Qos Policy
+
+        Examples
+        --------
+        >>> Policy.TimeBasedFilter(filter=duration(seconds=2))
+
+        Parameters
+        ----------
+        filter : int
+            Minimum time between samples in nanoseconds.  Use the helper function :func:`duration<cdds.util.time.duration>` 
+            to write the duration in a human readable format.
+
+        Returns
+        -------
+        Tuple[PolicyType, Any]
+            The type of this entity is not publicly specified.
+        """
+
         return _PolicyType.TimeBasedFilter, filter
 
     @staticmethod
     def Partitions(*partitions: List[str]) -> Tuple[_PolicyType, List[str]]:
+        """The Partitions Qos Policy
+
+        Examples
+        --------
+        >>> Policy.Partitions("partition_a", "partition_b", "partition_c")
+        >>> Policy.Partitions(*[f"partition_{i}" for i in range(100)])
+
+        Parameters
+        ----------
+        *partitions : str
+            Each argument is a partition this Qos will be active in.
+
+        Returns
+        -------
+        Tuple[PolicyType, Any]
+            The type of this entity is not publicly specified.
+        """
+
         return _PolicyType.Partitions, partitions
 
     @staticmethod
@@ -391,7 +516,11 @@ class Policy:
         Participant: Tuple[_PolicyType, _QosDestinationOrder] = (_PolicyType.IgnoreLocal, _QosIgnoreLocal.Participant)
         Process: Tuple[_PolicyType, _QosIgnoreLocal] = (_PolicyType.IgnoreLocal, _QosIgnoreLocal.Process)
 
+
 class QosException(Exception):
+    """This exception is thrown when you try to set a Qos with something that is not a Policy or other invalid usage
+    of the Qos object"""
+    
     def __init__(self, msg, *args, **kwargs):
         self.msg = msg
         super().__init__(*args, **kwargs)

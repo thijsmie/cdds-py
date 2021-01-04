@@ -2,7 +2,7 @@ from cdds.core import Entity, DDSException
 from cdds.internal import c_call
 from cdds.internal.dds_types import dds_domainid_t, dds_entity_t
 
-from typing import Optional
+from typing import Optional, List
 from ctypes import c_char_p, c_size_t, POINTER, byref, cast
 
 
@@ -14,7 +14,7 @@ class Domain(Entity):
         else:
             super().__init__(self._create_domain(dds_domainid_t(domainid), None))
 
-    def get_participants(self):
+    def get_participants(self) -> List[Entity]:
         num_participants = self._lookup_participant(self._id, None, 0)
         if num_participants < 0:
             raise DDSException(num_participants, f"Occurred when getting the number of participants of domain {self._id}")
