@@ -1,5 +1,5 @@
 Welcome to cdds's documentation!
-======================================
+================================
 
 .. toctree::
    :maxdepth: 4
