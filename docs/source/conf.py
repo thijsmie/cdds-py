@@ -12,7 +12,10 @@
 #
 import os
 import sys
-sys.path.insert(0, os.path.join(os.path.abspath(os.path.dirname(__file__)), '../../cdds'))
+root_dir = os.path.join(os.path.abspath(os.path.dirname(__file__)), "../..")
+sys.path.insert(0, os.path.join(root_dir, "src/cdds"))
+sys.path.insert(0, os.path.join(root_dir, "src/pycdr"))
+
 os.environ['CDDS_NO_IMPORT_LIBS'] = "1"
 
 # -- Project information -----------------------------------------------------

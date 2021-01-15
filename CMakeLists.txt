@@ -11,6 +11,7 @@
 #
 cmake_minimum_required(VERSION 3.7)
 project(CycloneDDS-Py VERSION 0.1.0 LANGUAGES C)
+set(CMAKE_BUILD_TYPE Debug)
 
 # By default don't treat warnings as errors, else anyone building it with a
 # different compiler that just happens to generate a warning, as well as
@@ -140,4 +141,4 @@ install(
 
 find_package(CycloneDDS REQUIRED)
 
-add_subdirectory(idlpy)
+add_subdirectory(src/idlpy)
