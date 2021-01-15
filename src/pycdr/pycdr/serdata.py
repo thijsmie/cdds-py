@@ -1,7 +1,6 @@
-from .machinery import Buffer, build_machine
-
-from dataclasses import dataclass
 from hashlib import md5
+
+from .machinery import Buffer
 
 
 def encode(self, buffer=None):

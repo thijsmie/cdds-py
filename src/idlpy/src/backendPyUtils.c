@@ -105,7 +105,7 @@ get_py_base_type(const idl_node_t *node)
   }
   return NULL;
 }
-
+/*
 static bool
 is_py_templ_type_special_case(const idl_node_t *node)
 {
@@ -138,15 +138,15 @@ handle_py_templ_type_special_case(const idl_node_t *node)
   
   return pyType;
 }
-
+*/
 
 static char *
 get_py_templ_type(const idl_node_t *node)
 {
   char *pyType = NULL;
 
-  if (is_py_templ_type_special_case(node)) {
-    pyType = handle_py_templ_type_special_case(node);
+  if (false){//(is_py_templ_type_special_case(node)) {
+    //pyType = handle_py_templ_type_special_case(node);
   }
   else {
     switch (idl_mask(node) & IDL_TEMPL_TYPE_MASK)

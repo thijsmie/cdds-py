@@ -7,7 +7,7 @@ from ctypes import c_char, c_char_p, c_size_t, cast
 
 
 class Topic(Entity):
-    """Representing a """
+    """Representing a Topic"""
 
     def __init__(self, domain_participant: 'cdds.domain.DomainParticipant',
                  data_type, topic_name: str, qos=None, listener=None):

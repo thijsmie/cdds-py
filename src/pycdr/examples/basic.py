@@ -24,8 +24,8 @@ class Test:
     f: Test2
     k: Annotated[List[int], Len(3)]
     v: Dict[str, str]
-    
-    
+
+
 a = Test(
     a = 1,
     b = 2,
