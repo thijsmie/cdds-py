@@ -166,6 +166,15 @@
 <div class="section" id="participant">
 <h2>Participant<a class="headerlink" href="#participant" title="Permalink to this headline">¶</a></h2>
 <p>All communication within a DDS network happens through <em>domains</em>. A domain is a combination of an integer identifier and a set of config parameters. The concept of a domain is what allows you to run multiple DDS systems on a single network without interference. As in any other DDS API, this connection to a domain is represented with a <cite>DomainParticipant</cite> . Your connection to the DDS network is started with the creation of the participant and ended with its destruction.</p>
+<dl>
+<dt>:: code-block: python</dt><dd><dl class="field-list simple">
+<dt class="field-odd">linenos</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+<p>from cdds.domain import Participant</p>
+<p>dp = Participant(0)</p>
+</dd>
+</dl>
 </div>
 </div>
 
