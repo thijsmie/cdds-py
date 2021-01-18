@@ -87,7 +87,7 @@ jobs:
       run: pip install dataclasses
 
     - name: Install cdds 🐍
-      working-directory: ./cdds
+      working-directory: ./src/cdds
       run: |
         pip install -e .
         pip install pytest pytest-cov flake8
