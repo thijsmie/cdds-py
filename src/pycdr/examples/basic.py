@@ -2,8 +2,9 @@ import os
 import sys
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
+from pycdr import cdr
 from pycdr.types import int8, int16, Len
-from pycdr.serdata import cdr, serialize, deserialize
+
 from typing import Annotated, List, Dict
 
 

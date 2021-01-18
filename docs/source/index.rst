@@ -6,6 +6,7 @@ Welcome to cdds's documentation!
    :caption: Contents:
 
    cdds
+   pycdr
    dds
 
 
