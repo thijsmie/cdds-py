@@ -84,7 +84,10 @@
               <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="cdds.html">The cdds python module</a><ul class="current">
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Usage</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Usage</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#participant">Participant</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="api.html">API</a></li>
 </ul>
 </li>
@@ -160,6 +163,10 @@
   <div class="section" id="usage">
 <h1>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h1>
 <p>Here should be some extensive documentation on how to use the API.</p>
+<div class="section" id="participant">
+<h2>Participant<a class="headerlink" href="#participant" title="Permalink to this headline">¶</a></h2>
+<p>All communication within a DDS network happens through <em>domains</em>. A domain is a combination of an integer identifier and a set of config parameters. The concept of a domain is what allows you to run multiple DDS systems on a single network without interference. As in any other DDS API, this connection to a domain is represented with a <cite>DomainParticipant</cite> . Your connection to the DDS network is started with the creation of the participant and ended with its destruction.</p>
+</div>
 </div>
 
 
