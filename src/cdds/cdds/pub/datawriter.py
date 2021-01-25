@@ -7,6 +7,8 @@ from cdds.core.exception import DDS_RETCODE_TIMEOUT
 
 from ctypes import c_void_p, byref
 
+from ddspy import ddspy_write
+
 
 class DataWriter(Entity):
     def __init__(self, publisher: 'cdds.pub.Publisher', topic: 'cdds.topic.Topic', qos=None, listener=None):
@@ -20,7 +22,8 @@ class DataWriter(Entity):
         )
 
     def write(self, sample):
-        ret = self._write(self._ref, sample.to_struct())
+        ret = ddspy_write(self._ref, sample)
+        # ret = self._write(self._ref, sample.to_struct())
         if ret < 0:
             raise DDSException(ret, f"Occurred while writing sample in {repr(self)}")
 

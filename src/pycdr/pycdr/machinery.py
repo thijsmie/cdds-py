@@ -347,7 +347,7 @@ class StructMachine(Machine):
         return self.type(**valuedict)
 
     def max_size(self, finder):
-        for m in self.members_machines:
+        for k, m in self.members_machines.items():
             m.max_size(finder)
 
 

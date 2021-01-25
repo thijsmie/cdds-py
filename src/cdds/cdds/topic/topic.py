@@ -4,6 +4,7 @@ from cdds.core import Entity, DDSException
 from cdds.internal import c_call, dds_entity_t, dds_return_t, dds_qos_p_t, dds_listener_p_t, dds_topic_descriptor_p_t
 
 from ctypes import c_char, c_char_p, c_size_t, cast
+from ddspy import ddspy_topic_create
 
 
 class Topic(Entity):
@@ -13,12 +14,10 @@ class Topic(Entity):
                  data_type, topic_name: str, qos=None, listener=None):
         self.data_type = data_type
         super().__init__(
-            self._create_topic(
+            ddspy_topic_create(
                 domain_participant._ref,
-                data_type.type_support,
-                topic_name.encode(),
-                qos._ref if qos else None,
-                listener._ref if listener else None
+                data_type,
+                topic_name
             )
         )
 

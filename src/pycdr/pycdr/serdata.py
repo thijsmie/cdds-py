@@ -26,7 +26,13 @@ def deserialize(object, data):
     return obj
 
 
-def key_encode(object):
+def key_serialize(object):
+    buffer = Buffer()
+    object.cdrkey.encode(buffer, object)
+    return buffer.asbytes()
+
+
+def key_hash_serialize(object):
     buffer = Buffer()
     object.cdrkey.encode(buffer, object)
     res = buffer.asbytes()
@@ -35,3 +41,9 @@ def key_encode(object):
     m = md5()
     m.update(res)
     return m.digest()
+
+
+def clserialize(cls, obj):
+    buffer = Buffer()
+    cls.cdr.encode(buffer, obj)
+    return buffer.asbytes()
