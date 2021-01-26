@@ -126,14 +126,13 @@ void ddspy_serdata_ensure_sample(ddspy_serdata_t* this)
     Py_INCREF(result);
     this->sample = result;
 
+    quickprint("Deserialized", result);
+
     PyGILState_Release(state);
 }
 
 void ddspy_serdata_populate_hash(ddspy_serdata_t* this)
 {
-    quickprint("hashing sample: ", this->sample);
-    quickprint("hashing type:", ((ddspy_sertype_t*) this->c_data.type)->my_py_type);
-    
     if (this->hash_populated) {
         printf("Already populated\n");
         return;
@@ -296,8 +295,6 @@ ddsi_serdata_t *serdata_from_sample(
     /// Make calls into python possible.
     PyGILState_STATE state = PyGILState_Ensure();
 
-    quickprint("serdata_from_sample-sample", container->sample);
-
     ddspy_serdata_t *d;
     switch(kind)
     {
@@ -305,7 +302,6 @@ ddsi_serdata_t *serdata_from_sample(
         {
             PyObject* arglist = Py_BuildValue("(O)", container->sample);
             PyObject* result = PyObject_CallObject(((const ddspy_sertype_t*) type)->serialize_attr, arglist);
-            quickprint("serdata_from_sample-sdk_data-result", result);
             Py_DECREF(arglist);
 
             if (result == NULL) {
@@ -395,17 +391,27 @@ bool serdata_to_sample(
     ddspy_sample_container_t *container = (ddspy_sample_container_t*) sample;
     //ddspy_serdata_ensure_sample(cserdata(dcmn));
 
+    PyGILState_STATE state = PyGILState_Ensure();
+
     Py_INCREF(cserdata(dcmn)->sample);
     container->sample = cserdata(dcmn)->sample;
+
+    PyGILState_Release(state);
 
     return false;
 }
 
 ddsi_serdata_t *serdata_to_typeless(const ddsi_serdata_t* dcmn)
 {
-    // TODO
-    (void) dcmn;
-    return NULL;
+    ddspy_serdata_t *d_tl = ddspy_serdata_new(dcmn->type, SDK_KEY, 16);
+
+    d_tl->c_data.type = NULL; 
+    d_tl->c_data.hash = dcmn->hash;
+    d_tl->c_data.timestamp.v = INT64_MIN;
+    d_tl->key = cserdata(dcmn)->key;
+    d_tl->hash_populated = true;
+
+    return (ddsi_serdata_t*) d_tl;
 }
 
 bool serdata_typeless_to_sample(
@@ -420,14 +426,18 @@ bool serdata_typeless_to_sample(
     (void)sample;
     (void)dcmn;
 
+    printf("Passing through typeless\n");
+
     return true;
 }
 
 void serdata_free(struct ddsi_serdata* dcmn)
 {
-    PyGILState_STATE state = PyGILState_Ensure();
-    Py_XDECREF(serdata(dcmn)->sample);
-    PyGILState_Release(state);
+    if (dcmn->kind == SDK_DATA && serdata(dcmn)->sample != NULL) {
+        PyGILState_STATE state = PyGILState_Ensure();
+        Py_XDECREF(serdata(dcmn)->sample);      
+        PyGILState_Release(state);
+    }
 
     free(serdata(dcmn)->data);
     free(dcmn);
@@ -501,9 +511,9 @@ void sertype_free(struct ddsi_sertype* tpcmn)
     Py_XDECREF(((ddspy_sertype_t*) tpcmn)->key_calc_attr);
     Py_XDECREF(((ddspy_sertype_t*) tpcmn)->keyhash_calc_attr);
 
-    ddsi_sertype_fini(tpcmn);
-
     PyGILState_Release(state);
+
+    ddsi_sertype_fini(tpcmn);
 }
 
 void sertype_zero_samples(const struct ddsi_sertype* d, void* _sample, size_t size)
@@ -669,7 +679,7 @@ ddspy_topic_create(PyObject *self, PyObject *args)
     
     ddspy_sertype_t *sertype = ddspy_sertype_new(datatype);
     ddsi_sertype_t *rsertype = (ddsi_sertype_t*) sertype;
-    sts = dds_create_topic_sertype(participant, name, &rsertype, NULL, NULL, NULL);
+    sts = dds_create_topic_sertype(participant, name, (void**) &rsertype, NULL, NULL, NULL);
 
     return PyLong_FromLong((long)sts);
 }
@@ -681,14 +691,10 @@ ddspy_write(PyObject *self, PyObject *args)
     dds_entity_t writer;
     dds_return_t sts;
 
-    quickprint("dds_write_args", args);
-
     if (!PyArg_ParseTuple(args, "iO", &writer, &container.sample))
         return NULL;
 
     sts = dds_write(writer, &container);
-
-    Py_DECREF(container.sample);
 
     return PyLong_FromLong((long) sts);
 }
@@ -702,14 +708,37 @@ ddspy_read(PyObject *self, PyObject *args)
     dds_entity_t reader;
     dds_return_t sts;
 
-    if (!PyArg_ParseTuple(args, "iO", &reader, &container.sample))
+    if (!PyArg_ParseTuple(args, "i", &reader))
         return NULL;
 
     sts = dds_read(reader, &pcontainer, &info, 1, 1);
 
-    if (sts == 1) {
-        return container.sample;
+    if (sts == 1) {  
+        return pcontainer->sample;
     }
+
+    return Py_None;
+}
+
+
+static PyObject *
+ddspy_take(PyObject *self, PyObject *args)
+{
+    dds_sample_info_t info;
+    ddspy_sample_container_t container = {.sample=NULL};
+    ddspy_sample_container_t* pcontainer = &container;
+    dds_entity_t reader;
+    dds_return_t sts;
+
+    if (!PyArg_ParseTuple(args, "i", &reader))
+        return NULL;
+
+    sts = dds_take(reader, &pcontainer, &info, 1, 1);
+
+    if (sts == 1) {  
+        return pcontainer->sample;
+    }
+
     return Py_None;
 }
 
@@ -722,6 +751,10 @@ PyMethodDef ddspy_funcs[] = {
 		ddspy_docs},
     {	"ddspy_read",
 		(PyCFunction)ddspy_read,
+		METH_VARARGS,
+		ddspy_docs},
+    {	"ddspy_take",
+		(PyCFunction)ddspy_take,
 		METH_VARARGS,
 		ddspy_docs},
     {	"ddspy_write",

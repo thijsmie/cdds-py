@@ -8,6 +8,8 @@ from cdds.core.exception import DDS_RETCODE_TIMEOUT
 from ctypes import c_void_p, POINTER, c_size_t, c_uint32, cast, pointer
 from typing import Union
 
+from ddspy import ddspy_read, ddspy_take
+
 
 class DataReader(Entity):
     """
@@ -43,6 +45,7 @@ class DataReader(Entity):
         self._pt_void_samples = cast(self._pt_samples, POINTER(c_void_p))
 
     def read(self, N=1, condition=None):
+        return ddspy_read(self._ref)
         ref = condition._ref if condition else self._ref
         self._ensure_memory(N)
 
@@ -59,6 +62,7 @@ class DataReader(Entity):
         return return_samples
 
     def take(self, N=1, condition=None):
+        return ddspy_take(self._ref)
         ref = condition._ref if condition else self._ref
         self._ensure_memory(N)
 
