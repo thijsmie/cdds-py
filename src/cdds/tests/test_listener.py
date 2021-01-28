@@ -30,7 +30,7 @@ def test_listener_inheritance():
 def test_listener_data_available(common_setup, capfd):
     listener = Listener(on_data_available=lambda reader: print("CHECK"))
     dr = DataReader(common_setup.sub, common_setup.tp, listener=listener)
-    common_setup.dw.write(Message(message=b"Hi!"))
+    common_setup.dw.write(Message(message="Hi!"))
 
     out, err = capfd.readouterr()
     assert "CHECK" in out

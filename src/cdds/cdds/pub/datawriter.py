@@ -7,7 +7,7 @@ from cdds.core.exception import DDS_RETCODE_TIMEOUT
 
 from ctypes import c_void_p, byref
 
-from ddspy import ddspy_write
+from ddspy import ddspy_write, ddspy_dispose
 
 
 class DataWriter(Entity):
@@ -36,25 +36,15 @@ class DataWriter(Entity):
         raise DDSException(ret, f"Occurred while waiting for acks from {repr(self)}")
 
     def dispose(self, sample):
-        if sample.struct:
-            ret = self._dispose(self._ref, byref(sample.struct))
-            if ret < 0:
-                raise DDSException(ret, f"Occurred while disposing in {repr(self)}")
+        ret = ddspy_dispose(self._ref, sample)
+        if ret < 0:
+            raise DDSException(ret, f"Occurred while disposing in {repr(self)}")
 
     # TODO: register_instance, unregister_instance
-    # TODO: writedispose
 
     @c_call("dds_create_writer")
     def _create_writer(self, publisher: dds_entity_t, topic: dds_entity_t, qos: dds_qos_p_t,
                        listener: dds_listener_p_t) -> dds_entity_t:
-        pass
-
-    @c_call("dds_write")
-    def _write(self, writer: dds_entity_t, sample: c_void_p) -> dds_return_t:
-        pass
-
-    @c_call("dds_dispose")
-    def _dispose(self, writer: dds_entity_t, sample: c_void_p) -> dds_return_t:
         pass
 
     @c_call("dds_wait_for_acks")

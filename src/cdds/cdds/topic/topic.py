@@ -11,13 +11,15 @@ class Topic(Entity):
     """Representing a Topic"""
 
     def __init__(self, domain_participant: 'cdds.domain.DomainParticipant',
-                 data_type, topic_name: str, qos=None, listener=None):
+                 topic_name: str, data_type, qos=None, listener=None):
         self.data_type = data_type
         super().__init__(
             ddspy_topic_create(
                 domain_participant._ref,
+                topic_name,
                 data_type,
-                topic_name
+                qos._ref if qos else None,
+                listener._ref if listener else None
             )
         )
 

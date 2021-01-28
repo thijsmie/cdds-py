@@ -36,7 +36,7 @@ def test_get_parent():
 
     assert dp.get_parent() == dp.parent == None
 
-    tp = Topic(dp, Message, 'Message')
+    tp = Topic(dp, 'Message', Message)
 
     assert isgoodentity(tp)
     assert tp.parent == tp.get_parent() == dp
@@ -67,7 +67,7 @@ def test_get_participant():
 
     assert dp.participant == dp.get_participant() == dp
 
-    tp = Topic(dp, Message, 'Message')
+    tp = Topic(dp, "Message", Message)
 
     assert isgoodentity(tp)
     assert tp.participant == tp.get_participant() == dp
@@ -98,7 +98,7 @@ def test_get_children():
 
     assert len(dp.children) == len(dp.get_children()) == 0
 
-    tp = Topic(dp, Message, 'Message')
+    tp = Topic(dp, "Message", Message)
 
     assert isgoodentity(tp)
     assert len(dp.children) == len(dp.get_children()) == 1
@@ -144,7 +144,7 @@ def test_get_children():
 
 def test_get_pubsub():
     dp = DomainParticipant(0)
-    tp = Topic(dp, Message, 'Message')
+    tp = Topic(dp, "Message", Message)
     sub = Subscriber(dp)
     pub = Publisher(dp)
     dr = DataReader(sub, tp)

@@ -1,12 +1,12 @@
-from cdds.topic import Sample
-from ctypes import c_char_p, c_uint16
+from pycdr import cdr
 
 
-@Sample("message")
+@cdr
 class Message:
-    message: c_char_p
+    message: str
 
-@Sample("message")
+
+@cdr
 class MessageAlt:
-    user_id: c_uint16
-    message: c_char_p
+    user_id: int
+    message: str

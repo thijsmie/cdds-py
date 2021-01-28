@@ -31,12 +31,12 @@ def test_readcondition_get_reader(common_setup):
     assert rc.get_datareader() == common_setup.dr
 
 
-def test_readcondtion_read(common_setup):
+def test_readcondition_read(common_setup):
     rc = ReadCondition(common_setup.dr, SampleState.Any | ViewState.Any | InstanceState.NotAliveDisposed)
 
     assert not rc.triggered
 
-    messages = [Message(message=f"Hi {i}!".encode('ascii')) for i in range(5)]
+    messages = [Message(message=f"Hi {i}!") for i in range(5)]
     for m in messages:
         common_setup.dw.write(m)
 

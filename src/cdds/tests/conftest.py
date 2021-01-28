@@ -19,7 +19,7 @@ class Common:
         self.qos = Qos(Policy.Reliability.Reliable(duration(seconds=2)), Policy.History.KeepLast(10))
 
         self.dp = DomainParticipant(domain_id)
-        self.tp = Topic(self.dp, Message, 'Message')
+        self.tp = Topic(self.dp, 'Message', Message)
         self.pub = Publisher(self.dp)
         self.sub = Subscriber(self.dp)
         self.dw = DataWriter(self.pub, self.tp, qos=self.qos)

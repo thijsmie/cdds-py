@@ -42,7 +42,7 @@ def test_waitset_wait(common_setup):
 
     assert ws.wait(duration(milliseconds=5)) == 0
 
-    common_setup.dw.write(Message(message=b"Hi!"))
+    common_setup.dw.write(Message(message="Hi!"))
 
     assert ws.wait(duration(seconds=1)) == 1
 

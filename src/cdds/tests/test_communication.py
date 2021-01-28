@@ -6,7 +6,7 @@ from  testtopics import Message
 
 
 def test_communication_basic_read(common_setup):
-    msg = Message(message=b"Hi!")
+    msg = Message(message="Hi!")
     common_setup.dw.write(msg)
     result = common_setup.dr.read()
 
@@ -15,7 +15,7 @@ def test_communication_basic_read(common_setup):
 
 
 def test_communication_basic_take(common_setup):
-    msg = Message(message=b"Hi!")
+    msg = Message(message="Hi!")
     common_setup.dw.write(msg)
     result = common_setup.dr.take()
 
@@ -24,8 +24,8 @@ def test_communication_basic_take(common_setup):
 
 
 def test_communication_order(common_setup):
-    msg1 = Message(message=b"Hi1!")
-    msg2 = Message(message=b"Hi2!")
+    msg1 = Message(message="Hi1!")
+    msg2 = Message(message="Hi2!")
     common_setup.dw.write(msg1)
     common_setup.dw.write(msg2)
     result = common_setup.dr.read(N=2)
@@ -36,7 +36,7 @@ def test_communication_order(common_setup):
 
 
 def test_communication_read_nodestroys(common_setup):
-    msg = Message(message=b"Hi!")
+    msg = Message(message="Hi!")
     common_setup.dw.write(msg)
     common_setup.dr.read()
     result = common_setup.dr.read()
@@ -46,7 +46,7 @@ def test_communication_read_nodestroys(common_setup):
 
 
 def test_communication_take_destroys(common_setup):
-    msg = Message(message=b"Hi!")
+    msg = Message(message="Hi!")
     common_setup.dw.write(msg)
     result1 = common_setup.dr.read()
     result2 = common_setup.dr.take()

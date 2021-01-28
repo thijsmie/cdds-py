@@ -18,7 +18,7 @@ def test_create_participant():
 
 def test_find_topic():
     dp = DomainParticipant(0)
-    tp = Topic(dp, Message, "Message")
+    tp = Topic(dp, "Message", Message)
 
     assert isgoodentity(tp)
     

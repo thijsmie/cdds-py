@@ -13,7 +13,7 @@ from  testtopics import Message
 
 def test_initialize_writer():
     dp = DomainParticipant(0)
-    tp = Topic(dp, Message, "Message")
+    tp = Topic(dp, "Message", Message)
     pub = Publisher(dp)
     dw = DataWriter(pub, tp)
 
@@ -22,12 +22,12 @@ def test_initialize_writer():
 
 def test_writeto_writer():
     dp = DomainParticipant(0)
-    tp = Topic(dp, Message, "Message")
+    tp = Topic(dp, "Message", Message)
     pub = Publisher(dp)
     dw = DataWriter(pub, tp)
 
     msg = Message(
-        message=b"TestMessage"
+        message="TestMessage"
     )
 
     dw.write(msg)

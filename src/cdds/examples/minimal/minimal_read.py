@@ -3,9 +3,7 @@ import time
 from cdds.domain import DomainParticipant
 from cdds.sub import Subscriber, DataReader
 
-from pycdr import cdr, keylist
-
-from topic import data, datatopic
+from topic import datatopic
 
 
 dp = DomainParticipant(0)

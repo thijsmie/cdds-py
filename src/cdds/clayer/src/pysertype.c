@@ -12,10 +12,10 @@
 
 #include <Python.h>
 
+#include <execinfo.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
-
 
 #include "dds/dds.h"
 
@@ -25,7 +25,99 @@
 #include "dds/ddsi/ddsi_serdata.h"
 #include "dds/ddsi/ddsi_sertype.h"
 
+//#define TRACE_SAMPL_ALLOC
+#ifdef TRACE_SAMPL_ALLOC
+void py_take_ref_(PyObject* object, int line)
+{
+    if (object == NULL) {
+        printf("TRIEDTAKEREFNULL on %i\n", line);  
+        return;
+    }
+    printf("TAKEREF(%p) on %i\n", (void *) object, line);   
+    Py_INCREF(object);
+}
 
+void py_release_ref_(PyObject* object, int line)
+{
+    if (object == NULL) {
+        printf("TRIEDRELEASEREFNULL on %i\n", line);  
+        return;
+    }
+    printf("RELEASEREF(%p) on %i\n", (void *) object, line);   
+    Py_DECREF(object);
+}
+
+void py_return_ref_(PyObject* object, int line)
+{
+    if (object == NULL) {
+        printf("TRIEDRETURNNULL on %i\n", line);  
+        return;
+    }
+    printf("RETURNEDREF(%p) on %i\n", (void *) object, line);   
+}
+
+void py_check(PyObject* object, const char* msg)
+{
+    if (!object) {
+        printf("%s", msg);
+        assert(0);
+    }
+    if (PyErr_Occurred() != NULL) {
+        printf("Error occurred before %s", msg);
+        assert(0);
+    }
+}
+
+void print_trace (void)
+{
+  void *array[10];
+  char **strings;
+  int size, i;
+
+  size = backtrace (array, 10);
+  strings = backtrace_symbols (array, size);
+  if (strings != NULL)
+  {
+
+    printf ("Obtained %d stack frames.\n", size);
+    for (i = 0; i < size; i++)
+      printf ("%s\n", strings[i]);
+  }
+
+  free (strings);
+}
+
+#define py_take_ref(T) py_take_ref_(T, __LINE__)
+#define py_release_ref(T) py_release_ref_(T, __LINE__)
+#define py_return_ref(T) py_return_ref_(T, __LINE__)
+#define trace
+#else
+void py_take_ref(PyObject* object)
+{
+    Py_INCREF(object);
+}
+
+void py_release_ref(PyObject* object)
+{
+    Py_DECREF(object);
+}
+
+void py_check(PyObject* object, const char* msg)
+{
+    (void*) object;
+    (void*) msg;
+}
+
+void py_return_ref(PyObject* object)
+{
+    (void*) object;  
+}
+
+#define trace 
+#endif
+
+
+/// Ref counting verified, does not take ownership of (*self)
 void quickprint(const char* prefix, PyObject* self)
 {
     PyObject* repr = PyObject_Repr(self);
@@ -63,6 +155,7 @@ typedef struct ddspy_serdata {
     bool hash_populated;
 } ddspy_serdata_t;
 
+// Non-owning
 typedef struct ddspy_sample_container {
     PyObject* sample;
 } ddspy_sample_container_t;
@@ -88,19 +181,6 @@ static inline const ddspy_serdata_t* cserdata(const ddsi_serdata_t *this)
     return (const ddspy_serdata_t*) (this);
 }
 
-PyObject *memory_as_pybuffer(void *ptr, Py_ssize_t buf_len) {
-    Py_buffer pybuf;
-    Py_ssize_t shape[] = {buf_len};
-
-    // This is not a copy!
-    int ret = PyBuffer_FillInfo(&pybuf, NULL, ptr, buf_len, 1, PyBUF_SIMPLE);
-    if (ret!=0)
-    	return NULL;
-    pybuf.format = "B";
-    pybuf.shape = shape;
-    return PyMemoryView_FromBuffer(&pybuf);
-}
-
 ddspy_serdata_t *ddspy_serdata_new(const struct ddsi_sertype* type, enum ddsi_serdata_kind kind, size_t data_size)
 {
     ddspy_serdata_t *new = (ddspy_serdata_t*) malloc(sizeof(ddspy_serdata_t));
@@ -114,6 +194,7 @@ ddspy_serdata_t *ddspy_serdata_new(const struct ddsi_sertype* type, enum ddsi_se
     return new;
 }
 
+/// refcount verified, one owning ref to the sample remaining
 void ddspy_serdata_ensure_sample(ddspy_serdata_t* this)
 {
     if (this->sample)
@@ -121,25 +202,29 @@ void ddspy_serdata_ensure_sample(ddspy_serdata_t* this)
 
     PyGILState_STATE state = PyGILState_Ensure();
 
-    PyObject* arglist = Py_BuildValue("(O)", memory_as_pybuffer(this->data, this->data_size));
-    PyObject* result = PyObject_CallObject(sertype(this)->deserialize_attr, arglist);
-    Py_INCREF(result);
-    this->sample = result;
+    /// This is not a copy
+    PyObject* memory = PyMemoryView_FromMemory(this->data + 4, this->data_size - 4, PyBUF_READ);
+    PyObject* arglist = Py_BuildValue("(O)", memory);
 
-    quickprint("Deserialized", result);
+    PyObject* result = PyObject_CallObject(sertype(this)->deserialize_attr, arglist);
+    // We already have a ref to result.
+
+    Py_DECREF(arglist);
+    Py_DECREF(memory);
+
+    this->sample = result;
 
     PyGILState_Release(state);
 }
 
+// refcount verified A
 void ddspy_serdata_populate_hash(ddspy_serdata_t* this)
 {
     if (this->hash_populated) {
-        printf("Already populated\n");
         return;
     }
 
     if (csertype(this)->keyhash_calc_attr == NULL) {
-        printf("No keyhash prop\n");
         return;
     }
 
@@ -175,6 +260,8 @@ void ddspy_serdata_populate_hash(ddspy_serdata_t* this)
     memcpy(this->key.value, buf, 16);
     memcpy(&(this->c_data.hash), buf, 4);
 
+    Py_DECREF(result);
+
     PyGILState_Release(state);
     this->hash_populated = true;
 }
@@ -194,7 +281,7 @@ ddsi_serdata_t *serdata_from_ser(
   enum ddsi_serdata_kind kind,
   const struct nn_rdata* fragchain, size_t size)
 {
-    ddspy_serdata_t *d = ddspy_serdata_new(type, size, kind);
+    ddspy_serdata_t *d = ddspy_serdata_new(type, kind, size);
 
     uint32_t off = 0;
     assert(fragchain->min == 0);
@@ -240,7 +327,7 @@ ddsi_serdata_t *serdata_from_ser_iov(
   const ddsrt_iovec_t* iov,
   size_t size)
 {
-    ddspy_serdata_t *d = ddspy_serdata_new(type, size, kind);
+    ddspy_serdata_t *d = ddspy_serdata_new(type, kind, size);
 
     size_t off = 0;
     unsigned char* cursor = d->data;
@@ -324,7 +411,6 @@ ddsi_serdata_t *serdata_from_sample(
         {
             PyObject* arglist = Py_BuildValue("(O)", container->sample);
             PyObject* result = PyObject_CallObject(((const ddspy_sertype_t*) type)->key_calc_attr, arglist);
-            quickprint("serdata_from_sample-sdk_key-result", result);
             Py_DECREF(arglist);
 
             if (result == NULL) {
@@ -348,8 +434,9 @@ ddsi_serdata_t *serdata_from_sample(
             assert(0);
     }
 
-    Py_IncRef(container->sample);
+    /// Serdata is the 'owning' structure, the sample container is not.
     d->sample = container->sample;
+    py_take_ref(d->sample);
     PyGILState_Release(state);
 
     memset(d->data, 0x0, 4);
@@ -382,21 +469,18 @@ void serdata_to_ser_unref(struct ddsi_serdata* dcmn, const ddsrt_iovec_t* ref)
 }
 
 bool serdata_to_sample(
-  const ddsi_serdata_t* dcmn, void* sample, void** bufptr,
+  ddsi_serdata_t* dcmn, void* sample, void** bufptr,
   void* buflim)
 {
     (void)bufptr;
     (void)buflim;
 
     ddspy_sample_container_t *container = (ddspy_sample_container_t*) sample;
-    //ddspy_serdata_ensure_sample(cserdata(dcmn));
+    ddspy_serdata_ensure_sample(cserdata(dcmn));
 
-    PyGILState_STATE state = PyGILState_Ensure();
-
-    Py_INCREF(cserdata(dcmn)->sample);
+    // Container is a non-owning structure
     container->sample = cserdata(dcmn)->sample;
-
-    PyGILState_Release(state);
+    py_take_ref(container->sample);
 
     return false;
 }
@@ -435,12 +519,13 @@ void serdata_free(struct ddsi_serdata* dcmn)
 {
     if (dcmn->kind == SDK_DATA && serdata(dcmn)->sample != NULL) {
         PyGILState_STATE state = PyGILState_Ensure();
-        Py_XDECREF(serdata(dcmn)->sample);      
+        py_release_ref(serdata(dcmn)->sample);      
         PyGILState_Release(state);
     }
 
     free(serdata(dcmn)->data);
     free(dcmn);
+    trace
 }
 
 size_t serdata_print(const struct ddsi_sertype* tpcmn, const struct ddsi_serdata* dcmn, char* buf, size_t bufsize)
@@ -511,9 +596,9 @@ void sertype_free(struct ddsi_sertype* tpcmn)
     Py_XDECREF(((ddspy_sertype_t*) tpcmn)->key_calc_attr);
     Py_XDECREF(((ddspy_sertype_t*) tpcmn)->keyhash_calc_attr);
 
-    PyGILState_Release(state);
-
     ddsi_sertype_fini(tpcmn);
+
+    PyGILState_Release(state);
 }
 
 void sertype_zero_samples(const struct ddsi_sertype* d, void* _sample, size_t size)
@@ -522,14 +607,10 @@ void sertype_zero_samples(const struct ddsi_sertype* d, void* _sample, size_t si
 
     ddspy_sample_container_t *sample = (ddspy_sample_container_t*) _sample;
 
-    PyGILState_STATE state = PyGILState_Ensure();
-
     for(size_t i = 0; i < size; ++i) {
-        Py_XDECREF((sample+i)->sample);
         (sample+i)->sample = NULL;
+        printf("Unfreed ref to sample maybe");
     }
-
-    PyGILState_Release(state);
 
     return;
 }
@@ -629,9 +710,11 @@ ddspy_sertype_t *ddspy_sertype_new(PyObject *pytype)
     ddspy_sertype_t *new = (ddspy_sertype_t*) malloc(sizeof(ddspy_sertype_t));
 
     PyObject* pyname = PyObject_GetAttrString(pytype, "typename");
+    py_check(pyname, "Typename unset.");
     const char *name = PyUnicode_AsUTF8(pyname);
 
     PyObject* pykeyless = PyObject_GetAttrString(pytype, "keyless");
+    py_check(pykeyless, "keyless unset.");
     bool keyless = pykeyless == Py_True;
     Py_DECREF(pykeyless);
 
@@ -644,20 +727,40 @@ ddspy_sertype_t *ddspy_sertype_new(PyObject *pytype)
     );
     Py_DECREF(pyname);
 
-    Py_INCREF(pytype);
+    py_take_ref(pytype);
     new->my_py_type = pytype;
     new->deserialize_attr = PyObject_GetAttrString(pytype, "deserialize");
     new->serialize_attr = PyObject_GetAttrString(pytype, "serialize");
+    py_check(new->deserialize_attr, "deserialize unset.");
+    py_check(new->serialize_attr, "serialize unset.");
+    py_check(pytype, "Type unset.");
 
     if (!keyless)
     {
         new->key_calc_attr = PyObject_GetAttrString(pytype, "key");
         new->keyhash_calc_attr = PyObject_GetAttrString(pytype, "keyhash");
+        py_check(new->key_calc_attr, "key_calc_attr unset.");
+        py_check(new->keyhash_calc_attr, "keyhash_calc_attr unset.");
 
         PyObject* pykeysize = PyObject_GetAttrString(pytype, "key_max_size");
-        long long keysize = PyLong_AsLongLong(pykeysize);
-        Py_DECREF(pykeysize);
-        new->key_maxsize_bigger_16 = keysize > 16;
+
+        if (pykeysize == NULL) {
+            new->key_maxsize_bigger_16 = true;
+            PyErr_Clear();
+        }
+        else {
+            long long keysize = PyLong_AsLongLong(pykeysize);
+            if (PyErr_Occurred() != NULL) {
+                PyErr_Clear();
+                keysize = 17;
+            }
+            Py_DECREF(pykeysize);
+            new->key_maxsize_bigger_16 = keysize > 16;
+        }
+    } else {
+        new->key_calc_attr = NULL;
+        new->keyhash_calc_attr = NULL;
+        new->key_maxsize_bigger_16 = true;
     }
 
     return new;
@@ -673,14 +776,21 @@ ddspy_topic_create(PyObject *self, PyObject *args)
     PyObject* datatype;
     dds_entity_t participant;
     dds_entity_t sts;
+    PyObject* qospy;
+    PyObject* listenerpy;
+    dds_listener_t* listener = NULL;
+    dds_qos_t* qos = NULL;
 
-    if (!PyArg_ParseTuple(args, "isO", &participant, &name, &datatype))
+    if (!PyArg_ParseTuple(args, "lsOOO", &participant, &name, &datatype, &qospy, &listenerpy))
         return NULL;
-    
+
+    if (listenerpy != Py_None) listener = PyLong_AsVoidPtr(listenerpy);
+    if (qospy != Py_None) qos = PyLong_AsVoidPtr(qospy);
+
     ddspy_sertype_t *sertype = ddspy_sertype_new(datatype);
     ddsi_sertype_t *rsertype = (ddsi_sertype_t*) sertype;
-    sts = dds_create_topic_sertype(participant, name, (void**) &rsertype, NULL, NULL, NULL);
 
+    sts = dds_create_topic_sertype(participant, name, (void**) &rsertype, qos, listener, NULL);
     return PyLong_FromLong((long)sts);
 }
 
@@ -700,46 +810,102 @@ ddspy_write(PyObject *self, PyObject *args)
 }
 
 static PyObject *
+ddspy_dispose(PyObject *self, PyObject *args)
+{
+    ddspy_sample_container_t container;
+    dds_entity_t writer;
+    dds_return_t sts;
+
+    if (!PyArg_ParseTuple(args, "iO", &writer, &container.sample))
+        return NULL;
+
+    sts = dds_dispose(writer, &container);
+
+    return PyLong_FromLong((long) sts);
+}
+
+
+static PyObject *
 ddspy_read(PyObject *self, PyObject *args)
 {
-    dds_sample_info_t info;
-    ddspy_sample_container_t container = {.sample=NULL};
-    ddspy_sample_container_t* pcontainer = &container;
+    long long N;
     dds_entity_t reader;
     dds_return_t sts;
 
-    if (!PyArg_ParseTuple(args, "i", &reader))
+    if (!PyArg_ParseTuple(args, "iL", &reader, &N))
         return NULL;
 
-    sts = dds_read(reader, &pcontainer, &info, 1, 1);
-
-    if (sts == 1) {  
-        return pcontainer->sample;
+    if (N <= 0) {
+        PyErr_SetString(PyExc_TypeError, "N should be a positive integer");
+        return NULL;
     }
 
-    return Py_None;
+    dds_sample_info_t* info = malloc(sizeof(dds_sample_info_t) * N);
+    ddspy_sample_container_t* container = malloc(sizeof(ddspy_sample_container_t) * N);
+    ddspy_sample_container_t** rcontainer = malloc(sizeof(ddspy_sample_container_t*) * N);
+
+    for(int i = 0; i < N; ++i) {
+        rcontainer[i] = &container[i];
+    }
+
+    sts = dds_read(reader, rcontainer, info, N, N);
+    if (sts < 0) {
+        return PyLong_FromLong((long) sts);
+    }
+
+    PyObject* list = PyList_New(sts);
+
+    for(int i = 0; i < sts; ++i) {
+        PyList_SetItem(list, i, container[i].sample);
+        py_return_ref(container[i].sample);
+    }
+    free(info);
+    free(container);
+    free(rcontainer);
+
+    return list;
 }
 
 
 static PyObject *
 ddspy_take(PyObject *self, PyObject *args)
 {
-    dds_sample_info_t info;
-    ddspy_sample_container_t container = {.sample=NULL};
-    ddspy_sample_container_t* pcontainer = &container;
+    long long N;
     dds_entity_t reader;
     dds_return_t sts;
 
-    if (!PyArg_ParseTuple(args, "i", &reader))
+    if (!PyArg_ParseTuple(args, "iL", &reader, &N))
         return NULL;
 
-    sts = dds_take(reader, &pcontainer, &info, 1, 1);
-
-    if (sts == 1) {  
-        return pcontainer->sample;
+    if (N <= 0) {
+        PyErr_SetString(PyExc_TypeError, "N should be a positive integer");
+        return NULL;
     }
 
-    return Py_None;
+    dds_sample_info_t* info = malloc(sizeof(dds_sample_info_t) * N);
+    ddspy_sample_container_t* container = malloc(sizeof(ddspy_sample_container_t) * N);
+    ddspy_sample_container_t** rcontainer = malloc(sizeof(ddspy_sample_container_t*) * N);
+
+    for(int i = 0; i < N; ++i) {
+        rcontainer[i] = &container[i];
+    }
+
+    sts = dds_take(reader, rcontainer, info, N, N);
+    if (sts < 0) {
+        return PyLong_FromLong((long) sts);
+    }
+
+    PyObject* list = PyList_New(sts);
+
+    for(int i = 0; i < sts; ++i) {
+        PyList_SetItem(list, i, container[i].sample);
+        py_return_ref(container[i].sample);
+    }
+    free(info);
+    free(container);
+    free(rcontainer);
+
+    return list;
 }
 
 char ddspy_docs[] = "DDSPY module";
@@ -759,6 +925,10 @@ PyMethodDef ddspy_funcs[] = {
 		ddspy_docs},
     {	"ddspy_write",
 		(PyCFunction)ddspy_write,
+		METH_VARARGS,
+		ddspy_docs},
+    {	"ddspy_dispose",
+		(PyCFunction)ddspy_dispose,
 		METH_VARARGS,
 		ddspy_docs},
 	{	NULL}

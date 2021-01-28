@@ -63,7 +63,7 @@ class Entity(DDS):
         self._entities[self._ref] = self
 
     def __del__(self):
-        if self._ref not in self._entities:
+        if not hasattr(self, "_ref") or self._ref not in self._entities:
             return
 
         del self._entities[self._ref]

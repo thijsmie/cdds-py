@@ -47,3 +47,20 @@ def clserialize(cls, obj):
     buffer = Buffer()
     cls.cdr.encode(buffer, obj)
     return buffer.asbytes()
+
+
+def clkeyserialize(cls, obj):
+    buffer = Buffer()
+    cls.cdrkey.encode(buffer, obj)
+    return buffer.asbytes()
+
+
+def clkeyhashserialize(cls, object):
+    buffer = Buffer()
+    cls.cdrkey.encode(buffer, object)
+    res = buffer.asbytes()
+    if cls.key_max_size <= 16:
+        return res.ljust(16, b'\0')
+    m = md5()
+    m.update(res)
+    return m.digest()

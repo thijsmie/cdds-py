@@ -1,9 +1,6 @@
 from cdds.domain import DomainParticipant
-from cdds.topic import Topic
 from cdds.pub import Publisher, DataWriter
 from cdds.sub import Subscriber, DataReader
-
-from pycdr import cdr, keylist
 
 from topic import data, datatopic
 
