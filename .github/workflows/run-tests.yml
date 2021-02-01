@@ -89,12 +89,12 @@ jobs:
     - name: Install pycdr 🐍
       working-directory: ./src/pycdr
       run: |
-        pip install -e .
+        pip install .
 
     - name: Install cdds 🐍
       working-directory: ./src/cdds
       run: |
-        pip install -e .
+        pip install .
         pip install pytest pytest-cov flake8
 
     - name: Lint with flake8 ❄
