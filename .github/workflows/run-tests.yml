@@ -86,6 +86,11 @@ jobs:
       if: matrix.python == '3.6.12'
       run: pip install dataclasses
 
+    - name: Install pycdr 🐍
+      working-directory: ./src/pycdr
+      run: |
+        pip install -e .
+
     - name: Install cdds 🐍
       working-directory: ./src/cdds
       run: |
