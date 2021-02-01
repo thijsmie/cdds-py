@@ -117,24 +117,11 @@ void py_return_ref(PyObject* object)
 #endif
 
 
-/// Ref counting verified, does not take ownership of (*self)
-void quickprint(const char* prefix, PyObject* self)
-{
-    PyObject* repr = PyObject_Repr(self);
-    PyObject* str = PyUnicode_AsEncodedString(repr, "utf-8", "~E~");
-    const char *bytes = PyBytes_AS_STRING(str);
-
-    printf("%s: %s\n", prefix, bytes);
-
-    Py_XDECREF(repr);
-    Py_XDECREF(str);
-}
-
-
 typedef struct ddsi_serdata ddsi_serdata_t;
 typedef struct ddsi_sertype ddsi_sertype_t;
 
 
+// Python refcount: one ref for each PyObject*.
 typedef struct ddspy_sertype {
     ddsi_sertype_t my_c_type;
     PyObject* my_py_type;
@@ -145,7 +132,7 @@ typedef struct ddspy_sertype {
     bool key_maxsize_bigger_16;
 } ddspy_sertype_t;
 
-
+// Python refcount: one ref for sample.
 typedef struct ddspy_serdata {
     ddsi_serdata_t c_data;
     PyObject* sample;
@@ -155,7 +142,7 @@ typedef struct ddspy_serdata {
     bool hash_populated;
 } ddspy_serdata_t;
 
-// Non-owning
+// Python refcount: one ref for sample.
 typedef struct ddspy_sample_container {
     PyObject* sample;
 } ddspy_sample_container_t;
@@ -194,7 +181,7 @@ ddspy_serdata_t *ddspy_serdata_new(const struct ddsi_sertype* type, enum ddsi_se
     return new;
 }
 
-/// refcount verified, one owning ref to the sample remaining
+
 void ddspy_serdata_ensure_sample(ddspy_serdata_t* this)
 {
     if (this->sample)
@@ -217,7 +204,7 @@ void ddspy_serdata_ensure_sample(ddspy_serdata_t* this)
     PyGILState_Release(state);
 }
 
-// refcount verified A
+
 void ddspy_serdata_populate_hash(ddspy_serdata_t* this)
 {
     if (this->hash_populated) {
@@ -392,7 +379,7 @@ ddsi_serdata_t *serdata_from_sample(
             Py_DECREF(arglist);
 
             if (result == NULL) {
-                // Error condition: This is when python has set an error code, the keyhash is unfilled.
+                // Error condition: This is when python has set an error code, no serialization happened.
                 // We won't set hash_populated, but we have to start the python interpreter back up
                 PyGILState_Release(state);
                 return NULL;
@@ -434,7 +421,7 @@ ddsi_serdata_t *serdata_from_sample(
             assert(0);
     }
 
-    /// Serdata is the 'owning' structure, the sample container is not.
+    /// Container already has a reference, take one extra for serdata.
     d->sample = container->sample;
     py_take_ref(d->sample);
     PyGILState_Release(state);
@@ -478,7 +465,7 @@ bool serdata_to_sample(
     ddspy_sample_container_t *container = (ddspy_sample_container_t*) sample;
     ddspy_serdata_ensure_sample(cserdata(dcmn));
 
-    // Container is a non-owning structure
+    // Take a reference for the container
     container->sample = cserdata(dcmn)->sample;
     py_take_ref(container->sample);
 
@@ -518,6 +505,7 @@ bool serdata_typeless_to_sample(
 void serdata_free(struct ddsi_serdata* dcmn)
 {
     if (dcmn->kind == SDK_DATA && serdata(dcmn)->sample != NULL) {
+        // Technically during a full on crash we can deadlock here.
         PyGILState_STATE state = PyGILState_Ensure();
         py_release_ref(serdata(dcmn)->sample);      
         PyGILState_Release(state);
@@ -609,7 +597,7 @@ void sertype_zero_samples(const struct ddsi_sertype* d, void* _sample, size_t si
 
     for(size_t i = 0; i < size; ++i) {
         (sample+i)->sample = NULL;
-        printf("Unfreed ref to sample maybe");
+        // TODO: decrease ref here
     }
 
     return;
