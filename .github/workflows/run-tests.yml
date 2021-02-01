@@ -13,7 +13,7 @@ jobs:
       with:
         repository: eclipse-cyclonedds/cyclonedds
         path: cyclonedds
-        ref: idlcxx
+        ref: master
         token: ${{ secrets.PAT }}
 
     - name: Check for Cyclone build cache 💽
@@ -21,7 +21,7 @@ jobs:
       uses: actions/cache@v2
       with:
         path: cyclonedds
-        key: ${{ runner.os }}-v2-${{ hashFiles('cyclonedds/.git/refs/heads/idlcxx') }}
+        key: ${{ runner.os }}-v2-${{ hashFiles('cyclonedds/.git/refs/heads/master') }}
 
     - name: Get Java and Maven ☕
       if: steps.cyclone-cache.outputs.cache-hit != 'true'
