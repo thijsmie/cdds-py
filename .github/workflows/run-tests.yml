@@ -39,14 +39,14 @@ jobs:
       if: steps.cyclone-cache.outputs.cache-hit != 'true'
       run: |
         mkdir cyclonedds/build cyclonedds/install && cd cyclonedds/build
-        cmake .. -DCMAKE_INSTALL_PREFIX=../install
-        cmake --build . --target install
+        cmake ..
+        cmake --build . 
 
     - name: Build result upload 🚀
       uses: actions/upload-artifact@v2
       with:
         name: cyclone-build
-        path: cyclonedds/install
+        path: cyclonedds
 
   test:
     if: "!contains(github.event.head_commit.message, 'skip ci')"
@@ -68,11 +68,16 @@ jobs:
       uses: actions/download-artifact@v2
       with:
         name: cyclone-build
-        path: cyclonedds/install
+        path: cyclonedds
 
     - name: Get latest CMake ⚡
       if: steps.cyclone-cache.outputs.cache-hit != 'true'
       uses: lukka/get-cmake@v3.19.1
+
+    - name: Install Cyclone 🌀
+      run: |
+        cd cyclonedds/build
+        cmake --build . --target install
     
     - name: Install python 🐍
       uses: actions/setup-python@v2
@@ -102,18 +107,9 @@ jobs:
         flake8 ./src/cdds/cdds --count --select=E9,F63,F7,F82 --show-source --statistics
         flake8 ./src/cdds/cdds --count --exit-zero --max-complexity=10 --max-line-length=127 --per-file-ignores="__init__.py:F401" --statistics
 
-    - name: Generate test module with idl ☄
-      working-directory: ./src/cdds/tests/support_modules/testtopics
-      run: |
-        mkdir build && cd build
-        cmake .. -DCMAKE_PREFIX_PATH=${{ github.workspace }}/cyclonedds/install
-        cmake --build .
-
     - name: Run tests 🧪
       working-directory: ./src/cdds
       run: pytest
-      env:
-        ddsc: ../cyclonedds/install/lib/libddsc.so
 
     - name: Upload coverage report to codecov 🚀
       uses: codecov/codecov-action@v1
