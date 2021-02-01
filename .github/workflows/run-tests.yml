@@ -74,6 +74,14 @@ jobs:
       if: steps.cyclone-cache.outputs.cache-hit != 'true'
       uses: lukka/get-cmake@v3.19.1
 
+    - name: Get Java and Maven ☕
+      if: steps.cyclone-cache.outputs.cache-hit != 'true'
+      uses: actions/setup-java@v1
+      with:
+        java-version: '9'
+        java-package: jdk
+        architecture: x64
+
     - name: Install Cyclone 🌀
       run: |
         cd cyclonedds/build
