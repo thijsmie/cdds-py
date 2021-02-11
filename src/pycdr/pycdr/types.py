@@ -1,11 +1,11 @@
-from typing import NewType, get_type_hints, List, Dict, Any, Optional, get_origin, get_args
+from typing import NewType, get_type_hints, List, Dict, Any, Optional
 from enum import Enum
 
 
 try:
-    from typing import Annotated
+    from typing import Annotated, get_origin, get_args
 except:
-    from typing_extensions import Annotated
+    from typing_extensions import Annotated, get_origin, get_args
 
 
 char = NewType("char", int)

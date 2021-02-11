@@ -3,9 +3,9 @@ from pycdr.types import primitive_types
 
 
 try:
-    from typing import Annotated
+    from typing import Annotated, get_origin, get_args
 except:
-    from typing_extensions import Annotated
+    from typing_extensions import Annotated, get_origin, get_args
 
 
 def is_plain_type(_type):

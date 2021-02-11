@@ -5,8 +5,6 @@ from .idl_entities import CompleteStructType, CompleteTypeDetail, CompleteTypeOb
     StringSTypeDefn, StringLTypeDefn, TypeIdentifier, IS_FINAL, IS_APPENDABLE, IS_MUTABLE, TypeObjectContainer
 
 from dataclasses import fields, is_dataclass
-
-from typing import get_origin, get_args
 from enum import Enum
 from pycdr.types import char, wchar, int8, int16, int32, int64, uint8, uint16, uint32, uint64, float32, float64, NoneType
 from pycdr.helper import CDR
@@ -19,9 +17,9 @@ from .util import uint32_max, uint8_max
 
 
 try:
-    from typing import Annotated
+    from typing import Annotated, get_origin, get_args
 except:
-    from typing_extensions import Annotated
+    from typing_extensions import Annotated, get_origin, get_args
     
 
 class TypeObjectBuilder:
