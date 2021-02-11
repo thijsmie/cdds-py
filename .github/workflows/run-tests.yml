@@ -92,8 +92,9 @@ jobs:
       env:
         LIBRARY_PATH: ${{ github.workspace }}/cyclonedds/install/lib
         LD_LIBRARY_PATH: ${{ github.workspace }}/cyclonedds/install/lib
+        DDS_INCLUDE_DIR: ${{ github.workspace }}/cyclonedds/install/include
       run: |
-        pip install .
+        pip install --global-option=build_ext --global-option="-I$DDS_INCLUDE_DIR" .
         pip install pytest pytest-cov flake8
 
     - name: Lint with flake8 ❄
