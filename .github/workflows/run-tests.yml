@@ -21,7 +21,7 @@ jobs:
       uses: actions/cache@v2
       with:
         path: cyclonedds
-        key: ${{ runner.os }}-v3-${{ hashFiles('cyclonedds/.git/refs/heads/master') }}
+        key: ${{ runner.os }}-v4-${{ hashFiles('cyclonedds/.git/refs/heads/master') }}
 
     - name: Get Java and Maven ☕
       if: steps.cyclone-cache.outputs.cache-hit != 'true'
