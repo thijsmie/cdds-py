@@ -1,41 +1,17 @@
 from dataclasses import dataclass
 
-from .machinery import build_key_machine, build_machine, MaxSizeFinder
-from .serdata import encode, decode, clserialize, clkeyhashserialize, clkeyserialize
+from .helper import CDR, proto_deserialize, proto_serialize
 
 
-def cdr(cls):
-    cls = dataclass(cls)
-    machine = build_machine(cls)
-    cls.cdr = machine
-    cls.cdrkey = machine
-    cls.encode = encode
-    cls.decode = classmethod(decode)
-
-    # For dds:
-    cls.typename = cls.__name__
-    cls.keyless = False
-    cls.deserialize = classmethod(decode)
-    cls.serialize = classmethod(clserialize)
-    cls.key = classmethod(clkeyserialize)
-    cls.keyhash = classmethod(clkeyhashserialize)
-
-    finder = MaxSizeFinder()
-    cls.cdr.max_size(finder)
-    cls.key_max_size = finder.size
-
-    return cls
-
-
-def keylist(*keys):
-    def keyfactory(cls):
-        cls.cdrkey = build_key_machine(keys, cls)
-        finder = MaxSizeFinder()
-        cls.cdrkey.max_size(finder)
-
-        cls.keyless = False
-        cls.key_max_size = finder.size
+def cdr(*args, final=False, mutable=False, appendable=True, keylist=None):
+    def cdr(cls):
+        cls = dataclass(cls)
+        cls.cdr = CDR(cls, final, mutable, appendable, keylist)
+        cls.serialize = proto_serialize
+        cls.deserialize = classmethod(proto_deserialize)
 
         return cls
 
-    return keyfactory
+    if args:
+        return cdr(args[0])
+    return cdr

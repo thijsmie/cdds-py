@@ -1,21 +1,15 @@
-import os
-import sys
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
 from pycdr import cdr
-from pycdr.types import int8, int16, Len
-
-from typing import Annotated, List, Dict
+from pycdr.types import int8, int16, uint16, map, sequence, array
 
 
 @cdr
 class Test2:
     a: int8
     b: str
+    v: uint16
 
 
 @cdr
-@keylist("a", "b", "f.a")
 class Test:
     a: int8
     b: int16
@@ -23,8 +17,10 @@ class Test:
     d: bool
     e: float
     f: Test2
-    k: Annotated[List[int], Len(3)]
-    v: Dict[str, str]
+    k: sequence[int, 12]
+    l: sequence[str]
+    m: array[bool, 3]
+    v: map[str, str]
 
 
 a = Test(
@@ -33,13 +29,15 @@ a = Test(
     c = "blah",
     d = False,
     e = 0.2,
-    f = Test2(a=12, b="wallallalla"),
+    f = Test2(a=12, b="wallallalla", v=12),
     k = [1,2,3],
+    m = [True, True, False],
+    l = [],
     v = {'a': 'b'}
 )
 
-data = a.encode()
-obj = Test.decode(data)
+data = a.serialize()
+obj = Test.deserialize(data)
 
 assert a == obj
 print(obj)

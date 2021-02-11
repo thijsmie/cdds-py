@@ -1,27 +1,9 @@
 from dataclasses import fields, is_dataclass
+from enum import Enum
 from typing import Annotated, List, Union, Mapping, get_origin, get_args
 import struct
-from .types import (default, char, wchar, int8, int16, int32, int64, uint8, uint16, uint32, uint64,
-                    float32, float64, MaxLen, Len, IdlUnion)
+from .types import ArrayHolder, BoundStringHolder, SequenceHolder, default, primitive_types, IdlUnion, NoneType
 
-
-primitive_types = {
-    char: (1, 'b'),
-    wchar: (2, 'h'),
-    int8: (1, 'b'),
-    int16: (2, 'h'),
-    int32: (4, 'i'),
-    int64: (8, 'q'),
-    uint8: (1, 'B'),
-    uint16: (2, 'H'),
-    uint32: (4, 'I'),
-    uint64: (8, 'Q'),
-    float32: (4, 'f'),
-    float64: (8, 'd'),
-    int: (8, 'q'),
-    bool: (1, '?'),
-    float: (8, 'd')
-}
 
 
 class Buffer:
@@ -31,8 +13,11 @@ class Buffer:
         self._size = len(self._bytes)
         self._alignc = '@'
 
+    def seek(self, pos):
+        self._pos = pos
+
     def ensure_size(self, size):
-        if self._pos + size < self._size:
+        if self._pos + size > self._size:
             old_bytes = self._bytes
             old_size = self._size
             self._size *= 2
@@ -80,14 +65,28 @@ class MaxSizeFinder:
 
 
 class Machine:
-    """Given a type, encode and decode"""
+    """Given a type, serialize and deserialize"""
     def __init__(self, type):
         self.alignment = 1
     
-    def encode(self, buffer, value):
+    def serialize(self, buffer, value):
         pass
 
-    def decode(self, buffer):
+    def deserialize(self, buffer):
+        pass
+
+    def max_size(self, finder):
+        pass
+
+
+class NoneMachine(Machine):
+    def __init__(self, type):
+        self.alignment = 1
+    
+    def serialize(self, buffer, value):
+        pass
+
+    def deserialize(self, buffer):
         pass
 
     def max_size(self, finder):
@@ -99,11 +98,11 @@ class PrimitiveMachine(Machine):
         self.type = type
         self.alignment, self.code = primitive_types[self.type]
 
-    def encode(self, buffer, value):
+    def serialize(self, buffer, value):
         buffer.align(self.alignment)
         buffer.write(self.code, self.alignment, value)
 
-    def decode(self, buffer):
+    def deserialize(self, buffer):
         buffer.align(self.alignment)
         return buffer.read(self.code, self.alignment)
 
@@ -116,7 +115,7 @@ class StringMachine(Machine):
         self.alignment = 4
         self.bound = bound
 
-    def encode(self, buffer, value):
+    def serialize(self, buffer, value):
         if self.bound and len(value) > self.bound:
             raise Exception("String longer than bound.")
         buffer.align(4)
@@ -125,7 +124,7 @@ class StringMachine(Machine):
         buffer.write_bytes(bytes)
         buffer.write('b', 1, 0)
 
-    def decode(self, buffer):
+    def deserialize(self, buffer):
         buffer.align(4)
         numbytes = buffer.read('I', 4)
         bytes = buffer.read_bytes(numbytes - 1)
@@ -134,7 +133,7 @@ class StringMachine(Machine):
 
     def max_size(self, finder: MaxSizeFinder):
         if self.bound:
-            finder.increase(self.bound + 5, 2)  # string size + length encoded (4) + null byte (1)
+            finder.increase(self.bound + 5, 2)  # string size + length serialized (4) + null byte (1)
         else:
             finder.increase(2**64 - 1 + 5, 2)
 
@@ -144,21 +143,21 @@ class BytesMachine(Machine):
         self.alignment = 2
         self.bound = bound
 
-    def encode(self, buffer, value):
+    def serialize(self, buffer, value):
         if self.bound and len(value) > self.bound:
             raise Exception("Bytes longer than bound.")
         buffer.align(2)
         buffer.write('H', 2, len(value))
         buffer.write_bytes(value)
 
-    def decode(self, buffer):
+    def deserialize(self, buffer):
         buffer.align(2)
         numbytes = buffer.read('H', 2)
         return buffer.read_bytes(numbytes)
 
     def max_size(self, finder: MaxSizeFinder):
         if self.bound:
-            finder.increase(self.bound + 3, 2)  # string size + length encoded (2)
+            finder.increase(self.bound + 3, 2)  # string size + length serialized (2)
         else:
             finder.increase(65535 + 3, 2)
 
@@ -168,13 +167,13 @@ class ByteArrayMachine(Machine):
         self.alignment = 1
         self.size = size
 
-    def encode(self, buffer, value):
+    def serialize(self, buffer, value):
         if self.bound and len(value) != self.size:
             raise Exception("Incorrectly sized array.")
 
         buffer.write_bytes(value)
 
-    def decode(self, buffer):
+    def deserialize(self, buffer):
         return buffer.read_bytes(self.size)
 
     def max_size(self, finder: MaxSizeFinder):
@@ -182,22 +181,22 @@ class ByteArrayMachine(Machine):
 
 
 class ArrayMachine(Machine):
-    def __init__(self, num, submachine):
-        self.num = num
+    def __init__(self, submachine, size):
+        self.size = size
         self.submachine = submachine
         self.alignment = submachine.alignment
 
-    def encode(self, buffer, value):
-        assert len(value) == self.num
+    def serialize(self, buffer, value):
+        assert len(value) == self.size
 
         for v in value:
-            self.submachine.encode(buffer, v)
+            self.submachine.serialize(buffer, v)
 
-    def decode(self, buffer):
-        return [self.submachine.decode(buffer) for i in range(self.num)]
+    def deserialize(self, buffer):
+        return [self.submachine.deserialize(buffer) for i in range(self.size)]
 
     def max_size(self, finder: MaxSizeFinder):
-        if self.num == 0:
+        if self.size == 0:
             return
 
         finder.align(self.alignment)
@@ -207,7 +206,7 @@ class ArrayMachine(Machine):
 
         size = post_size - pre_size
         size = (size + self.alignment - 1) & ~(self.alignment - 1)
-        finder.size = pre_size + self.num * size
+        finder.size = pre_size + self.size * size
 
 
 class SequenceMachine(Machine):
@@ -216,7 +215,7 @@ class SequenceMachine(Machine):
         self.alignment = 2
         self.maxlen = maxlen
 
-    def encode(self, buffer, value):
+    def serialize(self, buffer, value):
         if self.maxlen is not None:
             assert len(value) <= self.maxlen
 
@@ -224,12 +223,12 @@ class SequenceMachine(Machine):
         buffer.write('H', 2, len(value))
 
         for v in value:
-            self.submachine.encode(buffer, v)
+            self.submachine.serialize(buffer, v)
 
-    def decode(self, buffer):
+    def deserialize(self, buffer):
         buffer.align(2)
         num = buffer.read('H', 2)
-        return [self.submachine.decode(buffer) for i in range(num)]
+        return [self.submachine.deserialize(buffer) for i in range(num)]
 
     def max_size(self, finder: MaxSizeFinder):
         if self.maxlen == 0:
@@ -246,32 +245,31 @@ class SequenceMachine(Machine):
 
 
 class UnionMachine(Machine):
-    def __init__(self, discriminator_machine, labels_submachines, default=None):
+    def __init__(self, type, discriminator_machine, labels_submachines, default=None):
+        self.type = type
         self.labels_submachines = labels_submachines
         self.alignment = max(s.alignment for s in labels_submachines.values())
         self.alignment = max(self.alignment, discriminator_machine.alignment)
         self.discriminator = discriminator_machine
         self.default = default
 
-    def encode(self, buffer, value):
-        label, contents = value
-
-        self.disciminator.encode(buffer, label)
-
-        if self.default is not None and label not in self.labels_submachines:
-            self.default.encode(buffer, label)
+    def serialize(self, buffer, union):
+        if union.discriminator is None:
+            self.discriminator.serialize(buffer, union._default_val)
+            self.default.serialize(buffer, union.value)
         else:
-            self.labels_submachines[label].encode(buffer, contents)
+            self.discriminator.serialize(buffer, union.discriminator)
+            self.labels_submachines[union.discriminator].serialize(buffer, union.value)
 
-    def decode(self, buffer):
-        label = self.disciminator.decode(buffer)
+    def deserialize(self, buffer):
+        label = self.disciminator.deserialize(buffer)
 
-        if self.default is not None and label not in self.labels_submachines:
-            contents = self.default.decode(buffer)
+        if label not in self.labels_submachines:
+            contents = self.default.deserialize(buffer)
         else:
-            contents = self.labels_submachines[label].decode(buffer)
+            contents = self.labels_submachines[label].deserialize(buffer)
 
-        return label, contents
+        return self.type(**{label: contents})
 
     def max_size(self, finder: MaxSizeFinder):
         self.discriminator.max_size(finder)
@@ -297,21 +295,22 @@ class MappingMachine(Machine):
         self.value_machine = value_machine
         self.alignment = 2
 
-    def encode(self, buffer, values):
+    def serialize(self, buffer, values):
         buffer.align(2)
         buffer.write('H', 2, len(values))
 
         for key, value in values.items():
-            self.key_machine.encode(buffer, key)
-            self.value_machine.encode(buffer, value)
+            self.key_machine.serialize(buffer, key)
+            self.value_machine.serialize(buffer, value)
 
-    def decode(self, buffer):
+    def deserialize(self, buffer):
         ret = {}
+        buffer.align(2)
         num = buffer.read('H', 2)
 
         for i in range(num):
-            key = self.key_machine.decode(buffer)
-            value = self.value_machine.decode(buffer)
+            key = self.key_machine.deserialize(buffer)
+            value = self.value_machine.deserialize(buffer)
             ret[key] = value
 
         return ret
@@ -332,18 +331,18 @@ class StructMachine(Machine):
         self.type = object
         self.members_machines = members_machines
 
-    def encode(self, buffer, value):
+    def serialize(self, buffer, value):
         #  We use the fact here that dicts retain their insertion order
         #  This is guaranteed from python 3.7 but no existing python 3.6 implementation
         #  breaks this guarantee.
 
         for member, machine in self.members_machines.items():
-            machine.encode(buffer, getattr(value, member))
+            machine.serialize(buffer, getattr(value, member))
 
-    def decode(self, buffer):
+    def deserialize(self, buffer):
         valuedict = {}
         for member, machine in self.members_machines.items():
-            valuedict[member] = machine.decode(buffer)
+            valuedict[member] = machine.deserialize(buffer)
         return self.type(**valuedict)
 
     def max_size(self, finder):
@@ -351,29 +350,47 @@ class StructMachine(Machine):
             m.max_size(finder)
 
 
-def build_machine(_type):
+class EnumMachine(Machine):
+    def __init__(self, enum):
+        self.enum = enum
+    
+    def serialize(self, buffer, value):
+        buffer.write("I", 4, int(value))
+
+    def deserialize(self, buffer):
+        return self.enum(buffer.read("I", 4))
+
+    def max_size(self, finder: MaxSizeFinder):
+        finder.increase(4, 4)
+
+
+def build_machine(_type) -> Machine:
     if _type == str:
         return StringMachine()
     elif _type in primitive_types:
         return PrimitiveMachine(_type)
     elif _type == bytes:
         return BytesMachine()
+    elif _type == NoneType:
+        return NoneMachine()
     elif get_origin(_type) == Annotated:
         args = get_args(_type)
-        if get_origin(args[0]) == bytes and type(args[1]) == tuple and len(args[1]) == 2 and args[1][0] == 'MaxLen':
-            return BytesMachine(bound=args[1][1])
-        elif get_origin(args[0]) == bytes and type(args[1]) == tuple and len(args[1]) == 2 and args[1][0] == 'MaxLen':
-            return ByteArrayMachine(length=args[1][1])
-        elif get_origin(args[0]) == list and type(args[1]) == tuple and len(args[1]) == 2 and args[1][0] == 'Len':
-            return ArrayMachine(
-                args[1][1],
-                build_machine(get_args(args[0])[0])
-            )
-        elif get_origin(args[0]) == list and type(args[1]) == tuple and len(args[1]) == 2 and args[1][0] == 'MaxLen':
-            return SequenceMachine(
-                build_machine(get_args(args[0])[0]),
-                maxlen=args[1][1]
-            )
+        if len(args) >= 2:
+            holder = args[1]
+            if isinstance(holder, ArrayHolder):
+                return ArrayMachine(
+                    build_machine(holder.type),
+                    size=holder.length
+                )
+            elif isinstance(holder, SequenceHolder):
+                return SequenceMachine(
+                    build_machine(holder.type),
+                    maxlen=holder.max_length
+                )
+            elif isinstance(holder, BoundStringHolder):
+                return StringMachine(
+                    bound=holder.max_length
+                )
     elif get_origin(_type) == list:
         return SequenceMachine(
             build_machine(get_args(_type)[0])
@@ -385,19 +402,22 @@ def build_machine(_type):
         )
     elif isinstance(_type, IdlUnion):
         return UnionMachine(
+            _type,
             build_machine(_type._discriminator),
-            [build_machine(c) for c in _type._cases],
-            default=build_machine(_type._default) if _type._default else None
+            {dv: build_machine(tp) for dv,tp in _type._cases.items()},
+            default=build_machine(_type._default[1]) if _type._default else None
         )
+    elif isinstance(_type, Enum):
+        return EnumMachine(_type)
     elif is_dataclass(_type):
         _fields = fields(_type)
         _members = { f.name: build_machine(f.type) for f in _fields }
         return StructMachine(_type, _members)
 
-    raise Exception(f"Could not make encoding machinery for type {_type}.")
+    raise TypeError(f"{_type} is not valid in CDR classes because it cannot be encoded.")
 
 
-def build_key_machine(keys, cls):
+def build_key_machine(keys, cls) -> Machine:
     _fields = fields(cls)
     _members = { f.name: build_machine(f.type) for f in _fields if f.name in keys}
     return StructMachine(cls, _members)
