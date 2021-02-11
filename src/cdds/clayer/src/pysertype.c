@@ -25,7 +25,7 @@
 #include "dds/ddsi/ddsi_serdata.h"
 #include "dds/ddsi/ddsi_sertype.h"
 
-//#define TRACE_SAMPL_ALLOC
+//#define TRACE_SAMPL_ALLOC 1
 #ifdef TRACE_SAMPL_ALLOC
 void py_take_ref_(PyObject* object, int line)
 {
@@ -697,11 +697,14 @@ ddspy_sertype_t *ddspy_sertype_new(PyObject *pytype)
 {
     ddspy_sertype_t *new = (ddspy_sertype_t*) malloc(sizeof(ddspy_sertype_t));
 
-    PyObject* pyname = PyObject_GetAttrString(pytype, "typename");
+    PyObject *cdr;
+    cdr = PyObject_GetAttrString(pytype, "cdr");
+
+    PyObject* pyname = PyObject_GetAttrString(cdr, "typename");
     py_check(pyname, "Typename unset.");
     const char *name = PyUnicode_AsUTF8(pyname);
 
-    PyObject* pykeyless = PyObject_GetAttrString(pytype, "keyless");
+    PyObject* pykeyless = PyObject_GetAttrString(cdr, "keyless");
     py_check(pykeyless, "keyless unset.");
     bool keyless = pykeyless == Py_True;
     Py_DECREF(pykeyless);
@@ -717,20 +720,22 @@ ddspy_sertype_t *ddspy_sertype_new(PyObject *pytype)
 
     py_take_ref(pytype);
     new->my_py_type = pytype;
-    new->deserialize_attr = PyObject_GetAttrString(pytype, "deserialize");
-    new->serialize_attr = PyObject_GetAttrString(pytype, "serialize");
+
+    
+    new->deserialize_attr = PyObject_GetAttrString(cdr, "deserialize");
+    new->serialize_attr = PyObject_GetAttrString(cdr, "serialize");
     py_check(new->deserialize_attr, "deserialize unset.");
     py_check(new->serialize_attr, "serialize unset.");
     py_check(pytype, "Type unset.");
 
     if (!keyless)
     {
-        new->key_calc_attr = PyObject_GetAttrString(pytype, "key");
-        new->keyhash_calc_attr = PyObject_GetAttrString(pytype, "keyhash");
+        new->key_calc_attr = PyObject_GetAttrString(cdr, "key");
+        new->keyhash_calc_attr = PyObject_GetAttrString(cdr, "keyhash");
         py_check(new->key_calc_attr, "key_calc_attr unset.");
         py_check(new->keyhash_calc_attr, "keyhash_calc_attr unset.");
 
-        PyObject* pykeysize = PyObject_GetAttrString(pytype, "key_max_size");
+        PyObject* pykeysize = PyObject_GetAttrString(cdr, "key_max_size");
 
         if (pykeysize == NULL) {
             new->key_maxsize_bigger_16 = true;
@@ -750,6 +755,8 @@ ddspy_sertype_t *ddspy_sertype_new(PyObject *pytype)
         new->keyhash_calc_attr = NULL;
         new->key_maxsize_bigger_16 = true;
     }
+
+    Py_DECREF(cdr);
 
     return new;
 }

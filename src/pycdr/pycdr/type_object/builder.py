@@ -1,30 +1,35 @@
-from typing_extensions import final
-from pycdr.pycdr.types import IdlUnion
-from .idl_entities import CompleteStructType, CompleteTypeDetail, CompleteTypeObject, EK_COMPLETE, IS_AUTOID_HASH, IS_NESTED, PlainSequenceSElemDefn, TypeObject, CompleteStructMember, \
+from pycdr.types import ArrayHolder, BoundStringHolder, IdlUnion, SequenceHolder
+from .idl_entities import CompleteStructType, CompleteTypeDetail, CompleteTypeObject, EK_BOTH, EK_COMPLETE, IS_AUTOID_HASH, IS_NESTED, PlainSequenceSElemDefn, TK_NONE, \
+    TypeObject, CompleteStructMember, EK_MINIMAL, \
     CommonStructMember, CompleteMemberDetail, CompleteStructHeader, PlainSequenceLElemDefn, PlainCollectionHeader, PlainArrayLElemDefn, PlainArraySElemDefn, \
-    StringSTypeDefn, StringLTypeDefn, TypeIdentifier, IS_FINAL, IS_APPENDABLE, IS_MUTABLE
+    StringSTypeDefn, StringLTypeDefn, TypeIdentifier, IS_FINAL, IS_APPENDABLE, IS_MUTABLE, TypeObjectContainer
 
-from dataclasses import dataclass, fields
+from dataclasses import fields, is_dataclass
 
-from typing import List, Dict, Annotated, get_origin, get_args
+from typing import Annotated, get_origin, get_args
 from enum import Enum
-from pycdr.types import char, wchar, int8, int16, int32, int64, uint8, uint16, uint32, uint64, float32, float64
+from pycdr.types import char, wchar, int8, int16, int32, int64, uint8, uint16, uint32, uint64, float32, float64, NoneType
 from pycdr.helper import CDR
 from hashlib import md5
+from inspect import isclass
 
 from .idl_entities import TK_BOOLEAN, TK_BYTE, TK_INT16, TK_INT32, TK_INT64, TK_UINT16, TK_UINT32, TK_UINT64, TK_FLOAT32, \
-    TK_FLOAT64, TK_FLOAT64, TK_CHAR8, TK_CHAR16, TI_STRING8_LARGE
+    TK_FLOAT64, TK_FLOAT64, TK_CHAR8, TK_CHAR16
 from .util import uint32_max, uint8_max
 
 
 
 class TypeObjectBuilder:
     def __init__(self):
-        self.type_objects = {}
-        self._hash_of = {}
+        self.type_objects_minimal = {}
+        self._hash_of_minimal = {}
+        self.type_objects_complete = {}
+        self._hash_of_complete = {}
 
-        self.type_dispatch = {
+        self.simple_types = {
             bool: TK_BOOLEAN,
+            int: TK_INT64,
+            float: TK_FLOAT64,
             char: TK_CHAR8,
             wchar: TK_CHAR16,
             int8: TK_CHAR8,
@@ -36,51 +41,65 @@ class TypeObjectBuilder:
             uint32: TK_UINT32,
             uint64: TK_UINT64,
             float32: TK_FLOAT32,
-            float64: TK_FLOAT64,
-            str: TI_STRING8_LARGE,
-            list: (lambda x: self.type_identifier_sequence_of(x, uint32_max)),
-            Annotated: (lambda x, a: self.type_identifier_annotated_type(x, a))
+            float64: TK_FLOAT64
         }
 
-    def type_identifier_sequence_of(self, _type, bound):
+    def simple_types_only(self, _type):
+        if _type in self.simple_types.keys():
+            return True
+        if _type is str:
+            return True
+        if get_origin(_type) == Annotated:
+            _, holder = get_args(_type)
+            if isinstance(holder, ArrayHolder) or isinstance(holder, SequenceHolder):
+                return self.simple_types_only(holder.type)
+            elif isinstance(holder, BoundStringHolder):
+                return True
+        return False
+
+    def type_identifier_sequence_of(self, _type, bound, minimal):
+        equiv_kind = EK_BOTH if self.simple_types_only(_type) else (EK_MINIMAL if minimal else EK_COMPLETE)
+
         if bound <= uint8_max:
             return TypeIdentifier(seq_sdefn=PlainSequenceSElemDefn(
                 header=PlainCollectionHeader(
-                    equiv_kind=None, # TODO
+                    equiv_kind=equiv_kind,
                     element_flags=0, # TODO
                 ),
                 bound=bound,
-                element_identifier=self.type_identifier_resolve(_type)
+                element_identifier=self.type_identifier_resolve(_type, minimal)
             ))
         else:
             return TypeIdentifier(seq_ldefn=PlainSequenceLElemDefn(
                 header=PlainCollectionHeader(
-                    equiv_kind=None, # TODO
+                    equiv_kind=equiv_kind,
                     element_flags=0, # TODO
                 ),
                 bound=bound,
-                element_identifier=self.type_identifier_resolve(_type)
+                element_identifier=self.type_identifier_resolve(_type, minimal)
             ))
 
 
-    def type_identifier_array_of(self, _type, bound):
+    def type_identifier_array_of(self, _type, bound, minimal):
+        equiv_kind = EK_BOTH if self.simple_types_only(_type) else (EK_MINIMAL if minimal else EK_COMPLETE)
+
         if bound <= uint8_max:
             return TypeIdentifier(array_sdefn=PlainArraySElemDefn(
                 header=PlainCollectionHeader(
-                    equiv_kind=None, # TODO
+                    equiv_kind=equiv_kind,
                     element_flags=0, # TODO
                 ),
-                bound=[bound],
-                element_identifier=self.type_identifier_resolve(_type)
+                array_bound_seq=[bound],
+                element_identifier=self.type_identifier_resolve(_type, minimal)
             ))
         else:
-            return TypeIdentifier(array_ldefn=PlainArraySElemDefn(
+            return TypeIdentifier(array_ldefn=PlainArrayLElemDefn(
                 header=PlainCollectionHeader(
-                    equiv_kind=None, # TODO
+                    equiv_kind=equiv_kind,
                     element_flags=0, # TODO
                 ),
-                bound=[bound],
-                element_identifier=self.type_identifier_resolve(_type)
+                array_bound_seq=[bound],
+                element_identifier=self.type_identifier_resolve(_type, minimal)
             ))
 
 
@@ -91,68 +110,68 @@ class TypeObjectBuilder:
             return TypeIdentifier(string_ldefn=StringLTypeDefn(bound=bound))
 
 
-    def type_identifier_annotated_type(self, x, a):
-        o = get_origin(x)
-        if o == list:
-            if a[0] == 'Len':
-                return self.type_identifier_array_of(get_args(x)[0], a[1])
-            elif a[0] == 'MaxLen':
-                return self.type_identifier_sequence_of(get_args(x)[0], a[1])
-        if o == str:
-            if a[0] == 'MaxLen':
-                return self.type_identifier_string(a[1])
+    def type_identifier_resolve(self, _type, minimal):
+        if _type in self.simple_types:
+            return TypeIdentifier(discriminator=self.simple_types[_type])
+        elif _type is str:
+            return self.type_identifier_string(uint32_max)
+        elif get_origin(_type) == Annotated:
+            _, holder = get_args(_type)
+            if isinstance(holder, ArrayHolder):
+                return self.type_identifier_array_of(holder.type, holder.length, minimal)
+            elif isinstance(holder, SequenceHolder):
+                return self.type_identifier_sequence_of(holder.type, holder.max_length or uint32_max, minimal)
+            elif isinstance(holder, BoundStringHolder):
+                return self.type_identifier_string(holder.max_length)
+        else:
+            print(_type)
+            return TypeIdentifier(
+                discriminator=EK_MINIMAL if minimal else EK_COMPLETE,
+                value=self.hash_of(_type, minimal)
+            )
 
-        raise Exception("No such type identifier")
-
-    def type_identifier_resolve_complex(self, _type):
-        hash = self.hash_of(_type)
-        a = TypeIdentifier()
-        a.set(EK_COMPLETE, hash)
-        return a
-
-
-    def type_identifier_resolve(self, _type):
-        o = get_origin(_type)
-        v = self.type_dispatch.get(o)
-        if v is None:
-            self.type_identifier_resolve_complex(_type)
-        elif not callable(v):
-            a = TypeIdentifier()
-            a.set(v, None)
-            return a
-        return v(*get_args(_type))
-
-    def register_typeobj(self, datatype, typeobj):
-        data = typeobj.serialize()
+    def register_typeobj(self, datatype, typeobj, minimal):
+        data = TypeObjectContainer(type_object=typeobj).serialize()
 
         f = md5()
         f.update(data)
         hash = f.digest()[:14]
 
-        self.type_objects[hash] = typeobj
-        self._hash_of[id(datatype)] = hash
+        if minimal:
+            self.type_objects_minimal[hash] = typeobj
+            self._hash_of_minimal[id(datatype)] = hash
+        else:
+            self.type_objects_complete[hash] = typeobj
+            self._hash_of_complete[id(datatype)] = hash
 
-    def hash_of(self, datatype):
-        if id(datatype) in self._hash_of:
-            return self._hash_of[id(datatype)]
-        
-        self.to_typeobject(datatype)
-        return self._hash_of[id(datatype)]
+    def hash_of(self, datatype, minimal):
+        if minimal:
+            if id(datatype) in self._hash_of_minimal:
+                return self._hash_of_minimal[id(datatype)]
+            
+            self.to_typeobject(datatype, minimal)
+            return self._hash_of_minimal[id(datatype)]
+        else:
+            if id(datatype) in self._hash_of_complete:
+                return self._hash_of_complete[id(datatype)]
+            
+            self.to_typeobject(datatype, minimal)
+            return self._hash_of_complete[id(datatype)]
 
-    def struct_to_typeobject(self, struct):
+    def struct_to_typeobject_complete(self, struct):
         members = []
         member_id = 0
         for field in fields(struct):
             members.append(CompleteStructMember(
                 common=CommonStructMember(
                     member_id=member_id,
-                    member_flags=[],   # TODO
-                    member_type_id=self.type_identifier_resolve(field.type)
+                    member_flags=0,   # TODO
+                    member_type_id=self.type_identifier_resolve(field.type, False)
                 ),
                 detail=CompleteMemberDetail(
-                    member_name=field.name,
+                    name=field.name,
                     ann_builtin=None,  # TODO
-                    ann_custom=None    # TODO
+                    ann_custom=[]    # TODO
                 )
             ))
             member_id += 1
@@ -167,11 +186,13 @@ class TypeObjectBuilder:
                         (IS_NESTED if struct.cdr.nested else 0) |
                         (IS_AUTOID_HASH if struct.cdr.autoid_hash else 0),
                     header=CompleteStructHeader(
-                        base_type=self.type_identifier_resolve(struct.__base__),
+                        base_type=
+                            self.type_identifier_resolve(struct.__base__, False) if struct.__base__ != object else
+                            TypeIdentifier(discriminator=TK_NONE),
                         detail=CompleteTypeDetail(
                             ann_builtin=None,  # TODO
-                            ann_custon=None,   # TODO
-                            type_name=struct.typename
+                            ann_custom=[],   # TODO
+                            type_name=struct.cdr.typename
                         )
                     ),
                     member_seq=members
@@ -179,15 +200,15 @@ class TypeObjectBuilder:
             )
         )
 
-        self.register_typeobj(struct, typeobj)
+        self.register_typeobj(struct, typeobj, False)
         return typeobj
 
-    def to_typeobject(self, object):
-        if isinstance(object, IdlUnion):
-            return self.union_to_typeobject(object)
-        elif isinstance(object, Enum):
-            return self.enum_to_typeobject(object)
-        elif isinstance(object, dataclass) and hasattr(object, 'cdr') and isinstance(object.cdr, CDR):
-            return self.struct_to_typeobject(object)
-        raise Exception("Can't convert object to typeobject")
+    def to_typeobject(self, _type, minimal=False):
+        if isclass(_type) and issubclass(_type, IdlUnion):
+            return self.union_to_typeobject(_type)
+        elif isinstance(_type, Enum):
+            return self.enum_to_typeobject(_type)
+        elif is_dataclass(_type) and hasattr(_type, 'cdr') and isinstance(_type.cdr, CDR):
+            return self.struct_to_typeobject_complete(_type)
+        raise Exception(f"Can't convert object {object} to typeobject")
 

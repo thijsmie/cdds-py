@@ -39,7 +39,7 @@ jobs:
       if: steps.cyclone-cache.outputs.cache-hit != 'true'
       run: |
         mkdir cyclonedds/build cyclonedds/install && cd cyclonedds/build
-        cmake ..
+        cmake .. -DCMAKE_INSTALL_PREFIX=../install
         cmake --build . 
 
     - name: Build result upload 🚀
@@ -69,23 +69,6 @@ jobs:
       with:
         name: cyclone-build
         path: cyclonedds
-
-    - name: Get latest CMake ⚡
-      if: steps.cyclone-cache.outputs.cache-hit != 'true'
-      uses: lukka/get-cmake@v3.19.1
-
-    - name: Get Java and Maven ☕
-      if: steps.cyclone-cache.outputs.cache-hit != 'true'
-      uses: actions/setup-java@v1
-      with:
-        java-version: '9'
-        java-package: jdk
-        architecture: x64
-
-    - name: Install Cyclone 🌀
-      run: |
-        cd cyclonedds/build
-        cmake --build . --target install
     
     - name: Install python 🐍
       uses: actions/setup-python@v2
@@ -106,6 +89,9 @@ jobs:
 
     - name: Install cdds 🐍
       working-directory: ./src/cdds
+      env:
+        LIBRARY_PATH: ${{ github.workspace }}/cyclonedds/install/lib
+        LD_LIBRARY_PATH: ${{ github.workspace }}/cyclonedds/install/lib
       run: |
         pip install .
         pip install pytest pytest-cov flake8
@@ -117,6 +103,8 @@ jobs:
 
     - name: Run tests 🧪
       working-directory: ./src/cdds
+      env:
+        LD_LIBRARY_PATH: ${{ github.workspace }}/cyclonedds/install/lib
       run: pytest
 
     - name: Upload coverage report to codecov 🚀

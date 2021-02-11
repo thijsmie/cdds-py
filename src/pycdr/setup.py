@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from distutils.core import setup
+from setuptools import setup, find_packages
 
 
 setup(
@@ -9,7 +9,5 @@ setup(
     description='Python CDR serialization',
     author='Thijs Miedema',
     author_email='thijs.miedema@adlinktech.com',
-    packages=['pycdr'],
-    package_dir={'pycdr': 'pycdr/'},
-#    ext_modules = [module1]
+    packages=find_packages()
 )

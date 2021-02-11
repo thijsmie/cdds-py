@@ -65,7 +65,7 @@ class SequenceGenerator:
 
 
 class BoundStringHolder:
-    def __init__(self, type, max_length):
+    def __init__(self, max_length):
         self.max_length = max_length
 
 
@@ -73,7 +73,7 @@ class BoundStringGenerator:
     def __getitem__(self, tup):
         if type(tup) != int:
             return TypeError("A bounded string takes one arguments: a max length.")
-        if tup[0] <= 0 or tup[0] > 18446744073709551615:
+        if tup <= 0 or tup > 18446744073709551615:
             return TypeError("Bound string max length should be between 0 and 18446744073709551616.")
         return Annotated[str, BoundStringHolder(tup)]
 
@@ -111,10 +111,13 @@ class IdlUnion:
         self.discriminator = None
         self.value = None
 
-        if kwargs:
-            key = next(kwargs.keys())
-            value = next(kwargs.values())
-            self.__setattr__(key, value)
+        if 'discriminator' in kwargs:
+            self.discriminator = kwargs['discriminator']
+            self.value = kwargs.get('value')
+        elif kwargs:
+            for k,v in kwargs.items():
+                self.__setattr__(k, v)
+                break
 
     def __setattr__(self, name: str, value: Any) -> None:
         if name in self._field_set:
@@ -225,8 +228,11 @@ def union(discriminator):
             _original_cls = cls
             _cases = cases
             _default = default
-            _default_val = _union_default_finder(discriminator) if default else None
+            _default_val = _union_default_finder(discriminator, cases) if default else None
             _field_set = field_set
+
+            def __repr__(self):
+                return repr(cls)
 
         return MyUnion
     return wraps

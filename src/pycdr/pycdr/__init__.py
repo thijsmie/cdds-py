@@ -10,6 +10,8 @@ def cdr(*args, final=False, mutable=False, appendable=True, keylist=None):
         cls.serialize = proto_serialize
         cls.deserialize = classmethod(proto_deserialize)
 
+        CDR.refer(cls.cdr.typename, cls)
+
         return cls
 
     if args:

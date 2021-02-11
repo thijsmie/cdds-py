@@ -1,7 +1,8 @@
 from dataclasses import fields, is_dataclass
 from enum import Enum
-from typing import Annotated, List, Union, Mapping, get_origin, get_args
+from typing import Annotated, List, Optional, Union, Mapping, get_origin, get_args
 import struct
+from inspect import isclass
 from .types import ArrayHolder, BoundStringHolder, SequenceHolder, default, primitive_types, IdlUnion, NoneType
 
 
@@ -15,6 +16,7 @@ class Buffer:
 
     def seek(self, pos):
         self._pos = pos
+        return self
 
     def ensure_size(self, size):
         if self._pos + size > self._size:
@@ -26,17 +28,20 @@ class Buffer:
 
     def align(self, alignment):
         self._pos = (self._pos + alignment - 1) & ~(alignment - 1)
+        return self
 
     def write(self, pack, size, value):
         self.ensure_size(size)
         struct.pack_into(self._alignc + pack, self._bytes, self._pos, value)
         self._pos += size
+        return self
 
     def write_bytes(self, bytes):
         l = len(bytes)
         self.ensure_size(l)
         self._bytes[self._pos:self._pos+l] = bytes
         self._pos += l
+        return self
 
     def read_bytes(self, length):
         b = bytes(self._bytes[self._pos:self._pos+length])
@@ -80,7 +85,7 @@ class Machine:
 
 
 class NoneMachine(Machine):
-    def __init__(self, type):
+    def __init__(self):
         self.alignment = 1
     
     def serialize(self, buffer, value):
@@ -254,12 +259,15 @@ class UnionMachine(Machine):
         self.default = default
 
     def serialize(self, buffer, union):
-        if union.discriminator is None:
-            self.discriminator.serialize(buffer, union._default_val)
-            self.default.serialize(buffer, union.value)
-        else:
-            self.discriminator.serialize(buffer, union.discriminator)
-            self.labels_submachines[union.discriminator].serialize(buffer, union.value)
+        try:
+            if union.discriminator is None:
+                self.discriminator.serialize(buffer, union._default_val)
+                self.default.serialize(buffer, union.value)
+            else:
+                self.discriminator.serialize(buffer, union.discriminator)
+                self.labels_submachines[union.discriminator].serialize(buffer, union.value)
+        except:
+            raise Exception(f"Failed to encode union, {self.type}, value is {union.value}")
 
     def deserialize(self, buffer):
         label = self.disciminator.deserialize(buffer)
@@ -337,7 +345,10 @@ class StructMachine(Machine):
         #  breaks this guarantee.
 
         for member, machine in self.members_machines.items():
-            machine.serialize(buffer, getattr(value, member))
+            try:
+                machine.serialize(buffer, getattr(value, member))
+            except:
+                raise Exception(f"Failed to encode member {member}, value is {getattr(value, member)}")
 
     def deserialize(self, buffer):
         valuedict = {}
@@ -348,6 +359,48 @@ class StructMachine(Machine):
     def max_size(self, finder):
         for k, m in self.members_machines.items():
             m.max_size(finder)
+
+
+class InstanceMachine(Machine):
+    def __init__(self, object):
+        self.type = object
+        self.alignment = 1
+
+    def serialize(self, buffer, value):
+        if value is None:
+            print(f"Skipping the {self.type} object for now.")
+            return
+        return value.serialize(buffer)
+
+    def deserialize(self, buffer):
+        return self.type.deserialize(buffer)
+
+    def max_size(self, finder):
+        self.type.cdr.machine.max_size(finder)
+
+
+class DeferredInstanceMachine(Machine):
+    def __init__(self, object_type_name, cdr):
+        self.type = None
+        self.alignment = 1
+        self.object_type_name = object_type_name
+        cdr.defer(object_type_name, self)
+
+    def refer(self, type):
+        self.type = type
+
+    def serialize(self, buffer, value):
+        return value.serialize(buffer)
+
+    def deserialize(self, buffer):
+        if not self.type:
+            raise TypeError(f"Deferred type {self.object_type_name} was never defined.")
+        return self.type.deserialize(buffer)
+
+    def max_size(self, finder):
+        if not self.type:
+            raise TypeError(f"Deferred type {self.object_type_name} was never defined.")
+        self.type.cdr.machine.max_size(finder)
 
 
 class EnumMachine(Machine):
@@ -364,7 +417,9 @@ class EnumMachine(Machine):
         finder.increase(4, 4)
 
 
-def build_machine(_type) -> Machine:
+def build_machine(cdr, _type, top=False) -> Machine:
+    if type(_type) == str:
+        return DeferredInstanceMachine(_type, cdr)
     if _type == str:
         return StringMachine()
     elif _type in primitive_types:
@@ -379,45 +434,51 @@ def build_machine(_type) -> Machine:
             holder = args[1]
             if isinstance(holder, ArrayHolder):
                 return ArrayMachine(
-                    build_machine(holder.type),
+                    build_machine(cdr, holder.type),
                     size=holder.length
                 )
             elif isinstance(holder, SequenceHolder):
                 return SequenceMachine(
-                    build_machine(holder.type),
+                    build_machine(cdr, holder.type),
                     maxlen=holder.max_length
                 )
             elif isinstance(holder, BoundStringHolder):
                 return StringMachine(
                     bound=holder.max_length
                 )
+    elif get_origin(_type) == Union and len(get_args(_type)) == 2 and get_args(_type)[1] == NoneType:
+        # TODO
+        return build_machine(cdr, get_args(_type)[0])
     elif get_origin(_type) == list:
         return SequenceMachine(
-            build_machine(get_args(_type)[0])
+            build_machine(cdr, get_args(_type)[0])
         )
     elif get_origin(_type) == dict:
         return MappingMachine(
-            build_machine(get_args(_type)[0]),
-            build_machine(get_args(_type)[1])
+            build_machine(cdr, get_args(_type)[0]),
+            build_machine(cdr, get_args(_type)[1])
         )
-    elif isinstance(_type, IdlUnion):
+    elif isclass(_type) and issubclass(_type, IdlUnion):
         return UnionMachine(
             _type,
-            build_machine(_type._discriminator),
-            {dv: build_machine(tp) for dv,tp in _type._cases.items()},
-            default=build_machine(_type._default[1]) if _type._default else None
+            build_machine(cdr, _type._discriminator),
+            {dv: build_machine(cdr, tp) for dv, (_, tp) in _type._cases.items()},
+            default=build_machine(cdr, _type._default[1]) if _type._default else None
         )
-    elif isinstance(_type, Enum):
+    elif isclass(_type) and issubclass(_type, Enum):
         return EnumMachine(_type)
-    elif is_dataclass(_type):
+    elif isclass(_type) and is_dataclass(_type) and hasattr(_type, 'cdr'):
+        return InstanceMachine(_type)
+    elif isclass(_type) and is_dataclass(_type) and top:
         _fields = fields(_type)
-        _members = { f.name: build_machine(f.type) for f in _fields }
+        _members = { f.name: build_machine(cdr, f.type) for f in _fields}
         return StructMachine(_type, _members)
 
+    print(get_origin(_type), get_args(_type))
     raise TypeError(f"{_type} is not valid in CDR classes because it cannot be encoded.")
 
 
-def build_key_machine(keys, cls) -> Machine:
+def build_key_machine(cdr, keys, cls) -> Machine:
     _fields = fields(cls)
-    _members = { f.name: build_machine(f.type) for f in _fields if f.name in keys}
+    _members = { f.name: build_machine(cdr, f.type) for f in _fields if f.name in keys}
     return StructMachine(cls, _members)

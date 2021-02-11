@@ -2,10 +2,9 @@ from cdds.topic import Topic
 from cdds.core import Qos, Policy
 from cdds.util.time import duration
 
-from pycdr import cdr, keylist
+from pycdr import cdr
 
 
-@keylist('id')
 @cdr
 class data:
     id: int
