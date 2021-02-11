@@ -40,7 +40,7 @@ jobs:
       run: |
         mkdir cyclonedds/build cyclonedds/install && cd cyclonedds/build
         cmake .. -DCMAKE_INSTALL_PREFIX=../install
-        cmake --build . 
+        cmake --build . --target install
 
     - name: Build result upload 🚀
       uses: actions/upload-artifact@v2
