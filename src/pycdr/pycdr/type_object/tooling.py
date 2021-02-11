@@ -1,7 +1,11 @@
-from typing import get_origin, get_args, Annotated
-
-from typing_extensions import Annotated
+from typing import get_origin, get_args
 from pycdr.types import primitive_types
+
+
+try:
+    from typing import Annotated
+except:
+    from typing_extensions import Annotated
 
 
 def is_plain_type(_type):

@@ -6,7 +6,7 @@ from .idl_entities import CompleteStructType, CompleteTypeDetail, CompleteTypeOb
 
 from dataclasses import fields, is_dataclass
 
-from typing import Annotated, get_origin, get_args
+from typing import get_origin, get_args
 from enum import Enum
 from pycdr.types import char, wchar, int8, int16, int32, int64, uint8, uint16, uint32, uint64, float32, float64, NoneType
 from pycdr.helper import CDR
@@ -18,6 +18,11 @@ from .idl_entities import TK_BOOLEAN, TK_BYTE, TK_INT16, TK_INT32, TK_INT64, TK_
 from .util import uint32_max, uint8_max
 
 
+try:
+    from typing import Annotated
+except:
+    from typing_extensions import Annotated
+    
 
 class TypeObjectBuilder:
     def __init__(self):

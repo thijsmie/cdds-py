@@ -32,7 +32,7 @@ class CDR:
         self.machine = build_machine(self, datatype, True)
         self.key_machine = build_key_machine(self, keylist, datatype) if keylist else self.machine
 
-        self.keylist = keylist is None
+        self.keyless = keylist is None
 
     def serialize(self, object, buffer=None) -> bytes:
         buffer = buffer or self.buffer.seek(0)
