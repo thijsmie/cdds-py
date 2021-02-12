@@ -3,8 +3,9 @@ from enum import Enum
 from typing import Union
 import struct
 from inspect import isclass
+
 from .types import ArrayHolder, BoundStringHolder, SequenceHolder, default, primitive_types, IdlUnion, NoneType
-from .type_helper import Annotated, get_origin, get_args
+from .type_helper import Annotated, get_origin, get_args, get_type_hints
 
 
 class Buffer:
@@ -470,8 +471,8 @@ def build_machine(cdr, _type, top=False) -> Machine:
     elif isclass(_type) and is_dataclass(_type) and hasattr(_type, 'cdr'):
         return InstanceMachine(_type)
     elif isclass(_type) and is_dataclass(_type) and top:
-        _fields = fields(_type)
-        _members = { f.name: build_machine(cdr, f.type) for f in _fields}
+        _fields = get_type_hints(_type, include_extras=True)
+        _members = { k: build_machine(cdr, v) for k,v in _fields.items()}
         return StructMachine(_type, _members)
 
     print(get_origin(_type), get_args(_type))
@@ -479,6 +480,6 @@ def build_machine(cdr, _type, top=False) -> Machine:
 
 
 def build_key_machine(cdr, keys, cls) -> Machine:
-    _fields = fields(cls)
-    _members = { f.name: build_machine(cdr, f.type) for f in _fields if f.name in keys}
+    _fields = get_type_hints(cls, include_extras=True)
+    _members = { k: build_machine(cdr, v) for k,v in _fields.items()}
     return StructMachine(cls, _members)
