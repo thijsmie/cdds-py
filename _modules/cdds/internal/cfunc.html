@@ -169,13 +169,16 @@
 
             <span class="c1"># Set c function types based on python type annotations</span>
             <span class="n">cfunc</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">_dll_handle</span><span class="p">,</span> <span class="n">cname</span><span class="p">)</span>
-            <span class="n">cfunc</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">return_annotation</span>
+
+            <span class="c1"># Note: in python 3.10 we get NoneType for voids instead of None</span>
+            <span class="c1"># This confuses ctypes a lot, so we explicitly test for it</span>
+            <span class="n">cfunc</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">return_annotation</span> <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">return_annotation</span> <span class="o">!=</span> <span class="nb">type</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
 
             <span class="c1"># Note: ignoring the &#39;self&#39; argument</span>
             <span class="n">cfunc</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">annotation</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">]</span>
 
             <span class="c1"># Need to rebuild this function to ignore the &#39;self&#39; attribute</span>
-            <span class="k">def</span> <span class="nf">final_func</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+            <span class="k">def</span> <span class="nf">final_func</span><span class="p">(</span><span class="n">self_</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
                 <span class="k">return</span> <span class="n">cfunc</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
 
             <span class="c1"># replace class named method with c call</span>
