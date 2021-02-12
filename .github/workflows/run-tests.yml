@@ -42,12 +42,6 @@ jobs:
         cmake .. -DCMAKE_INSTALL_PREFIX=../install
         cmake --build . --target install
 
-    - name: Build result upload 🚀
-      uses: actions/upload-artifact@v2
-      with:
-        name: cyclone-build
-        path: cyclonedds
-
   test:
     if: "!contains(github.event.head_commit.message, 'skip ci')"
     runs-on: ubuntu-latest
@@ -58,17 +52,18 @@ jobs:
         python:
           - 3.6.12
           - 3.7.9
-          - 3.9.0
+          - 3.9.1
 
     steps:
     - name: Checkout 🚨
       uses: actions/checkout@v2
 
-    - name: Get Cyclone 🌀
-      uses: actions/download-artifact@v2
+    - name: Get Cyclone build cache 💽
+      id: cyclone-cache
+      uses: actions/cache@v2
       with:
-        name: cyclone-build
         path: cyclonedds
+        key: ${{ runner.os }}-v4-${{ hashFiles('cyclonedds/.git/refs/heads/master') }}
     
     - name: Install python 🐍
       uses: actions/setup-python@v2
@@ -77,10 +72,6 @@ jobs:
 
     - name: Update pip 🐍
       run: python -m pip install --upgrade pip
-
-    - name: For python 3.6 we need backported dataclasses 🐍
-      if: matrix.python == '3.6.12'
-      run: pip install dataclasses
 
     - name: Install pycdr 🐍
       working-directory: ./src/pycdr

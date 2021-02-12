@@ -34,6 +34,12 @@ class CDR:
 
         self.keyless = keylist is None
 
+    def finalize(self):
+        if not hasattr(self, 'key_max_size'):
+            finder = MaxSizeFinder()
+            self.key_machine.max_size(finder)
+            self.key_max_size = finder.size
+
     def serialize(self, object, buffer=None) -> bytes:
         buffer = buffer or self.buffer.seek(0)
         self.machine.serialize(self.buffer, object)
@@ -49,11 +55,6 @@ class CDR:
         return self.buffer.asbytes()
 
     def keyhash(self, object) -> bytes:
-        if not hasattr(self, 'key_max_size'):
-            finder = MaxSizeFinder()
-            self.key_machine.max_size(finder)
-            self.key_max_size = finder.size
-
         if self.key_max_size <= 16:
             return self.key(object).ljust(16, b'\0')
         

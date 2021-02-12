@@ -1,4 +1,4 @@
-from typing import get_origin, get_args
+from pycdr.type_helper import Annotated, get_origin, get_args
 from pycdr.types import primitive_types
 
 

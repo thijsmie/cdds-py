@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from .helper import CDR, proto_deserialize, proto_serialize
+from .main import CDR, proto_deserialize, proto_serialize
 
 
 def cdr(*args, final=False, mutable=False, appendable=True, keylist=None):

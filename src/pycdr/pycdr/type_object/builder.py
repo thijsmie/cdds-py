@@ -1,4 +1,3 @@
-from pycdr.types import ArrayHolder, BoundStringHolder, IdlUnion, SequenceHolder
 from .idl_entities import CompleteStructType, CompleteTypeDetail, CompleteTypeObject, EK_BOTH, EK_COMPLETE, IS_AUTOID_HASH, IS_NESTED, PlainSequenceSElemDefn, TK_NONE, \
     TypeObject, CompleteStructMember, EK_MINIMAL, \
     CommonStructMember, CompleteMemberDetail, CompleteStructHeader, PlainSequenceLElemDefn, PlainCollectionHeader, PlainArrayLElemDefn, PlainArraySElemDefn, \
@@ -6,8 +5,10 @@ from .idl_entities import CompleteStructType, CompleteTypeDetail, CompleteTypeOb
 
 from dataclasses import fields, is_dataclass
 from enum import Enum
-from pycdr.types import char, wchar, int8, int16, int32, int64, uint8, uint16, uint32, uint64, float32, float64, NoneType
-from pycdr.helper import CDR
+from pycdr.types import char, wchar, int8, int16, int32, int64, uint8, uint16, uint32, uint64, float32, float64, \
+    ArrayHolder, BoundStringHolder, IdlUnion, SequenceHolder
+from pycdr.type_helper import Annotated, get_origin, get_args
+from pycdr.main import CDR
 from hashlib import md5
 from inspect import isclass
 
@@ -15,12 +16,6 @@ from .idl_entities import TK_BOOLEAN, TK_BYTE, TK_INT16, TK_INT32, TK_INT64, TK_
     TK_FLOAT64, TK_FLOAT64, TK_CHAR8, TK_CHAR16
 from .util import uint32_max, uint8_max
 
-
-try:
-    from typing import Annotated, get_origin, get_args
-except:
-    from typing_extensions import Annotated, get_origin, get_args
-    
 
 class TypeObjectBuilder:
     def __init__(self):

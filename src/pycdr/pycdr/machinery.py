@@ -1,14 +1,10 @@
 from dataclasses import fields, is_dataclass
 from enum import Enum
-from typing import List, Optional, Union, Mapping
+from typing import Union
 import struct
 from inspect import isclass
 from .types import ArrayHolder, BoundStringHolder, SequenceHolder, default, primitive_types, IdlUnion, NoneType
-
-try:
-    from typing import Annotated, get_origin, get_args
-except:
-    from typing_extensions import Annotated, get_origin, get_args
+from .type_helper import Annotated, get_origin, get_args
 
 
 class Buffer:

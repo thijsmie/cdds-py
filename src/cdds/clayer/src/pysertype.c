@@ -693,21 +693,33 @@ const struct ddsi_sertype_ops ddspy_sertype_ops = {
 };
 
 
+bool valid_topic_py_or_set_error(PyObject *py_obj)
+{
+    if (PyErr_Occurred()) return false;
+    if (py_obj != NULL && py_obj != Py_None) return true;
+
+    PyErr_SetString(PyExc_TypeError, "Invalid python object used as topic datatype.");
+    return false;
+}
+
+
 ddspy_sertype_t *ddspy_sertype_new(PyObject *pytype)
 {
     ddspy_sertype_t *new = (ddspy_sertype_t*) malloc(sizeof(ddspy_sertype_t));
+    py_take_ref(pytype);
 
-    PyObject *cdr;
-    cdr = PyObject_GetAttrString(pytype, "cdr");
+    /// Check all return values
+    PyObject *cdr = PyObject_GetAttrString(pytype, "cdr");
+    if (!valid_topic_py_or_set_error(cdr)) return NULL;
 
     PyObject* pyname = PyObject_GetAttrString(cdr, "typename");
-    py_check(pyname, "Typename unset.");
-    const char *name = PyUnicode_AsUTF8(pyname);
+    if (!valid_topic_py_or_set_error(pyname)) return NULL;
 
     PyObject* pykeyless = PyObject_GetAttrString(cdr, "keyless");
-    py_check(pykeyless, "keyless unset.");
+    if (!valid_topic_py_or_set_error(pykeyless)) return NULL;
+    
+    const char *name = PyUnicode_AsUTF8(pyname);
     bool keyless = pykeyless == Py_True;
-    Py_DECREF(pykeyless);
 
     ddsi_sertype_init(
         &(new->my_c_type),
@@ -717,49 +729,49 @@ ddspy_sertype_t *ddspy_sertype_new(PyObject *pytype)
         keyless
     );
     Py_DECREF(pyname);
-
-    py_take_ref(pytype);
+    Py_DECREF(pykeyless);
+    
     new->my_py_type = pytype;
 
-    
+    PyObject* finalize = PyObject_GetAttrString(cdr, "finalize");
+    if (!valid_topic_py_or_set_error(finalize)) return NULL;
+    PyObject* args = PyTuple_New(0);
+    PyObject* result = PyObject_CallObject(finalize, args);
+    Py_DECREF(args);
+    Py_DECREF(finalize);
+    Py_XDECREF(result);
+
     new->deserialize_attr = PyObject_GetAttrString(cdr, "deserialize");
     new->serialize_attr = PyObject_GetAttrString(cdr, "serialize");
-    py_check(new->deserialize_attr, "deserialize unset.");
-    py_check(new->serialize_attr, "serialize unset.");
-    py_check(pytype, "Type unset.");
+    new->key_calc_attr = PyObject_GetAttrString(cdr, "key");
+    new->keyhash_calc_attr = PyObject_GetAttrString(cdr, "keyhash");
 
-    if (!keyless)
-    {
-        new->key_calc_attr = PyObject_GetAttrString(cdr, "key");
-        new->keyhash_calc_attr = PyObject_GetAttrString(cdr, "keyhash");
-        py_check(new->key_calc_attr, "key_calc_attr unset.");
-        py_check(new->keyhash_calc_attr, "keyhash_calc_attr unset.");
+    if (!valid_topic_py_or_set_error(new->deserialize_attr) ||
+        !valid_topic_py_or_set_error(new->serialize_attr) ||
+        !valid_topic_py_or_set_error(new->key_calc_attr) ||
+        !valid_topic_py_or_set_error(new->keyhash_calc_attr)) 
+        return NULL;
+    
+    PyObject* pykeysize = PyObject_GetAttrString(cdr, "key_max_size");
+    if (!valid_topic_py_or_set_error(pykeysize)) return NULL;
 
-        PyObject* pykeysize = PyObject_GetAttrString(cdr, "key_max_size");
+    long long keysize = PyLong_AsLongLong(pykeysize);
+    Py_DECREF(pykeysize);
 
-        if (pykeysize == NULL) {
-            new->key_maxsize_bigger_16 = true;
-            PyErr_Clear();
-        }
-        else {
-            long long keysize = PyLong_AsLongLong(pykeysize);
-            if (PyErr_Occurred() != NULL) {
-                PyErr_Clear();
-                keysize = 17;
-            }
-            Py_DECREF(pykeysize);
-            new->key_maxsize_bigger_16 = keysize > 16;
-        }
-    } else {
-        new->key_calc_attr = NULL;
-        new->keyhash_calc_attr = NULL;
+    if (PyErr_Occurred()) {
+        // Overflow
+        PyErr_Clear();
         new->key_maxsize_bigger_16 = true;
+    }
+    else {
+        new->key_maxsize_bigger_16 = keysize > 16;
     }
 
     Py_DECREF(cdr);
 
     return new;
 }
+
 
 
 /// Python BIND
