@@ -52,4 +52,3 @@ def test_readcondition_read(common_setup):
     assert len(received) == 1 and received[0] == messages[1]
 
 
-

@@ -1,7 +1,6 @@
-from _typeshed import NoneType
 from pycdr import cdr
 from pycdr.types import uint8, uint16, uint32, uint64, int16, int32, int64, float32, float64, char, \
-    union, sequence, array, bounded_str, default, case, optional
+    union, sequence, array, bound_str, default, case, optional, NoneType
 
 
 
@@ -119,10 +118,6 @@ class TypeObjectHashId:
     hash: case[[EK_MINIMAL, EK_COMPLETE], EquivalenceHash]
 
 
-class TypeIdentifier:
-    pass
-
-
 TypeKind = uint8  # typedef
 
 # @ bit_bound(16)
@@ -196,7 +191,7 @@ class PlainCollectionHeader:
 class PlainSequenceSElemDefn:
     header: PlainCollectionHeader
     bound: SBound
-    element_identifier: TypeIdentifier
+    element_identifier: 'TypeIdentifier'
 
 
 # @ extensibility(FINAL) @ nested
@@ -209,7 +204,7 @@ class PlainSequenceSElemDefn:
 class PlainSequenceLElemDefn:
     header: PlainCollectionHeader
     bound: LBound
-    element_identifier: TypeIdentifier
+    element_identifier: 'TypeIdentifier'
 
 
 # @ extensibility(FINAL) @ nested
@@ -222,7 +217,7 @@ class PlainSequenceLElemDefn:
 class PlainArraySElemDefn:
     header: PlainCollectionHeader
     array_bound_seq: SBoundSeq
-    element_identifier: TypeIdentifier
+    element_identifier: 'TypeIdentifier'
 
 
 # @ extensibility(FINAL) @ nested
@@ -235,7 +230,7 @@ class PlainArraySElemDefn:
 class PlainArrayLElemDefn:
     header: PlainCollectionHeader
     array_bound_seq: LBoundSeq
-    element_identifier: TypeIdentifier
+    element_identifier: 'TypeIdentifier'
 
 
 # @ extensibility(FINAL) @ nested
@@ -246,12 +241,13 @@ class PlainArrayLElemDefn:
 # CollectionElementFlag  key_flags;
 # @external TypeIdentifier key_identifier;
 # };
+@cdr
 class PlainMapSTypeDefn:
     header: PlainCollectionHeader
     bound: SBound
-    element_identifier: TypeIdentifier
+    element_identifier: 'TypeIdentifier'
     key_flags: CollectionElementFlag
-    key_identifier: TypeIdentifier
+    key_identifier: 'TypeIdentifier'
 
 
 # @ extensibility(FINAL) @ nested
@@ -266,9 +262,9 @@ class PlainMapSTypeDefn:
 class PlainMapLTypeDefn:
     header: PlainCollectionHeader
     bound: LBound
-    element_identifier: TypeIdentifier
+    element_identifier: 'TypeIdentifier'
     key_flags: CollectionElementFlag
-    key_identifier: TypeIdentifier
+    key_identifier: 'TypeIdentifier'
 
 
 # # Used for Types that have cyclic depencencies with other types
@@ -358,7 +354,7 @@ class TypeIdentifier:
         [
             TK_NONE, TK_BOOLEAN, TK_BYTE, TK_INT16, TK_INT32, 
             TK_INT64, TK_UINT16,  TK_UINT32, TK_UINT64, 
-            TK_FLOAT32, TK_FLOAT64, TK_FLOAT64, TK_CHAR8, TK_CHAR16
+            TK_FLOAT32, TK_FLOAT64, TK_CHAR8, TK_CHAR16
         ]
         , NoneType]
     string_sdefn: case[[TI_STRING8_SMALL, TI_STRING16_SMALL], StringSTypeDefn]
@@ -387,8 +383,8 @@ ANNOTATION_SEC_VALUE_MAX_LEN = 128
 MEMBER_NAME_MAX_LENGTH = 256
 TYPE_NAME_MAX_LENGTH = 256
 
-MemberName = bounded_str[MEMBER_NAME_MAX_LENGTH]
-QualifiedTypeName = bounded_str[TYPE_NAME_MAX_LENGTH]
+MemberName = bound_str[MEMBER_NAME_MAX_LENGTH]
+QualifiedTypeName = bound_str[TYPE_NAME_MAX_LENGTH]
 
 
 # @extensibility(MUTABLE) @nested
@@ -456,7 +452,7 @@ class AnnotationParameterValue:
     char_value: case[TK_CHAR8, char]
     # wchar not supported
     enum_value: case[TK_ENUM, int32]
-    string_value: case[TK_STRING8, bounded_str[ANNOTATION_STR_VALUE_MAX_LEN]]
+    string_value: case[TK_STRING8, bound_str[ANNOTATION_STR_VALUE_MAX_LEN]]
     # string16 not supported
     extended_value: default[ExtendedAnnotationParameterValue]
 
@@ -503,8 +499,8 @@ AppliedAnnotationSeq = sequence[AppliedAnnotation]
 # };
 @cdr
 class AppliedVerbatimAnnotation:
-    placement: bounded_str[32]
-    language: bounded_str[32]
+    placement: bound_str[32]
+    language: bound_str[32]
     text: str
 
 
@@ -1574,3 +1570,8 @@ class MinimalTypeObject:
 class TypeObject:
     complete: case[EK_COMPLETE, CompleteTypeObject]
     minimal: case[EK_MINIMAL, MinimalTypeObject]
+
+
+@cdr
+class TypeObjectContainer:
+    type_object: TypeObject

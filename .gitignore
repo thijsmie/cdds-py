@@ -9,3 +9,4 @@ cov.xml
 *.egg-info
 .inputrc
 .python-version
+snippets.txt

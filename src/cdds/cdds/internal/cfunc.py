@@ -19,13 +19,16 @@ def c_call(cname):
 
             # Set c function types based on python type annotations
             cfunc = getattr(cls._dll_handle, cname)
-            cfunc.restype = s.return_annotation
+
+            # Note: in python 3.10 we get NoneType for voids instead of None
+            # This confuses ctypes a lot, so we explicitly test for it
+            cfunc.restype = s.return_annotation if s.return_annotation != type(None) else None
 
             # Note: ignoring the 'self' argument
             cfunc.argtypes = [p.annotation for i, p in enumerate(s.parameters.values()) if i > 0]
 
             # Need to rebuild this function to ignore the 'self' attribute
-            def final_func(self, *args):
+            def final_func(self_, *args):
                 return cfunc(*args)
 
             # replace class named method with c call
