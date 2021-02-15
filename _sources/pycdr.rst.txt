@@ -65,34 +65,33 @@ The python :class:`str<python:str>` type maps directly to the XCDR string. Under
 Lists
 ^^^^^
 
-The python :func:`list<python:list>` is a versatile type. In normal python a list would be able to contain any other types, but to be able to encode it all of the contents must be the same type, and this type must be known beforehand. This can be achieved by using :class:`List<python:typing.List>` from the :mod:`typing<python:typing>` module in the standard library, or in future python versions with :pep:`585`.
+The python :func:`list<python:list>` is a versatile type. In normal python a list would be able to contain any other types, but to be able to encode it all of the contents must be the same type, and this type must be known beforehand. This can be achieved by using the :class:`sequence<pycdr.types.sequence>` type.
 
 
 .. code-block:: python
    :linenos:
 
-   from typing import List
    from pycdr import cdr
+   from pycdr.types import sequence
 
    @cdr
    class Names:
-      names: List[str]
+      names: sequence[str]
 
    n = Names(names=["foo", "bar", "baz"])
 
-In XCDR this will result in an 'unbounded sequence', which should be fine in most cases. However, you can switch over to a 'bounded sequence' or 'array' using annotations. This can be useful to either limit the maximum allowed number of items (bounded sequence) or if the length of the list is always the same (array). These are expressed with :func:`MaxLen<pycdr.types.MaxLen>` and :func:`Len<pycdr.types.Len>` from the :mod:`types<pycdr.types>` module.
+In XCDR this will result in an 'unbounded sequence', which should be fine in most cases. However, you can switch over to a 'bounded sequence' or 'array' using annotations. This can be useful to either limit the maximum allowed number of items (bounded sequence) or if the length of the list is always the same (array).
 
 .. code-block:: python
    :linenos:
 
-   from typing import List, Annotated
    from pycdr import cdr
-   from pycdr.types import Len, MaxLen
+   from pycdr.types import sequence, array
 
    @cdr
    class Numbers:
-      ThreeNumbers: Annotated[List[int], Len(3)]
-      MaxFourNumbers: Annotated[List[int], MaxLen(4)]
+      ThreeNumbers: array[int, 3]
+      MaxFourNumbers: sequence[int, 4]
 
 Dictionaries
 ^^^^^^^^^^^^
@@ -115,15 +114,14 @@ Currently dictionaries are not supported by the Cyclone IDL compiler. However, i
 Unions
 ^^^^^^
 
-Unions in CDR are not like the Unions defined in the :mod:`typing<python:typing>` module. CDR unions are *discriminated*, meaning they have a value that indicates which of the possibilities is active. With PyCDR python Unions will be automatically converted to discriminated union, with the caveat that the difference between the union types needs to be detectable at runtime. A concrete example would be that you cannot have a python union with a `int8` and a `uint8`, because for a value like `8` there is no way to determine which of those two is active.
+Unions in CDR are not like the Unions defined in the :mod:`typing<python:typing>` module. CDR unions are *discriminated*, meaning they have a value that indicates which of the possibilities is active. In future PyCDR will convert python Unions to discriminated unions automatically, with the caveat that the difference between the union types needs to be detectable at runtime. A concrete example would be that you cannot have a python union with a `int8` and a `uint8`, because for a value like `8` there is no way to determine which of those two is active.
 
-You can also write discriminated unions using the :func:`@union<pycdr.types.union>` decorator and the :func:`case<pycdr.types.case>` and :func:`default<pycdr.types.default>` helper functions. You again write a class in a dataclass style, except only one of the values can be active at a time. The :func:`@union<pycdr.types.union>` decorator takes one type as argument, which determines the type of what is differentiating the cases.
+You can also write discriminated unions using the :func:`@union<pycdr.types.union>` decorator and the :func:`case<pycdr.types.case>` and :func:`default<pycdr.types.default>` helper types. You again write a class in a dataclass style, except only one of the values can be active at a time. The :func:`@union<pycdr.types.union>` decorator takes one type as argument, which determines the type of what is differentiating the cases.
 
 .. code-block:: python
    :linenos:
 
    from enum import Enum, auto
-   from typing import Union, List, Annotated
    from pycdr import cdr
    from pycdr.types import uint8, union, case, default, MaxLen
 
@@ -137,19 +135,19 @@ You can also write discriminated unions using the :func:`@union<pycdr.types.unio
 
    @union(Direction)
    class WalkInstruction:
-      steps_n: int = case(Direction.North)
-      steps_e: int = case(Direction.East)
-      steps_s: int = case(Direction.South)
-      steps_w: int = case(Direction.West)
-      jumps: int = default()
+      steps_n: case[Direction.North, int]
+      steps_e: case[Direction.East, int]
+      steps_s: case[Direction.South, int]
+      steps_w: case[Direction.West, int]
+      jumps: default[int]
 
    @cdr
    class TreasureMap:
-      description: Union[str, List[str]]
-      steps: Annotated[List[WalkInstruction], MaxLen(20)]
+      description: str
+      steps: sequence[WalkInstruction, 20]
 
    map = TreasureMap(
-      description=["Find my Coins, Diamonds and other Riches!", "Signed", "Captain Corsaro"],
+      description="Find my Coins, Diamonds and other Riches!\nSigned\nCaptain Corsaro",
       steps=[
          WalkInstruction(steps_n=5),
          WalkInstruction(steps_e=3),
@@ -170,7 +168,7 @@ You can also reference other classes as member type. These other classes should 
    :linenos:
 
    from pycdr import cdr
-   from typing import List
+   from pycdr.types import sequence
 
    @cdr
    class Point2D:
@@ -179,7 +177,7 @@ You can also reference other classes as member type. These other classes should 
 
    @cdr
    class Cloud:
-      points: List[Point]
+      points: sequence[Point]
 
 
 Serialization

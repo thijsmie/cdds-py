@@ -235,7 +235,7 @@
 </div>
 <div class="section" id="lists">
 <h3>Lists<a class="headerlink" href="#lists" title="Permalink to this headline">¶</a></h3>
-<p>The python <code class="xref py py-func docutils literal notranslate"><span class="pre">list</span></code> is a versatile type. In normal python a list would be able to contain any other types, but to be able to encode it all of the contents must be the same type, and this type must be known beforehand. This can be achieved by using <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></a> from the <a class="reference external" href="https://docs.python.org/3/library/typing.html#module-typing" title="(in Python v3.9)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">typing</span></code></a> module in the standard library, or in future python versions with <span class="target" id="index-0"></span><a class="pep reference external" href="https://www.python.org/dev/peps/pep-0585"><strong>PEP 585</strong></a>.</p>
+<p>The python <code class="xref py py-func docutils literal notranslate"><span class="pre">list</span></code> is a versatile type. In normal python a list would be able to contain any other types, but to be able to encode it all of the contents must be the same type, and this type must be known beforehand. This can be achieved by using the <code class="xref py py-class docutils literal notranslate"><span class="pre">sequence</span></code> type.</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2
 3
@@ -243,32 +243,30 @@
 5
 6
 7
-8</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
-<span class="kn">from</span> <span class="nn">pycdr</span> <span class="kn">import</span> <span class="n">cdr</span>
+8</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pycdr</span> <span class="kn">import</span> <span class="n">cdr</span>
+<span class="kn">from</span> <span class="nn">pycdr.types</span> <span class="kn">import</span> <span class="n">sequence</span>
 
 <span class="nd">@cdr</span>
 <span class="k">class</span> <span class="nc">Names</span><span class="p">:</span>
-   <span class="n">names</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+   <span class="n">names</span><span class="p">:</span> <span class="n">sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
 
 <span class="n">n</span> <span class="o">=</span> <span class="n">Names</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;foo&quot;</span><span class="p">,</span> <span class="s2">&quot;bar&quot;</span><span class="p">,</span> <span class="s2">&quot;baz&quot;</span><span class="p">])</span>
 </pre></div>
 </td></tr></table></div>
-<p>In XCDR this will result in an ‘unbounded sequence’, which should be fine in most cases. However, you can switch over to a ‘bounded sequence’ or ‘array’ using annotations. This can be useful to either limit the maximum allowed number of items (bounded sequence) or if the length of the list is always the same (array). These are expressed with <code class="xref py py-func docutils literal notranslate"><span class="pre">MaxLen</span></code> and <code class="xref py py-func docutils literal notranslate"><span class="pre">Len</span></code> from the <code class="xref py py-mod docutils literal notranslate"><span class="pre">types</span></code> module.</p>
+<p>In XCDR this will result in an ‘unbounded sequence’, which should be fine in most cases. However, you can switch over to a ‘bounded sequence’ or ‘array’ using annotations. This can be useful to either limit the maximum allowed number of items (bounded sequence) or if the length of the list is always the same (array).</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2
 3
 4
 5
 6
-7
-8</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Annotated</span>
-<span class="kn">from</span> <span class="nn">pycdr</span> <span class="kn">import</span> <span class="n">cdr</span>
-<span class="kn">from</span> <span class="nn">pycdr.types</span> <span class="kn">import</span> <span class="n">Len</span><span class="p">,</span> <span class="n">MaxLen</span>
+7</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pycdr</span> <span class="kn">import</span> <span class="n">cdr</span>
+<span class="kn">from</span> <span class="nn">pycdr.types</span> <span class="kn">import</span> <span class="n">sequence</span><span class="p">,</span> <span class="n">array</span>
 
 <span class="nd">@cdr</span>
 <span class="k">class</span> <span class="nc">Numbers</span><span class="p">:</span>
-   <span class="n">ThreeNumbers</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">Len</span><span class="p">(</span><span class="mi">3</span><span class="p">)]</span>
-   <span class="n">MaxFourNumbers</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">MaxLen</span><span class="p">(</span><span class="mi">4</span><span class="p">)]</span>
+   <span class="n">ThreeNumbers</span><span class="p">:</span> <span class="n">array</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
+   <span class="n">MaxFourNumbers</span><span class="p">:</span> <span class="n">sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="mi">4</span><span class="p">]</span>
 </pre></div>
 </td></tr></table></div>
 </div>
@@ -295,8 +293,8 @@
 </div>
 <div class="section" id="unions">
 <h3>Unions<a class="headerlink" href="#unions" title="Permalink to this headline">¶</a></h3>
-<p>Unions in CDR are not like the Unions defined in the <a class="reference external" href="https://docs.python.org/3/library/typing.html#module-typing" title="(in Python v3.9)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">typing</span></code></a> module. CDR unions are <em>discriminated</em>, meaning they have a value that indicates which of the possibilities is active. With PyCDR python Unions will be automatically converted to discriminated union, with the caveat that the difference between the union types needs to be detectable at runtime. A concrete example would be that you cannot have a python union with a <cite>int8</cite> and a <cite>uint8</cite>, because for a value like <cite>8</cite> there is no way to determine which of those two is active.</p>
-<p>You can also write discriminated unions using the <code class="xref py py-func docutils literal notranslate"><span class="pre">&#64;union</span></code> decorator and the <code class="xref py py-func docutils literal notranslate"><span class="pre">case</span></code> and <code class="xref py py-func docutils literal notranslate"><span class="pre">default</span></code> helper functions. You again write a class in a dataclass style, except only one of the values can be active at a time. The <code class="xref py py-func docutils literal notranslate"><span class="pre">&#64;union</span></code> decorator takes one type as argument, which determines the type of what is differentiating the cases.</p>
+<p>Unions in CDR are not like the Unions defined in the <a class="reference external" href="https://docs.python.org/3/library/typing.html#module-typing" title="(in Python v3.9)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">typing</span></code></a> module. CDR unions are <em>discriminated</em>, meaning they have a value that indicates which of the possibilities is active. In future PyCDR will convert python Unions to discriminated unions automatically, with the caveat that the difference between the union types needs to be detectable at runtime. A concrete example would be that you cannot have a python union with a <cite>int8</cite> and a <cite>uint8</cite>, because for a value like <cite>8</cite> there is no way to determine which of those two is active.</p>
+<p>You can also write discriminated unions using the <code class="xref py py-func docutils literal notranslate"><span class="pre">&#64;union</span></code> decorator and the <code class="xref py py-func docutils literal notranslate"><span class="pre">case</span></code> and <code class="xref py py-func docutils literal notranslate"><span class="pre">default</span></code> helper types. You again write a class in a dataclass style, except only one of the values can be active at a time. The <code class="xref py py-func docutils literal notranslate"><span class="pre">&#64;union</span></code> decorator takes one type as argument, which determines the type of what is differentiating the cases.</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
  2
  3
@@ -332,9 +330,7 @@
 33
 34
 35
-36
-37</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span><span class="p">,</span> <span class="n">auto</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Annotated</span>
+36</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span><span class="p">,</span> <span class="n">auto</span>
 <span class="kn">from</span> <span class="nn">pycdr</span> <span class="kn">import</span> <span class="n">cdr</span>
 <span class="kn">from</span> <span class="nn">pycdr.types</span> <span class="kn">import</span> <span class="n">uint8</span><span class="p">,</span> <span class="n">union</span><span class="p">,</span> <span class="n">case</span><span class="p">,</span> <span class="n">default</span><span class="p">,</span> <span class="n">MaxLen</span>
 
@@ -348,19 +344,19 @@
 
 <span class="nd">@union</span><span class="p">(</span><span class="n">Direction</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">WalkInstruction</span><span class="p">:</span>
-   <span class="n">steps_n</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">case</span><span class="p">(</span><span class="n">Direction</span><span class="o">.</span><span class="n">North</span><span class="p">)</span>
-   <span class="n">steps_e</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">case</span><span class="p">(</span><span class="n">Direction</span><span class="o">.</span><span class="n">East</span><span class="p">)</span>
-   <span class="n">steps_s</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">case</span><span class="p">(</span><span class="n">Direction</span><span class="o">.</span><span class="n">South</span><span class="p">)</span>
-   <span class="n">steps_w</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">case</span><span class="p">(</span><span class="n">Direction</span><span class="o">.</span><span class="n">West</span><span class="p">)</span>
-   <span class="n">jumps</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">default</span><span class="p">()</span>
+   <span class="n">steps_n</span><span class="p">:</span> <span class="n">case</span><span class="p">[</span><span class="n">Direction</span><span class="o">.</span><span class="n">North</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span>
+   <span class="n">steps_e</span><span class="p">:</span> <span class="n">case</span><span class="p">[</span><span class="n">Direction</span><span class="o">.</span><span class="n">East</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span>
+   <span class="n">steps_s</span><span class="p">:</span> <span class="n">case</span><span class="p">[</span><span class="n">Direction</span><span class="o">.</span><span class="n">South</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span>
+   <span class="n">steps_w</span><span class="p">:</span> <span class="n">case</span><span class="p">[</span><span class="n">Direction</span><span class="o">.</span><span class="n">West</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span>
+   <span class="n">jumps</span><span class="p">:</span> <span class="n">default</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>
 
 <span class="nd">@cdr</span>
 <span class="k">class</span> <span class="nc">TreasureMap</span><span class="p">:</span>
-   <span class="n">description</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span>
-   <span class="n">steps</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">WalkInstruction</span><span class="p">],</span> <span class="n">MaxLen</span><span class="p">(</span><span class="mi">20</span><span class="p">)]</span>
+   <span class="n">description</span><span class="p">:</span> <span class="nb">str</span>
+   <span class="n">steps</span><span class="p">:</span> <span class="n">sequence</span><span class="p">[</span><span class="n">WalkInstruction</span><span class="p">,</span> <span class="mi">20</span><span class="p">]</span>
 
 <span class="nb">map</span> <span class="o">=</span> <span class="n">TreasureMap</span><span class="p">(</span>
-   <span class="n">description</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Find my Coins, Diamonds and other Riches!&quot;</span><span class="p">,</span> <span class="s2">&quot;Signed&quot;</span><span class="p">,</span> <span class="s2">&quot;Captain Corsaro&quot;</span><span class="p">],</span>
+   <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Find my Coins, Diamonds and other Riches!</span><span class="se">\n</span><span class="s2">Signed</span><span class="se">\n</span><span class="s2">Captain Corsaro&quot;</span><span class="p">,</span>
    <span class="n">steps</span><span class="o">=</span><span class="p">[</span>
       <span class="n">WalkInstruction</span><span class="p">(</span><span class="n">steps_n</span><span class="o">=</span><span class="mi">5</span><span class="p">),</span>
       <span class="n">WalkInstruction</span><span class="p">(</span><span class="n">steps_e</span><span class="o">=</span><span class="mi">3</span><span class="p">),</span>
@@ -387,7 +383,7 @@
  9
 10
 11</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pycdr</span> <span class="kn">import</span> <span class="n">cdr</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
+<span class="kn">from</span> <span class="nn">pycdr.types</span> <span class="kn">import</span> <span class="n">sequence</span>
 
 <span class="nd">@cdr</span>
 <span class="k">class</span> <span class="nc">Point2D</span><span class="p">:</span>
@@ -396,7 +392,7 @@
 
 <span class="nd">@cdr</span>
 <span class="k">class</span> <span class="nc">Cloud</span><span class="p">:</span>
-   <span class="n">points</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Point</span><span class="p">]</span>
+   <span class="n">points</span><span class="p">:</span> <span class="n">sequence</span><span class="p">[</span><span class="n">Point</span><span class="p">]</span>
 </pre></div>
 </td></tr></table></div>
 </div>

@@ -172,13 +172,13 @@
 <h1>cdds.core<a class="headerlink" href="#cdds-core" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt id="cdds.core.policy.Qos">
-<em class="property">class </em><code class="sig-prename descclassname">cdds.core.policy.</code><code class="sig-name descname">Qos</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/policy.html#Qos"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdds.core.policy.Qos" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">cdds.core.policy.</span></code><code class="sig-name descname"><span class="pre">Qos</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/policy.html#Qos"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdds.core.policy.Qos" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="cdds.internal.html#cdds.internal.dds.DDS" title="cdds.internal.dds.DDS"><code class="xref py py-class docutils literal notranslate"><span class="pre">cdds.internal.dds.DDS</span></code></a></p>
 </dd></dl>
 
 <dl class="py class">
 <dt id="cdds.core.policy.Policy">
-<em class="property">class </em><code class="sig-prename descclassname">cdds.core.policy.</code><code class="sig-name descname">Policy</code><a class="reference internal" href="_modules/cdds/core/policy.html#Policy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdds.core.policy.Policy" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">cdds.core.policy.</span></code><code class="sig-name descname"><span class="pre">Policy</span></code><a class="reference internal" href="_modules/cdds/core/policy.html#Policy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdds.core.policy.Policy" title="Permalink to this definition">¶</a></dt>
 <dd><p>The Policy class is fully static and should never need to be instantiated.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
@@ -189,7 +189,7 @@
 </div>
 <dl class="py class">
 <dt id="cdds.core.policy.Policy.Reliability">
-<em class="property">class </em><code class="sig-name descname">Reliability</code><a class="reference internal" href="_modules/cdds/core/policy.html#Policy.Reliability"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdds.core.policy.Policy.Reliability" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">Reliability</span></code><a class="reference internal" href="_modules/cdds/core/policy.html#Policy.Reliability"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdds.core.policy.Policy.Reliability" title="Permalink to this definition">¶</a></dt>
 <dd><p>The Reliability Qos Policy</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Policy</span><span class="o">.</span><span class="n">Reliability</span><span class="o">.</span><span class="n">BestEffort</span><span class="p">(</span><span class="n">max_blocking_time</span><span class="o">=</span><span class="n">duration</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
@@ -198,7 +198,7 @@
 </div>
 <dl class="py method">
 <dt id="cdds.core.policy.Policy.Reliability.BestEffort">
-<em class="property">static </em><code class="sig-name descname">BestEffort</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">max_blocking_time</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/policy.html#Policy.Reliability.BestEffort"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdds.core.policy.Policy.Reliability.BestEffort" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">BestEffort</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">max_blocking_time</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/policy.html#Policy.Reliability.BestEffort"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdds.core.policy.Policy.Reliability.BestEffort" title="Permalink to this definition">¶</a></dt>
 <dd><p>Use BestEffort reliability</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -216,7 +216,7 @@ Use the <a class="reference internal" href="cdds.util.html#cdds.util.time.durati
 
 <dl class="py method">
 <dt id="cdds.core.policy.Policy.Reliability.Reliable">
-<em class="property">static </em><code class="sig-name descname">Reliable</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">max_blocking_time</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/policy.html#Policy.Reliability.Reliable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdds.core.policy.Policy.Reliability.Reliable" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">Reliable</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">max_blocking_time</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/policy.html#Policy.Reliability.Reliable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdds.core.policy.Policy.Reliability.Reliable" title="Permalink to this definition">¶</a></dt>
 <dd><p>Use Reliable reliability</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -236,7 +236,7 @@ Use the <a class="reference internal" href="cdds.util.html#cdds.util.time.durati
 
 <dl class="py class">
 <dt id="cdds.core.policy.Policy.Durability">
-<em class="property">class </em><code class="sig-name descname">Durability</code><a class="reference internal" href="_modules/cdds/core/policy.html#Policy.Durability"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdds.core.policy.Policy.Durability" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">Durability</span></code><a class="reference internal" href="_modules/cdds/core/policy.html#Policy.Durability"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdds.core.policy.Policy.Durability" title="Permalink to this definition">¶</a></dt>
 <dd><p>The Durability Qos Policy</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Policy</span><span class="o">.</span><span class="n">Durability</span><span class="o">.</span><span class="n">Volatile</span>
@@ -247,7 +247,7 @@ Use the <a class="reference internal" href="cdds.util.html#cdds.util.time.durati
 </div>
 <dl class="py attribute">
 <dt id="cdds.core.policy.Policy.Durability.Volatile">
-<code class="sig-name descname">Volatile</code><a class="headerlink" href="#cdds.core.policy.Policy.Durability.Volatile" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">Volatile</span></code><a class="headerlink" href="#cdds.core.policy.Policy.Durability.Volatile" title="Permalink to this definition">¶</a></dt>
 <dd><p>The type of this entity is not publicly specified.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -258,7 +258,7 @@ Use the <a class="reference internal" href="cdds.util.html#cdds.util.time.durati
 
 <dl class="py attribute">
 <dt id="cdds.core.policy.Policy.Durability.TransientLocal">
-<code class="sig-name descname">TransientLocal</code><a class="headerlink" href="#cdds.core.policy.Policy.Durability.TransientLocal" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">TransientLocal</span></code><a class="headerlink" href="#cdds.core.policy.Policy.Durability.TransientLocal" title="Permalink to this definition">¶</a></dt>
 <dd><p>The type of this entity is not publicly specified.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -269,7 +269,7 @@ Use the <a class="reference internal" href="cdds.util.html#cdds.util.time.durati
 
 <dl class="py attribute">
 <dt id="cdds.core.policy.Policy.Durability.Transient">
-<code class="sig-name descname">Transient</code><a class="headerlink" href="#cdds.core.policy.Policy.Durability.Transient" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">Transient</span></code><a class="headerlink" href="#cdds.core.policy.Policy.Durability.Transient" title="Permalink to this definition">¶</a></dt>
 <dd><p>The type of this entity is not publicly specified.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -280,7 +280,7 @@ Use the <a class="reference internal" href="cdds.util.html#cdds.util.time.durati
 
 <dl class="py attribute">
 <dt id="cdds.core.policy.Policy.Durability.Persistent">
-<code class="sig-name descname">Persistent</code><a class="headerlink" href="#cdds.core.policy.Policy.Durability.Persistent" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">Persistent</span></code><a class="headerlink" href="#cdds.core.policy.Policy.Durability.Persistent" title="Permalink to this definition">¶</a></dt>
 <dd><p>The type of this entity is not publicly specified.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -293,7 +293,7 @@ Use the <a class="reference internal" href="cdds.util.html#cdds.util.time.durati
 
 <dl class="py class">
 <dt id="cdds.core.policy.Policy.History">
-<em class="property">class </em><code class="sig-name descname">History</code><a class="reference internal" href="_modules/cdds/core/policy.html#Policy.History"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdds.core.policy.Policy.History" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">History</span></code><a class="reference internal" href="_modules/cdds/core/policy.html#Policy.History"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdds.core.policy.Policy.History" title="Permalink to this definition">¶</a></dt>
 <dd><p>The History Qos Policy</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Policy</span><span class="o">.</span><span class="n">History</span><span class="o">.</span><span class="n">KeepAll</span>
@@ -302,7 +302,7 @@ Use the <a class="reference internal" href="cdds.util.html#cdds.util.time.durati
 </div>
 <dl class="py attribute">
 <dt id="cdds.core.policy.Policy.History.KeepAll">
-<code class="sig-name descname">KeepAll</code><a class="headerlink" href="#cdds.core.policy.Policy.History.KeepAll" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">KeepAll</span></code><a class="headerlink" href="#cdds.core.policy.Policy.History.KeepAll" title="Permalink to this definition">¶</a></dt>
 <dd><p>The type of this entity is not publicly specified.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -313,7 +313,7 @@ Use the <a class="reference internal" href="cdds.util.html#cdds.util.time.durati
 
 <dl class="py method">
 <dt id="cdds.core.policy.Policy.History.KeepLast">
-<em class="property">static </em><code class="sig-name descname">KeepLast</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">amount</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/policy.html#Policy.History.KeepLast"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdds.core.policy.Policy.History.KeepLast" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">KeepLast</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">amount</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/policy.html#Policy.History.KeepLast"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdds.core.policy.Policy.History.KeepLast" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>amount</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – The amount of samples to keep in the history.</p>
@@ -331,7 +331,7 @@ Use the <a class="reference internal" href="cdds.util.html#cdds.util.time.durati
 
 <dl class="py method">
 <dt id="cdds.core.policy.Policy.ResourceLimits">
-<em class="property">static </em><code class="sig-name descname">ResourceLimits</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">max_samples</span></em>, <em class="sig-param"><span class="n">max_instances</span></em>, <em class="sig-param"><span class="n">max_samples_per_instance</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/policy.html#Policy.ResourceLimits"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdds.core.policy.Policy.ResourceLimits" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">ResourceLimits</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">max_samples</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_instances</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_samples_per_instance</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/policy.html#Policy.ResourceLimits"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdds.core.policy.Policy.ResourceLimits" title="Permalink to this definition">¶</a></dt>
 <dd><p>The ResourceLimits Qos Policy</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Policy</span><span class="o">.</span><span class="n">ResourceLimits</span><span class="p">(</span>
@@ -360,7 +360,7 @@ Use the <a class="reference internal" href="cdds.util.html#cdds.util.time.durati
 
 <dl class="py class">
 <dt id="cdds.core.policy.Policy.PresentationAccessScope">
-<em class="property">class </em><code class="sig-name descname">PresentationAccessScope</code><a class="reference internal" href="_modules/cdds/core/policy.html#Policy.PresentationAccessScope"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdds.core.policy.Policy.PresentationAccessScope" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">PresentationAccessScope</span></code><a class="reference internal" href="_modules/cdds/core/policy.html#Policy.PresentationAccessScope"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdds.core.policy.Policy.PresentationAccessScope" title="Permalink to this definition">¶</a></dt>
 <dd><p>The Presentation Access Scope Qos Policy</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Policy</span><span class="o">.</span><span class="n">PresentationAccessScope</span><span class="o">.</span><span class="n">Instance</span><span class="p">(</span><span class="n">coherent_access</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ordered_access</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
@@ -370,7 +370,7 @@ Use the <a class="reference internal" href="cdds.util.html#cdds.util.time.durati
 </div>
 <dl class="py method">
 <dt id="cdds.core.policy.Policy.PresentationAccessScope.Instance">
-<em class="property">static </em><code class="sig-name descname">Instance</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">coherent_access</span></em>, <em class="sig-param"><span class="n">ordered_access</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/policy.html#Policy.PresentationAccessScope.Instance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdds.core.policy.Policy.PresentationAccessScope.Instance" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">Instance</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">coherent_access</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ordered_access</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/policy.html#Policy.PresentationAccessScope.Instance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdds.core.policy.Policy.PresentationAccessScope.Instance" title="Permalink to this definition">¶</a></dt>
 <dd><p>Use Instance Presentation Access Scope</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -390,7 +390,7 @@ Use the <a class="reference internal" href="cdds.util.html#cdds.util.time.durati
 
 <dl class="py method">
 <dt id="cdds.core.policy.Policy.PresentationAccessScope.Topic">
-<em class="property">static </em><code class="sig-name descname">Topic</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">coherent_access</span></em>, <em class="sig-param"><span class="n">ordered_access</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/policy.html#Policy.PresentationAccessScope.Topic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdds.core.policy.Policy.PresentationAccessScope.Topic" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">Topic</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">coherent_access</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ordered_access</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/policy.html#Policy.PresentationAccessScope.Topic"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdds.core.policy.Policy.PresentationAccessScope.Topic" title="Permalink to this definition">¶</a></dt>
 <dd><p>Use Topic Presentation Access Scope</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -410,7 +410,7 @@ Use the <a class="reference internal" href="cdds.util.html#cdds.util.time.durati
 
 <dl class="py method">
 <dt id="cdds.core.policy.Policy.PresentationAccessScope.Group">
-<em class="property">static </em><code class="sig-name descname">Group</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">coherent_access</span></em>, <em class="sig-param"><span class="n">ordered_access</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/policy.html#Policy.PresentationAccessScope.Group"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdds.core.policy.Policy.PresentationAccessScope.Group" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">Group</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">coherent_access</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ordered_access</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/policy.html#Policy.PresentationAccessScope.Group"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdds.core.policy.Policy.PresentationAccessScope.Group" title="Permalink to this definition">¶</a></dt>
 <dd><p>Use Group Presentation Access Scope</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -432,7 +432,7 @@ Use the <a class="reference internal" href="cdds.util.html#cdds.util.time.durati
 
 <dl class="py method">
 <dt id="cdds.core.policy.Policy.Lifespan">
-<em class="property">static </em><code class="sig-name descname">Lifespan</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">lifespan</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/policy.html#Policy.Lifespan"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdds.core.policy.Policy.Lifespan" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">Lifespan</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lifespan</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/policy.html#Policy.Lifespan"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdds.core.policy.Policy.Lifespan" title="Permalink to this definition">¶</a></dt>
 <dd><p>The Lifespan Qos Policy</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Policy</span><span class="o">.</span><span class="n">Lifespan</span><span class="p">(</span><span class="n">duration</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
@@ -453,7 +453,7 @@ Use the <a class="reference internal" href="cdds.util.html#cdds.util.time.durati
 
 <dl class="py method">
 <dt id="cdds.core.policy.Policy.Deadline">
-<em class="property">static </em><code class="sig-name descname">Deadline</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">deadline</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/policy.html#Policy.Deadline"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdds.core.policy.Policy.Deadline" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">Deadline</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">deadline</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/policy.html#Policy.Deadline"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdds.core.policy.Policy.Deadline" title="Permalink to this definition">¶</a></dt>
 <dd><p>The Deadline Qos Policy</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Policy</span><span class="o">.</span><span class="n">Deadline</span><span class="p">(</span><span class="n">duration</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
@@ -474,7 +474,7 @@ Use the <a class="reference internal" href="cdds.util.html#cdds.util.time.durati
 
 <dl class="py method">
 <dt id="cdds.core.policy.Policy.LatencyBudget">
-<em class="property">static </em><code class="sig-name descname">LatencyBudget</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">budget</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/policy.html#Policy.LatencyBudget"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdds.core.policy.Policy.LatencyBudget" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">LatencyBudget</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">budget</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/policy.html#Policy.LatencyBudget"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdds.core.policy.Policy.LatencyBudget" title="Permalink to this definition">¶</a></dt>
 <dd><p>The Latency Budget Qos Policy</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Policy</span><span class="o">.</span><span class="n">LatencyBudget</span><span class="p">(</span><span class="n">duration</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
@@ -495,7 +495,7 @@ Use the <a class="reference internal" href="cdds.util.html#cdds.util.time.durati
 
 <dl class="py class">
 <dt id="cdds.core.policy.Policy.Ownership">
-<em class="property">class </em><code class="sig-name descname">Ownership</code><a class="reference internal" href="_modules/cdds/core/policy.html#Policy.Ownership"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdds.core.policy.Policy.Ownership" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">Ownership</span></code><a class="reference internal" href="_modules/cdds/core/policy.html#Policy.Ownership"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdds.core.policy.Policy.Ownership" title="Permalink to this definition">¶</a></dt>
 <dd><p>The Ownership Qos Policy</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Policy</span><span class="o">.</span><span class="n">Ownership</span><span class="o">.</span><span class="n">Shared</span>
@@ -504,7 +504,7 @@ Use the <a class="reference internal" href="cdds.util.html#cdds.util.time.durati
 </div>
 <dl class="py attribute">
 <dt id="cdds.core.policy.Policy.Ownership.Shared">
-<code class="sig-name descname">Shared</code><a class="headerlink" href="#cdds.core.policy.Policy.Ownership.Shared" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">Shared</span></code><a class="headerlink" href="#cdds.core.policy.Policy.Ownership.Shared" title="Permalink to this definition">¶</a></dt>
 <dd><p>The type of this entity is not publicly specified.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -515,7 +515,7 @@ Use the <a class="reference internal" href="cdds.util.html#cdds.util.time.durati
 
 <dl class="py attribute">
 <dt id="cdds.core.policy.Policy.Ownership.Exclusive">
-<code class="sig-name descname">Exclusive</code><a class="headerlink" href="#cdds.core.policy.Policy.Ownership.Exclusive" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">Exclusive</span></code><a class="headerlink" href="#cdds.core.policy.Policy.Ownership.Exclusive" title="Permalink to this definition">¶</a></dt>
 <dd><p>The type of this entity is not publicly specified.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -528,7 +528,7 @@ Use the <a class="reference internal" href="cdds.util.html#cdds.util.time.durati
 
 <dl class="py method">
 <dt id="cdds.core.policy.Policy.OwnershipStrength">
-<em class="property">static </em><code class="sig-name descname">OwnershipStrength</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">strength</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/policy.html#Policy.OwnershipStrength"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdds.core.policy.Policy.OwnershipStrength" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">OwnershipStrength</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">strength</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/policy.html#Policy.OwnershipStrength"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdds.core.policy.Policy.OwnershipStrength" title="Permalink to this definition">¶</a></dt>
 <dd><p>The Ownership Strength Qos Policy</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Policy</span><span class="o">.</span><span class="n">OwnershipStrength</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
@@ -549,7 +549,7 @@ Use the <a class="reference internal" href="cdds.util.html#cdds.util.time.durati
 
 <dl class="py class">
 <dt id="cdds.core.policy.Policy.Liveliness">
-<em class="property">class </em><code class="sig-name descname">Liveliness</code><a class="reference internal" href="_modules/cdds/core/policy.html#Policy.Liveliness"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdds.core.policy.Policy.Liveliness" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">Liveliness</span></code><a class="reference internal" href="_modules/cdds/core/policy.html#Policy.Liveliness"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdds.core.policy.Policy.Liveliness" title="Permalink to this definition">¶</a></dt>
 <dd><p>The Liveliness Qos Policy</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Policy</span><span class="o">.</span><span class="n">Liveliness</span><span class="o">.</span><span class="n">Automatic</span><span class="p">(</span><span class="n">lease_duration</span><span class="o">=</span><span class="n">duration</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="mi">10</span><span class="p">))</span>
@@ -559,7 +559,7 @@ Use the <a class="reference internal" href="cdds.util.html#cdds.util.time.durati
 </div>
 <dl class="py method">
 <dt id="cdds.core.policy.Policy.Liveliness.Automatic">
-<em class="property">static </em><code class="sig-name descname">Automatic</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">lease_duration</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/policy.html#Policy.Liveliness.Automatic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdds.core.policy.Policy.Liveliness.Automatic" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">Automatic</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lease_duration</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/policy.html#Policy.Liveliness.Automatic"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdds.core.policy.Policy.Liveliness.Automatic" title="Permalink to this definition">¶</a></dt>
 <dd><p>Use Automatic Liveliness</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -577,7 +577,7 @@ the duration in a human readable format.</p>
 
 <dl class="py method">
 <dt id="cdds.core.policy.Policy.Liveliness.ManualByParticipant">
-<em class="property">static </em><code class="sig-name descname">ManualByParticipant</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">lease_duration</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/policy.html#Policy.Liveliness.ManualByParticipant"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdds.core.policy.Policy.Liveliness.ManualByParticipant" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">ManualByParticipant</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lease_duration</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/policy.html#Policy.Liveliness.ManualByParticipant"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdds.core.policy.Policy.Liveliness.ManualByParticipant" title="Permalink to this definition">¶</a></dt>
 <dd><p>Use ManualByParticipant Liveliness</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -595,7 +595,7 @@ the duration in a human readable format.</p>
 
 <dl class="py method">
 <dt id="cdds.core.policy.Policy.Liveliness.ManualByTopic">
-<em class="property">static </em><code class="sig-name descname">ManualByTopic</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">lease_duration</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/policy.html#Policy.Liveliness.ManualByTopic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdds.core.policy.Policy.Liveliness.ManualByTopic" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">ManualByTopic</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lease_duration</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/policy.html#Policy.Liveliness.ManualByTopic"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdds.core.policy.Policy.Liveliness.ManualByTopic" title="Permalink to this definition">¶</a></dt>
 <dd><p>Use ManualByTopic Liveliness</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -615,7 +615,7 @@ the duration in a human readable format.</p>
 
 <dl class="py method">
 <dt id="cdds.core.policy.Policy.TimeBasedFilter">
-<em class="property">static </em><code class="sig-name descname">TimeBasedFilter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filter</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/policy.html#Policy.TimeBasedFilter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdds.core.policy.Policy.TimeBasedFilter" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">TimeBasedFilter</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filter</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/policy.html#Policy.TimeBasedFilter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdds.core.policy.Policy.TimeBasedFilter" title="Permalink to this definition">¶</a></dt>
 <dd><p>The TimeBasedFilter Qos Policy</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Policy</span><span class="o">.</span><span class="n">TimeBasedFilter</span><span class="p">(</span><span class="nb">filter</span><span class="o">=</span><span class="n">duration</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
@@ -637,7 +637,7 @@ to write the duration in a human readable format.</p>
 
 <dl class="py method">
 <dt id="cdds.core.policy.Policy.Partitions">
-<em class="property">static </em><code class="sig-name descname">Partitions</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">partitions</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/policy.html#Policy.Partitions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdds.core.policy.Policy.Partitions" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">Partitions</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">partitions</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/policy.html#Policy.Partitions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdds.core.policy.Policy.Partitions" title="Permalink to this definition">¶</a></dt>
 <dd><p>The Partitions Qos Policy</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Policy</span><span class="o">.</span><span class="n">Partitions</span><span class="p">(</span><span class="s2">&quot;partition_a&quot;</span><span class="p">,</span> <span class="s2">&quot;partition_b&quot;</span><span class="p">,</span> <span class="s2">&quot;partition_c&quot;</span><span class="p">)</span>
@@ -664,11 +664,11 @@ to write the duration in a human readable format.</p>
 
 <dl class="py class">
 <dt id="cdds.core.listener.Listener">
-<em class="property">class </em><code class="sig-prename descclassname">cdds.core.listener.</code><code class="sig-name descname">Listener</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/listener.html#Listener"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdds.core.listener.Listener" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">cdds.core.listener.</span></code><code class="sig-name descname"><span class="pre">Listener</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/listener.html#Listener"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdds.core.listener.Listener" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="cdds.internal.html#cdds.internal.dds.DDS" title="cdds.internal.dds.DDS"><code class="xref py py-class docutils literal notranslate"><span class="pre">cdds.internal.dds.DDS</span></code></a></p>
 <dl class="py method">
 <dt id="cdds.core.listener.Listener.reset">
-<code class="sig-name descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/listener.html#Listener.reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdds.core.listener.Listener.reset" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">reset</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/listener.html#Listener.reset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdds.core.listener.Listener.reset" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
@@ -678,7 +678,7 @@ to write the duration in a human readable format.</p>
 
 <dl class="py method">
 <dt id="cdds.core.listener.Listener.copy">
-<code class="sig-name descname">copy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/listener.html#Listener.copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdds.core.listener.Listener.copy" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">copy</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/listener.html#Listener.copy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdds.core.listener.Listener.copy" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><a class="reference internal" href="#cdds.core.listener.Listener" title="cdds.core.listener.Listener">cdds.core.listener.Listener</a></p>
@@ -688,7 +688,7 @@ to write the duration in a human readable format.</p>
 
 <dl class="py method">
 <dt id="cdds.core.listener.Listener.copy_to">
-<code class="sig-name descname">copy_to</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">listener</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/listener.html#Listener.copy_to"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdds.core.listener.Listener.copy_to" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">copy_to</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">listener</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/listener.html#Listener.copy_to"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdds.core.listener.Listener.copy_to" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>listener</strong> (<a class="reference internal" href="#cdds.core.listener.Listener" title="cdds.core.listener.Listener"><em>cdds.core.listener.Listener</em></a>) – </p>
@@ -701,7 +701,7 @@ to write the duration in a human readable format.</p>
 
 <dl class="py method">
 <dt id="cdds.core.listener.Listener.merge">
-<code class="sig-name descname">merge</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">listener</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/listener.html#Listener.merge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdds.core.listener.Listener.merge" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">merge</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">listener</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/listener.html#Listener.merge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdds.core.listener.Listener.merge" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>listener</strong> (<a class="reference internal" href="#cdds.core.listener.Listener" title="cdds.core.listener.Listener"><em>cdds.core.listener.Listener</em></a>) – </p>
@@ -714,7 +714,7 @@ to write the duration in a human readable format.</p>
 
 <dl class="py method">
 <dt id="cdds.core.listener.Listener.on_inconsistent_topic">
-<code class="sig-name descname">on_inconsistent_topic</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">reader</span></em>, <em class="sig-param"><span class="n">status</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/listener.html#Listener.on_inconsistent_topic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdds.core.listener.Listener.on_inconsistent_topic" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">on_inconsistent_topic</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reader</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/listener.html#Listener.on_inconsistent_topic"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdds.core.listener.Listener.on_inconsistent_topic" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -730,7 +730,7 @@ to write the duration in a human readable format.</p>
 
 <dl class="py method">
 <dt id="cdds.core.listener.Listener.set_on_inconsistent_topic">
-<code class="sig-name descname">set_on_inconsistent_topic</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">callable</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/listener.html#Listener.set_on_inconsistent_topic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdds.core.listener.Listener.set_on_inconsistent_topic" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">set_on_inconsistent_topic</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">callable</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/listener.html#Listener.set_on_inconsistent_topic"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdds.core.listener.Listener.set_on_inconsistent_topic" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>callable</strong> (<em>Callable</em><em>[</em><em>[</em><em>cdds.sub.DataReader</em><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><em>None</em></a><em>]</em>) – </p>
@@ -740,7 +740,7 @@ to write the duration in a human readable format.</p>
 
 <dl class="py method">
 <dt id="cdds.core.listener.Listener.on_data_available">
-<code class="sig-name descname">on_data_available</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">reader</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/listener.html#Listener.on_data_available"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdds.core.listener.Listener.on_data_available" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">on_data_available</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reader</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/listener.html#Listener.on_data_available"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdds.core.listener.Listener.on_data_available" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>reader</strong> (<em>cdds.sub.DataReader</em>) – </p>
@@ -753,7 +753,7 @@ to write the duration in a human readable format.</p>
 
 <dl class="py method">
 <dt id="cdds.core.listener.Listener.set_on_data_available">
-<code class="sig-name descname">set_on_data_available</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">callable</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/listener.html#Listener.set_on_data_available"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdds.core.listener.Listener.set_on_data_available" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">set_on_data_available</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">callable</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/listener.html#Listener.set_on_data_available"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdds.core.listener.Listener.set_on_data_available" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>callable</strong> (<em>Callable</em><em>[</em><em>[</em><em>cdds.sub.DataReader</em><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><em>None</em></a><em>]</em>) – </p>
@@ -763,7 +763,7 @@ to write the duration in a human readable format.</p>
 
 <dl class="py method">
 <dt id="cdds.core.listener.Listener.on_liveliness_lost">
-<code class="sig-name descname">on_liveliness_lost</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">writer</span></em>, <em class="sig-param"><span class="n">status</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/listener.html#Listener.on_liveliness_lost"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdds.core.listener.Listener.on_liveliness_lost" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">on_liveliness_lost</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">writer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/listener.html#Listener.on_liveliness_lost"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdds.core.listener.Listener.on_liveliness_lost" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -779,7 +779,7 @@ to write the duration in a human readable format.</p>
 
 <dl class="py method">
 <dt id="cdds.core.listener.Listener.set_on_liveliness_lost">
-<code class="sig-name descname">set_on_liveliness_lost</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">callable</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/listener.html#Listener.set_on_liveliness_lost"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdds.core.listener.Listener.set_on_liveliness_lost" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">set_on_liveliness_lost</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">callable</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/listener.html#Listener.set_on_liveliness_lost"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdds.core.listener.Listener.set_on_liveliness_lost" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>callable</strong> (<em>Callable</em><em>[</em><em>[</em><em>cdds.pub.DataWriter</em><em>, </em><a class="reference internal" href="cdds.internal.html#cdds.internal.dds_types.dds_liveliness_lost_status_t" title="cdds.internal.dds_types.dds_liveliness_lost_status_t"><em>cdds.internal.dds_types.dds_liveliness_lost_status_t</em></a><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><em>None</em></a><em>]</em>) – </p>
@@ -789,7 +789,7 @@ to write the duration in a human readable format.</p>
 
 <dl class="py method">
 <dt id="cdds.core.listener.Listener.on_liveliness_changed">
-<code class="sig-name descname">on_liveliness_changed</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">reader</span></em>, <em class="sig-param"><span class="n">status</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/listener.html#Listener.on_liveliness_changed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdds.core.listener.Listener.on_liveliness_changed" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">on_liveliness_changed</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reader</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/listener.html#Listener.on_liveliness_changed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdds.core.listener.Listener.on_liveliness_changed" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -805,7 +805,7 @@ to write the duration in a human readable format.</p>
 
 <dl class="py method">
 <dt id="cdds.core.listener.Listener.set_on_liveliness_changed">
-<code class="sig-name descname">set_on_liveliness_changed</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">callable</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/listener.html#Listener.set_on_liveliness_changed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdds.core.listener.Listener.set_on_liveliness_changed" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">set_on_liveliness_changed</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">callable</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/listener.html#Listener.set_on_liveliness_changed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdds.core.listener.Listener.set_on_liveliness_changed" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>callable</strong> (<em>Callable</em><em>[</em><em>[</em><em>cdds.sub.DataReader</em><em>, </em><a class="reference internal" href="cdds.internal.html#cdds.internal.dds_types.dds_liveliness_changed_status_t" title="cdds.internal.dds_types.dds_liveliness_changed_status_t"><em>cdds.internal.dds_types.dds_liveliness_changed_status_t</em></a><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><em>None</em></a><em>]</em>) – </p>
@@ -815,7 +815,7 @@ to write the duration in a human readable format.</p>
 
 <dl class="py method">
 <dt id="cdds.core.listener.Listener.on_offered_deadline_missed">
-<code class="sig-name descname">on_offered_deadline_missed</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">writer</span></em>, <em class="sig-param"><span class="n">status</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/listener.html#Listener.on_offered_deadline_missed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdds.core.listener.Listener.on_offered_deadline_missed" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">on_offered_deadline_missed</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">writer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/listener.html#Listener.on_offered_deadline_missed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdds.core.listener.Listener.on_offered_deadline_missed" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -831,7 +831,7 @@ to write the duration in a human readable format.</p>
 
 <dl class="py method">
 <dt id="cdds.core.listener.Listener.set_on_offered_deadline_missed">
-<code class="sig-name descname">set_on_offered_deadline_missed</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">callable</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/listener.html#Listener.set_on_offered_deadline_missed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdds.core.listener.Listener.set_on_offered_deadline_missed" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">set_on_offered_deadline_missed</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">callable</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/listener.html#Listener.set_on_offered_deadline_missed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdds.core.listener.Listener.set_on_offered_deadline_missed" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>callable</strong> (<em>Callable</em><em>[</em><em>[</em><em>cdds.sub.DataWriter</em><em>, </em><a class="reference internal" href="cdds.internal.html#cdds.internal.dds_types.dds_offered_deadline_missed_status_t" title="cdds.internal.dds_types.dds_offered_deadline_missed_status_t"><em>cdds.internal.dds_types.dds_offered_deadline_missed_status_t</em></a><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><em>None</em></a><em>]</em>) – </p>
@@ -843,12 +843,12 @@ to write the duration in a human readable format.</p>
 
 <dl class="py class">
 <dt id="cdds.core.guard_condition.GuardCondition">
-<em class="property">class </em><code class="sig-prename descclassname">cdds.core.guard_condition.</code><code class="sig-name descname">GuardCondition</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">domain_participant</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/guard_condition.html#GuardCondition"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdds.core.guard_condition.GuardCondition" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">cdds.core.guard_condition.</span></code><code class="sig-name descname"><span class="pre">GuardCondition</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">domain_participant</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/guard_condition.html#GuardCondition"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdds.core.guard_condition.GuardCondition" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#cdds.core.entity.Entity" title="cdds.core.entity.Entity"><code class="xref py py-class docutils literal notranslate"><span class="pre">cdds.core.entity.Entity</span></code></a></p>
 <p>A GuardCondition is a manually triggered condition that can be added to a <a class="reference internal" href="#cdds.core.waitset.WaitSet" title="cdds.core.waitset.WaitSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">WaitSet</span></code></a>.</p>
 <dl class="py method">
 <dt id="cdds.core.guard_condition.GuardCondition.set">
-<code class="sig-name descname">set</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">triggered</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/guard_condition.html#GuardCondition.set"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdds.core.guard_condition.GuardCondition.set" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">set</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">triggered</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/guard_condition.html#GuardCondition.set"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdds.core.guard_condition.GuardCondition.set" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set the status of the GuardCondition to triggered or untriggered.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -868,7 +868,7 @@ to write the duration in a human readable format.</p>
 
 <dl class="py method">
 <dt id="cdds.core.guard_condition.GuardCondition.read">
-<code class="sig-name descname">read</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/guard_condition.html#GuardCondition.read"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdds.core.guard_condition.GuardCondition.read" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">read</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/guard_condition.html#GuardCondition.read"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdds.core.guard_condition.GuardCondition.read" title="Permalink to this definition">¶</a></dt>
 <dd><p>Read the status of the GuardCondition.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -885,7 +885,7 @@ to write the duration in a human readable format.</p>
 
 <dl class="py method">
 <dt id="cdds.core.guard_condition.GuardCondition.take">
-<code class="sig-name descname">take</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/guard_condition.html#GuardCondition.take"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdds.core.guard_condition.GuardCondition.take" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">take</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/guard_condition.html#GuardCondition.take"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdds.core.guard_condition.GuardCondition.take" title="Permalink to this definition">¶</a></dt>
 <dd><p>Take the status of the GuardCondition. If it is True it will be False on the next call.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -904,14 +904,14 @@ to write the duration in a human readable format.</p>
 
 <span class="target" id="module-cdds.core.status_conditions"></span><dl class="py class">
 <dt id="cdds.core.status_conditions.SampleState">
-<em class="property">class </em><code class="sig-prename descclassname">cdds.core.status_conditions.</code><code class="sig-name descname">SampleState</code><a class="reference internal" href="_modules/cdds/core/status_conditions.html#SampleState"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdds.core.status_conditions.SampleState" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">cdds.core.status_conditions.</span></code><code class="sig-name descname"><span class="pre">SampleState</span></code><a class="reference internal" href="_modules/cdds/core/status_conditions.html#SampleState"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdds.core.status_conditions.SampleState" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>SampleState constants for building condition masks. This class is static and
 there should never be a need to instantiate it. It operates on the state of
 a single sample.</p>
 <dl class="py attribute">
 <dt id="cdds.core.status_conditions.SampleState.Read">
-<code class="sig-name descname">Read</code><a class="headerlink" href="#cdds.core.status_conditions.SampleState.Read" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">Read</span></code><a class="headerlink" href="#cdds.core.status_conditions.SampleState.Read" title="Permalink to this definition">¶</a></dt>
 <dd><p>Only consider samples that have already been read.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -922,7 +922,7 @@ a single sample.</p>
 
 <dl class="py attribute">
 <dt id="cdds.core.status_conditions.SampleState.NotRead">
-<code class="sig-name descname">NotRead</code><a class="headerlink" href="#cdds.core.status_conditions.SampleState.NotRead" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">NotRead</span></code><a class="headerlink" href="#cdds.core.status_conditions.SampleState.NotRead" title="Permalink to this definition">¶</a></dt>
 <dd><p>Only consider unread samples.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -933,7 +933,7 @@ a single sample.</p>
 
 <dl class="py attribute">
 <dt id="cdds.core.status_conditions.SampleState.Any">
-<code class="sig-name descname">Any</code><a class="headerlink" href="#cdds.core.status_conditions.SampleState.Any" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">Any</span></code><a class="headerlink" href="#cdds.core.status_conditions.SampleState.Any" title="Permalink to this definition">¶</a></dt>
 <dd><p>Ignore the read/unread state of samples.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -946,14 +946,14 @@ a single sample.</p>
 
 <dl class="py class">
 <dt id="cdds.core.status_conditions.ViewState">
-<em class="property">class </em><code class="sig-prename descclassname">cdds.core.status_conditions.</code><code class="sig-name descname">ViewState</code><a class="reference internal" href="_modules/cdds/core/status_conditions.html#ViewState"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdds.core.status_conditions.ViewState" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">cdds.core.status_conditions.</span></code><code class="sig-name descname"><span class="pre">ViewState</span></code><a class="reference internal" href="_modules/cdds/core/status_conditions.html#ViewState"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdds.core.status_conditions.ViewState" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>ViewState constants for building condition masks. This class is static and
 there should never be a need to instantiate it. It operates on the state of
 an instance.</p>
 <dl class="py attribute">
 <dt id="cdds.core.status_conditions.ViewState.New">
-<code class="sig-name descname">New</code><a class="headerlink" href="#cdds.core.status_conditions.ViewState.New" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">New</span></code><a class="headerlink" href="#cdds.core.status_conditions.ViewState.New" title="Permalink to this definition">¶</a></dt>
 <dd><p>Only consider samples belonging to newly created instances.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -964,7 +964,7 @@ an instance.</p>
 
 <dl class="py attribute">
 <dt id="cdds.core.status_conditions.ViewState.Old">
-<code class="sig-name descname">Old</code><a class="headerlink" href="#cdds.core.status_conditions.ViewState.Old" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">Old</span></code><a class="headerlink" href="#cdds.core.status_conditions.ViewState.Old" title="Permalink to this definition">¶</a></dt>
 <dd><p>Only consider samples belonging to previously created instances.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -975,7 +975,7 @@ an instance.</p>
 
 <dl class="py attribute">
 <dt id="cdds.core.status_conditions.ViewState.Any">
-<code class="sig-name descname">Any</code><a class="headerlink" href="#cdds.core.status_conditions.ViewState.Any" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">Any</span></code><a class="headerlink" href="#cdds.core.status_conditions.ViewState.Any" title="Permalink to this definition">¶</a></dt>
 <dd><p>Ignore the fact whether instances are new or not.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -988,14 +988,14 @@ an instance.</p>
 
 <dl class="py class">
 <dt id="cdds.core.status_conditions.InstanceState">
-<em class="property">class </em><code class="sig-prename descclassname">cdds.core.status_conditions.</code><code class="sig-name descname">InstanceState</code><a class="reference internal" href="_modules/cdds/core/status_conditions.html#InstanceState"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdds.core.status_conditions.InstanceState" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">cdds.core.status_conditions.</span></code><code class="sig-name descname"><span class="pre">InstanceState</span></code><a class="reference internal" href="_modules/cdds/core/status_conditions.html#InstanceState"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdds.core.status_conditions.InstanceState" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>InstanceState constants for building condition masks. This class is static and
 there should never be a need to instantiate it. It operates on the state of
 an instance.</p>
 <dl class="py attribute">
 <dt id="cdds.core.status_conditions.InstanceState.Alive">
-<code class="sig-name descname">Alive</code><a class="headerlink" href="#cdds.core.status_conditions.InstanceState.Alive" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">Alive</span></code><a class="headerlink" href="#cdds.core.status_conditions.InstanceState.Alive" title="Permalink to this definition">¶</a></dt>
 <dd><p>Only consider samples belonging to an alive instance (it has alive writer(s))</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -1006,7 +1006,7 @@ an instance.</p>
 
 <dl class="py attribute">
 <dt id="cdds.core.status_conditions.InstanceState.NotAliveDisposed">
-<code class="sig-name descname">NotAliveDisposed</code><a class="headerlink" href="#cdds.core.status_conditions.InstanceState.NotAliveDisposed" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">NotAliveDisposed</span></code><a class="headerlink" href="#cdds.core.status_conditions.InstanceState.NotAliveDisposed" title="Permalink to this definition">¶</a></dt>
 <dd><p>Only consider samples belonging to an instance that is not alive because it was actively disposed.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -1017,7 +1017,7 @@ an instance.</p>
 
 <dl class="py attribute">
 <dt id="cdds.core.status_conditions.InstanceState.NotAliveNoWriters">
-<code class="sig-name descname">NotAliveNoWriters</code><a class="headerlink" href="#cdds.core.status_conditions.InstanceState.NotAliveNoWriters" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">NotAliveNoWriters</span></code><a class="headerlink" href="#cdds.core.status_conditions.InstanceState.NotAliveNoWriters" title="Permalink to this definition">¶</a></dt>
 <dd><p>Only consider samples belonging to an instance that is not alive because it has no writers.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -1028,7 +1028,7 @@ an instance.</p>
 
 <dl class="py attribute">
 <dt id="cdds.core.status_conditions.InstanceState.Any">
-<code class="sig-name descname">Any</code><a class="headerlink" href="#cdds.core.status_conditions.InstanceState.Any" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">Any</span></code><a class="headerlink" href="#cdds.core.status_conditions.InstanceState.Any" title="Permalink to this definition">¶</a></dt>
 <dd><p>Ignore the liveliness status of the instance.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -1041,13 +1041,13 @@ an instance.</p>
 
 <dl class="py class">
 <dt id="cdds.core.status_conditions.DDSStatus">
-<em class="property">class </em><code class="sig-prename descclassname">cdds.core.status_conditions.</code><code class="sig-name descname">DDSStatus</code><a class="reference internal" href="_modules/cdds/core/status_conditions.html#DDSStatus"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdds.core.status_conditions.DDSStatus" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">cdds.core.status_conditions.</span></code><code class="sig-name descname"><span class="pre">DDSStatus</span></code><a class="reference internal" href="_modules/cdds/core/status_conditions.html#DDSStatus"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdds.core.status_conditions.DDSStatus" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>DDSStatus contains constants to build status masks. It is static and should never
 need to be instantiated.</p>
 <dl class="py attribute">
 <dt id="cdds.core.status_conditions.DDSStatus.InconsistentTopic">
-<code class="sig-name descname">InconsistentTopic</code><a class="headerlink" href="#cdds.core.status_conditions.DDSStatus.InconsistentTopic" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">InconsistentTopic</span></code><a class="headerlink" href="#cdds.core.status_conditions.DDSStatus.InconsistentTopic" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></p>
@@ -1057,7 +1057,7 @@ need to be instantiated.</p>
 
 <dl class="py attribute">
 <dt id="cdds.core.status_conditions.DDSStatus.OfferedDeadlineMissed">
-<code class="sig-name descname">OfferedDeadlineMissed</code><a class="headerlink" href="#cdds.core.status_conditions.DDSStatus.OfferedDeadlineMissed" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">OfferedDeadlineMissed</span></code><a class="headerlink" href="#cdds.core.status_conditions.DDSStatus.OfferedDeadlineMissed" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></p>
@@ -1067,7 +1067,7 @@ need to be instantiated.</p>
 
 <dl class="py attribute">
 <dt id="cdds.core.status_conditions.DDSStatus.RequestedDeadlineMissed">
-<code class="sig-name descname">RequestedDeadlineMissed</code><a class="headerlink" href="#cdds.core.status_conditions.DDSStatus.RequestedDeadlineMissed" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">RequestedDeadlineMissed</span></code><a class="headerlink" href="#cdds.core.status_conditions.DDSStatus.RequestedDeadlineMissed" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></p>
@@ -1077,7 +1077,7 @@ need to be instantiated.</p>
 
 <dl class="py attribute">
 <dt id="cdds.core.status_conditions.DDSStatus.OfferedIncompatibleQos">
-<code class="sig-name descname">OfferedIncompatibleQos</code><a class="headerlink" href="#cdds.core.status_conditions.DDSStatus.OfferedIncompatibleQos" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">OfferedIncompatibleQos</span></code><a class="headerlink" href="#cdds.core.status_conditions.DDSStatus.OfferedIncompatibleQos" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></p>
@@ -1087,7 +1087,7 @@ need to be instantiated.</p>
 
 <dl class="py attribute">
 <dt id="cdds.core.status_conditions.DDSStatus.RequestedIncompatibleQos">
-<code class="sig-name descname">RequestedIncompatibleQos</code><a class="headerlink" href="#cdds.core.status_conditions.DDSStatus.RequestedIncompatibleQos" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">RequestedIncompatibleQos</span></code><a class="headerlink" href="#cdds.core.status_conditions.DDSStatus.RequestedIncompatibleQos" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></p>
@@ -1097,7 +1097,7 @@ need to be instantiated.</p>
 
 <dl class="py attribute">
 <dt id="cdds.core.status_conditions.DDSStatus.SampleLost">
-<code class="sig-name descname">SampleLost</code><a class="headerlink" href="#cdds.core.status_conditions.DDSStatus.SampleLost" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">SampleLost</span></code><a class="headerlink" href="#cdds.core.status_conditions.DDSStatus.SampleLost" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></p>
@@ -1107,7 +1107,7 @@ need to be instantiated.</p>
 
 <dl class="py attribute">
 <dt id="cdds.core.status_conditions.DDSStatus.SampleRejected">
-<code class="sig-name descname">SampleRejected</code><a class="headerlink" href="#cdds.core.status_conditions.DDSStatus.SampleRejected" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">SampleRejected</span></code><a class="headerlink" href="#cdds.core.status_conditions.DDSStatus.SampleRejected" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></p>
@@ -1117,7 +1117,7 @@ need to be instantiated.</p>
 
 <dl class="py attribute">
 <dt id="cdds.core.status_conditions.DDSStatus.DataOnReaders">
-<code class="sig-name descname">DataOnReaders</code><a class="headerlink" href="#cdds.core.status_conditions.DDSStatus.DataOnReaders" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">DataOnReaders</span></code><a class="headerlink" href="#cdds.core.status_conditions.DDSStatus.DataOnReaders" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></p>
@@ -1127,7 +1127,7 @@ need to be instantiated.</p>
 
 <dl class="py attribute">
 <dt id="cdds.core.status_conditions.DDSStatus.DataAvailable">
-<code class="sig-name descname">DataAvailable</code><a class="headerlink" href="#cdds.core.status_conditions.DDSStatus.DataAvailable" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">DataAvailable</span></code><a class="headerlink" href="#cdds.core.status_conditions.DDSStatus.DataAvailable" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></p>
@@ -1137,7 +1137,7 @@ need to be instantiated.</p>
 
 <dl class="py attribute">
 <dt id="cdds.core.status_conditions.DDSStatus.LivelinessLost">
-<code class="sig-name descname">LivelinessLost</code><a class="headerlink" href="#cdds.core.status_conditions.DDSStatus.LivelinessLost" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">LivelinessLost</span></code><a class="headerlink" href="#cdds.core.status_conditions.DDSStatus.LivelinessLost" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></p>
@@ -1147,7 +1147,7 @@ need to be instantiated.</p>
 
 <dl class="py attribute">
 <dt id="cdds.core.status_conditions.DDSStatus.LivelinessChanged">
-<code class="sig-name descname">LivelinessChanged</code><a class="headerlink" href="#cdds.core.status_conditions.DDSStatus.LivelinessChanged" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">LivelinessChanged</span></code><a class="headerlink" href="#cdds.core.status_conditions.DDSStatus.LivelinessChanged" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></p>
@@ -1157,7 +1157,7 @@ need to be instantiated.</p>
 
 <dl class="py attribute">
 <dt id="cdds.core.status_conditions.DDSStatus.PublicationMatched">
-<code class="sig-name descname">PublicationMatched</code><a class="headerlink" href="#cdds.core.status_conditions.DDSStatus.PublicationMatched" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">PublicationMatched</span></code><a class="headerlink" href="#cdds.core.status_conditions.DDSStatus.PublicationMatched" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></p>
@@ -1167,7 +1167,7 @@ need to be instantiated.</p>
 
 <dl class="py attribute">
 <dt id="cdds.core.status_conditions.DDSStatus.SubscriptionMatched">
-<code class="sig-name descname">SubscriptionMatched</code><a class="headerlink" href="#cdds.core.status_conditions.DDSStatus.SubscriptionMatched" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">SubscriptionMatched</span></code><a class="headerlink" href="#cdds.core.status_conditions.DDSStatus.SubscriptionMatched" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></p>
@@ -1177,40 +1177,40 @@ need to be instantiated.</p>
 
 <dl class="py attribute">
 <dt>
-<code class="sig-name descname">All = (1 &lt;&lt; 14) - 1</code></dt>
+<code class="sig-name descname"><span class="pre">All</span> <span class="pre">=</span> <span class="pre">(1</span> <span class="pre">&lt;&lt;</span> <span class="pre">14)</span> <span class="pre">-</span> <span class="pre">1</span></code></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt id="cdds.core.status_conditions.Condition">
-<em class="property">class </em><code class="sig-prename descclassname">cdds.core.status_conditions.</code><code class="sig-name descname">Condition</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ref</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/status_conditions.html#Condition"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdds.core.status_conditions.Condition" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">cdds.core.status_conditions.</span></code><code class="sig-name descname"><span class="pre">Condition</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ref</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/status_conditions.html#Condition"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdds.core.status_conditions.Condition" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#cdds.core.entity.Entity" title="cdds.core.entity.Entity"><code class="xref py py-class docutils literal notranslate"><span class="pre">cdds.core.entity.Entity</span></code></a></p>
 <p>Utility class to implement common methods between Read and Queryconditions</p>
 </dd></dl>
 
 <dl class="py class">
 <dt id="cdds.core.status_conditions.ReadCondition">
-<em class="property">class </em><code class="sig-prename descclassname">cdds.core.status_conditions.</code><code class="sig-name descname">ReadCondition</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">reader</span></em>, <em class="sig-param"><span class="n">mask</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/status_conditions.html#ReadCondition"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdds.core.status_conditions.ReadCondition" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">cdds.core.status_conditions.</span></code><code class="sig-name descname"><span class="pre">ReadCondition</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reader</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/status_conditions.html#ReadCondition"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdds.core.status_conditions.ReadCondition" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#cdds.core.status_conditions.Condition" title="cdds.core.status_conditions.Condition"><code class="xref py py-class docutils literal notranslate"><span class="pre">cdds.core.status_conditions.Condition</span></code></a></p>
 </dd></dl>
 
 <dl class="py class">
 <dt id="cdds.core.status_conditions.QueryCondition">
-<em class="property">class </em><code class="sig-prename descclassname">cdds.core.status_conditions.</code><code class="sig-name descname">QueryCondition</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">reader</span></em>, <em class="sig-param"><span class="n">mask</span></em>, <em class="sig-param"><span class="n">filter</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/status_conditions.html#QueryCondition"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdds.core.status_conditions.QueryCondition" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">cdds.core.status_conditions.</span></code><code class="sig-name descname"><span class="pre">QueryCondition</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reader</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/status_conditions.html#QueryCondition"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdds.core.status_conditions.QueryCondition" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#cdds.core.status_conditions.Condition" title="cdds.core.status_conditions.Condition"><code class="xref py py-class docutils literal notranslate"><span class="pre">cdds.core.status_conditions.Condition</span></code></a></p>
 </dd></dl>
 
 <span class="target" id="module-cdds.core.waitset"></span><dl class="py class">
 <dt id="cdds.core.waitset.WaitSet">
-<em class="property">class </em><code class="sig-prename descclassname">cdds.core.waitset.</code><code class="sig-name descname">WaitSet</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">domain_participant</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/waitset.html#WaitSet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdds.core.waitset.WaitSet" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">cdds.core.waitset.</span></code><code class="sig-name descname"><span class="pre">WaitSet</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">domain_participant</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/waitset.html#WaitSet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdds.core.waitset.WaitSet" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#cdds.core.entity.Entity" title="cdds.core.entity.Entity"><code class="xref py py-class docutils literal notranslate"><span class="pre">cdds.core.entity.Entity</span></code></a></p>
 <p>A WaitSet is a way to provide synchronous access to events happening in the DDS system. You can attach almost any kind
 of entity to a WaitSet and then perform a blocking wait on the waitset. When one or more of the entities in the waitset
 trigger the wait is unblocked. What a ‘trigger’ is depends on the type of entity, you can find out more in <code class="docutils literal notranslate"><span class="pre">todo(DDS)</span> <span class="pre">triggers</span></code>.</p>
 <dl class="py method">
 <dt id="cdds.core.waitset.WaitSet.attach">
-<code class="sig-name descname">attach</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">entity</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/waitset.html#WaitSet.attach"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdds.core.waitset.WaitSet.attach" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">attach</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">entity</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/waitset.html#WaitSet.attach"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdds.core.waitset.WaitSet.attach" title="Permalink to this definition">¶</a></dt>
 <dd><p>Attach an entity to this WaitSet. This is a no-op if the entity was already attached.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1230,7 +1230,7 @@ trigger the wait is unblocked. What a ‘trigger’ is depends on the type of en
 
 <dl class="py method">
 <dt id="cdds.core.waitset.WaitSet.detach">
-<code class="sig-name descname">detach</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">entity</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/waitset.html#WaitSet.detach"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdds.core.waitset.WaitSet.detach" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">detach</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">entity</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/waitset.html#WaitSet.detach"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdds.core.waitset.WaitSet.detach" title="Permalink to this definition">¶</a></dt>
 <dd><p>Detach an entity from this WaitSet. If it was not attach this is a no-op.
 Note that this operation is not atomic, a trigger for the detached entity could still occurr right
 after detaching it.</p>
@@ -1249,7 +1249,7 @@ after detaching it.</p>
 
 <dl class="py method">
 <dt id="cdds.core.waitset.WaitSet.is_attached">
-<code class="sig-name descname">is_attached</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">entity</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/waitset.html#WaitSet.is_attached"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdds.core.waitset.WaitSet.is_attached" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">is_attached</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">entity</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/waitset.html#WaitSet.is_attached"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdds.core.waitset.WaitSet.is_attached" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check whether an entity is attached.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1266,7 +1266,7 @@ after detaching it.</p>
 
 <dl class="py method">
 <dt id="cdds.core.waitset.WaitSet.get_entities">
-<code class="sig-name descname">get_entities</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/waitset.html#WaitSet.get_entities"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdds.core.waitset.WaitSet.get_entities" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">get_entities</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/waitset.html#WaitSet.get_entities"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdds.core.waitset.WaitSet.get_entities" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get all the attached entities</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -1280,7 +1280,7 @@ after detaching it.</p>
 
 <dl class="py method">
 <dt id="cdds.core.waitset.WaitSet.wait">
-<code class="sig-name descname">wait</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">timeout</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/waitset.html#WaitSet.wait"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdds.core.waitset.WaitSet.wait" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">wait</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timeout</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/waitset.html#WaitSet.wait"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdds.core.waitset.WaitSet.wait" title="Permalink to this definition">¶</a></dt>
 <dd><p>Block execution and wait for one of the entities in this waitset to trigger.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1298,7 +1298,7 @@ to write that in a human readable format.</p>
 
 <dl class="py method">
 <dt id="cdds.core.waitset.WaitSet.wait_until">
-<code class="sig-name descname">wait_until</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">abstime</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/waitset.html#WaitSet.wait_until"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdds.core.waitset.WaitSet.wait_until" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">wait_until</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">abstime</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/waitset.html#WaitSet.wait_until"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdds.core.waitset.WaitSet.wait_until" title="Permalink to this definition">¶</a></dt>
 <dd><p>Block execution and wait for one of the entities in this waitset to trigger.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1317,7 +1317,7 @@ a human readable format.</p>
 
 <dl class="py method">
 <dt id="cdds.core.waitset.WaitSet.set_trigger">
-<code class="sig-name descname">set_trigger</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/waitset.html#WaitSet.set_trigger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdds.core.waitset.WaitSet.set_trigger" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">set_trigger</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/waitset.html#WaitSet.set_trigger"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdds.core.waitset.WaitSet.set_trigger" title="Permalink to this definition">¶</a></dt>
 <dd><p>Manually trigger a WaitSet. It is unlikely you would need this.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1336,12 +1336,12 @@ a human readable format.</p>
 
 <dl class="py class">
 <dt id="cdds.core.entity.Entity">
-<em class="property">class </em><code class="sig-prename descclassname">cdds.core.entity.</code><code class="sig-name descname">Entity</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ref</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/entity.html#Entity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdds.core.entity.Entity" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">cdds.core.entity.</span></code><code class="sig-name descname"><span class="pre">Entity</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ref</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/entity.html#Entity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdds.core.entity.Entity" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="cdds.internal.html#cdds.internal.dds.DDS" title="cdds.internal.dds.DDS"><code class="xref py py-class docutils literal notranslate"><span class="pre">cdds.internal.dds.DDS</span></code></a></p>
 <p>Base class for all entities in the DDS API. The lifetime of the underlying DDS API object is linked to the lifetime of the Python entity object.</p>
 <dl class="py attribute">
 <dt id="cdds.core.entity.Entity.subscriber">
-<code class="sig-name descname">subscriber</code><a class="headerlink" href="#cdds.core.entity.Entity.subscriber" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">subscriber</span></code><a class="headerlink" href="#cdds.core.entity.Entity.subscriber" title="Permalink to this definition">¶</a></dt>
 <dd><p>If this entity is associated with a DataReader retrieve it. It is read-only. This is a proxy for get_subscriber().</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -1352,7 +1352,7 @@ a human readable format.</p>
 
 <dl class="py attribute">
 <dt id="cdds.core.entity.Entity.publisher">
-<code class="sig-name descname">publisher</code><a class="headerlink" href="#cdds.core.entity.Entity.publisher" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">publisher</span></code><a class="headerlink" href="#cdds.core.entity.Entity.publisher" title="Permalink to this definition">¶</a></dt>
 <dd><p>If this entity is associated with a Publisher retrieve it. It is read-only. This is a proxy for get_publisher().</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -1363,7 +1363,7 @@ a human readable format.</p>
 
 <dl class="py attribute">
 <dt id="cdds.core.entity.Entity.datareader">
-<code class="sig-name descname">datareader</code><a class="headerlink" href="#cdds.core.entity.Entity.datareader" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">datareader</span></code><a class="headerlink" href="#cdds.core.entity.Entity.datareader" title="Permalink to this definition">¶</a></dt>
 <dd><p>If this entity is associated with a DataReader retrieve it. It is read-only. This is a proxy for get_datareader().</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -1374,7 +1374,7 @@ a human readable format.</p>
 
 <dl class="py attribute">
 <dt id="cdds.core.entity.Entity.guid">
-<code class="sig-name descname">guid</code><a class="headerlink" href="#cdds.core.entity.Entity.guid" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">guid</span></code><a class="headerlink" href="#cdds.core.entity.Entity.guid" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the globally unique identifier for this entity. It is read-only. This is a proxy for get_guid().</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -1385,7 +1385,7 @@ a human readable format.</p>
 
 <dl class="py attribute">
 <dt id="cdds.core.entity.Entity.status_mask">
-<code class="sig-name descname">status_mask</code><a class="headerlink" href="#cdds.core.entity.Entity.status_mask" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">status_mask</span></code><a class="headerlink" href="#cdds.core.entity.Entity.status_mask" title="Permalink to this definition">¶</a></dt>
 <dd><p>The status mask for this entity. It is a set of bits formed from <code class="docutils literal notranslate"><span class="pre">DDSStatus</span></code>. This is a proxy for get/set_status_mask().</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -1396,7 +1396,7 @@ a human readable format.</p>
 
 <dl class="py attribute">
 <dt id="cdds.core.entity.Entity.qos">
-<code class="sig-name descname">qos</code><a class="headerlink" href="#cdds.core.entity.Entity.qos" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">qos</span></code><a class="headerlink" href="#cdds.core.entity.Entity.qos" title="Permalink to this definition">¶</a></dt>
 <dd><p>The quality of service policies for this entity. This is a proxy for get/set_qos().</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -1407,7 +1407,7 @@ a human readable format.</p>
 
 <dl class="py attribute">
 <dt id="cdds.core.entity.Entity.listener">
-<code class="sig-name descname">listener</code><a class="headerlink" href="#cdds.core.entity.Entity.listener" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">listener</span></code><a class="headerlink" href="#cdds.core.entity.Entity.listener" title="Permalink to this definition">¶</a></dt>
 <dd><p>The listener associated with this entity. This is a proxy for get/set_listener().</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -1418,7 +1418,7 @@ a human readable format.</p>
 
 <dl class="py attribute">
 <dt id="cdds.core.entity.Entity.parent">
-<code class="sig-name descname">parent</code><a class="headerlink" href="#cdds.core.entity.Entity.parent" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">parent</span></code><a class="headerlink" href="#cdds.core.entity.Entity.parent" title="Permalink to this definition">¶</a></dt>
 <dd><p>The entity that is this entities parent. For example: the subscriber for a datareader, the participant for a topic.
 It is read-only. This is a proxy for get_parent().</p>
 <dl class="field-list simple">
@@ -1430,7 +1430,7 @@ It is read-only. This is a proxy for get_parent().</p>
 
 <dl class="py attribute">
 <dt id="cdds.core.entity.Entity.participant">
-<code class="sig-name descname">participant</code><a class="headerlink" href="#cdds.core.entity.Entity.participant" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">participant</span></code><a class="headerlink" href="#cdds.core.entity.Entity.participant" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the participant for any entity, will only fail for a <code class="docutils literal notranslate"><span class="pre">Domain</span></code>. It is read-only. This is a proxy for get_participant().</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -1441,7 +1441,7 @@ It is read-only. This is a proxy for get_parent().</p>
 
 <dl class="py attribute">
 <dt id="cdds.core.entity.Entity.children">
-<code class="sig-name descname">children</code><a class="headerlink" href="#cdds.core.entity.Entity.children" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">children</span></code><a class="headerlink" href="#cdds.core.entity.Entity.children" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get a list of children belonging to this entity. It is the opposite as <code class="docutils literal notranslate"><span class="pre">parent</span></code>. It is read-only. This is a proxy for get_children().</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -1452,7 +1452,7 @@ It is read-only. This is a proxy for get_parent().</p>
 
 <dl class="py attribute">
 <dt id="cdds.core.entity.Entity.domainid">
-<code class="sig-name descname">domainid</code><a class="headerlink" href="#cdds.core.entity.Entity.domainid" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">domainid</span></code><a class="headerlink" href="#cdds.core.entity.Entity.domainid" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the id of the domain this entity belongs to.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -1463,7 +1463,7 @@ It is read-only. This is a proxy for get_parent().</p>
 
 <dl class="py method">
 <dt id="cdds.core.entity.Entity.get_subscriber">
-<code class="sig-name descname">get_subscriber</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/entity.html#Entity.get_subscriber"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdds.core.entity.Entity.get_subscriber" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">get_subscriber</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/entity.html#Entity.get_subscriber"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdds.core.entity.Entity.get_subscriber" title="Permalink to this definition">¶</a></dt>
 <dd><p>Retrieve the subscriber associated with this entity.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -1480,7 +1480,7 @@ It is read-only. This is a proxy for get_parent().</p>
 
 <dl class="py method">
 <dt id="cdds.core.entity.Entity.get_publisher">
-<code class="sig-name descname">get_publisher</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/entity.html#Entity.get_publisher"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdds.core.entity.Entity.get_publisher" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">get_publisher</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/entity.html#Entity.get_publisher"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdds.core.entity.Entity.get_publisher" title="Permalink to this definition">¶</a></dt>
 <dd><p>Retrieve the publisher associated with this entity.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -1497,7 +1497,7 @@ It is read-only. This is a proxy for get_parent().</p>
 
 <dl class="py method">
 <dt id="cdds.core.entity.Entity.get_datareader">
-<code class="sig-name descname">get_datareader</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/entity.html#Entity.get_datareader"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdds.core.entity.Entity.get_datareader" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">get_datareader</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/entity.html#Entity.get_datareader"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdds.core.entity.Entity.get_datareader" title="Permalink to this definition">¶</a></dt>
 <dd><p>Retrieve the datareader associated with this entity.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -1514,7 +1514,7 @@ It is read-only. This is a proxy for get_parent().</p>
 
 <dl class="py method">
 <dt id="cdds.core.entity.Entity.get_instance_handle">
-<code class="sig-name descname">get_instance_handle</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/entity.html#Entity.get_instance_handle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdds.core.entity.Entity.get_instance_handle" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">get_instance_handle</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/entity.html#Entity.get_instance_handle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdds.core.entity.Entity.get_instance_handle" title="Permalink to this definition">¶</a></dt>
 <dd><p>Retrieve the instance associated with this entity.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -1531,7 +1531,7 @@ It is read-only. This is a proxy for get_parent().</p>
 
 <dl class="py method">
 <dt id="cdds.core.entity.Entity.instance_handle">
-<em class="property">property </em><code class="sig-name descname">instance_handle</code><a class="headerlink" href="#cdds.core.entity.Entity.instance_handle" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">instance_handle</span></code><a class="headerlink" href="#cdds.core.entity.Entity.instance_handle" title="Permalink to this definition">¶</a></dt>
 <dd><p>Retrieve the instance associated with this entity.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -1548,7 +1548,7 @@ It is read-only. This is a proxy for get_parent().</p>
 
 <dl class="py method">
 <dt id="cdds.core.entity.Entity.get_guid">
-<code class="sig-name descname">get_guid</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/entity.html#Entity.get_guid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdds.core.entity.Entity.get_guid" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">get_guid</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/entity.html#Entity.get_guid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdds.core.entity.Entity.get_guid" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get a globally unique identifier for this entity.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -1565,7 +1565,7 @@ It is read-only. This is a proxy for get_parent().</p>
 
 <dl class="py method">
 <dt id="cdds.core.entity.Entity.read_status">
-<code class="sig-name descname">read_status</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mask</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/entity.html#Entity.read_status"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdds.core.entity.Entity.read_status" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">read_status</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mask</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/entity.html#Entity.read_status"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdds.core.entity.Entity.read_status" title="Permalink to this definition">¶</a></dt>
 <dd><p>Read the status bits set on this Entity. You can build a mask by using <code class="docutils literal notranslate"><span class="pre">cdds.core.DDSStatus</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1585,7 +1585,7 @@ It is read-only. This is a proxy for get_parent().</p>
 
 <dl class="py method">
 <dt id="cdds.core.entity.Entity.take_status">
-<code class="sig-name descname">take_status</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mask</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/entity.html#Entity.take_status"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdds.core.entity.Entity.take_status" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">take_status</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mask</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/entity.html#Entity.take_status"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdds.core.entity.Entity.take_status" title="Permalink to this definition">¶</a></dt>
 <dd><p>Take the status bits set on this Entity, after which they will be set to 0 again.
 You can build a mask by using <code class="docutils literal notranslate"><span class="pre">cdds.core.DDSStatus</span></code>.</p>
 <dl class="field-list simple">
@@ -1606,7 +1606,7 @@ You can build a mask by using <code class="docutils literal notranslate"><span c
 
 <dl class="py method">
 <dt id="cdds.core.entity.Entity.get_status_changes">
-<code class="sig-name descname">get_status_changes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/entity.html#Entity.get_status_changes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdds.core.entity.Entity.get_status_changes" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">get_status_changes</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/entity.html#Entity.get_status_changes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdds.core.entity.Entity.get_status_changes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get all status changes since the last read_status() or take_status().</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -1623,7 +1623,7 @@ You can build a mask by using <code class="docutils literal notranslate"><span c
 
 <dl class="py method">
 <dt id="cdds.core.entity.Entity.get_status_mask">
-<code class="sig-name descname">get_status_mask</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/entity.html#Entity.get_status_mask"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdds.core.entity.Entity.get_status_mask" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">get_status_mask</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/entity.html#Entity.get_status_mask"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdds.core.entity.Entity.get_status_mask" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the status mask for this Entity.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -1640,7 +1640,7 @@ You can build a mask by using <code class="docutils literal notranslate"><span c
 
 <dl class="py method">
 <dt id="cdds.core.entity.Entity.set_status_mask">
-<code class="sig-name descname">set_status_mask</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mask</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/entity.html#Entity.set_status_mask"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdds.core.entity.Entity.set_status_mask" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">set_status_mask</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mask</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/entity.html#Entity.set_status_mask"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdds.core.entity.Entity.set_status_mask" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set the status mask for this Entity. By default the mask is 0. Only the status changes for the bits in this mask are tracked on this entity.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1657,7 +1657,7 @@ You can build a mask by using <code class="docutils literal notranslate"><span c
 
 <dl class="py method">
 <dt id="cdds.core.entity.Entity.get_qos">
-<code class="sig-name descname">get_qos</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/entity.html#Entity.get_qos"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdds.core.entity.Entity.get_qos" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">get_qos</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/entity.html#Entity.get_qos"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdds.core.entity.Entity.get_qos" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the set of <code class="docutils literal notranslate"><span class="pre">Qos</span></code> policies associated with this entity. Note that the object returned is not
 the same python object that you used to set the <code class="docutils literal notranslate"><span class="pre">Qos</span></code> on this object. Modifications to the <code class="docutils literal notranslate"><span class="pre">Qos</span></code> object
 that is returned does _not_ modify the Qos of the Entity.</p>
@@ -1676,7 +1676,7 @@ that is returned does _not_ modify the Qos of the Entity.</p>
 
 <dl class="py method">
 <dt id="cdds.core.entity.Entity.set_qos">
-<code class="sig-name descname">set_qos</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">qos</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/entity.html#Entity.set_qos"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdds.core.entity.Entity.set_qos" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">set_qos</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">qos</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/entity.html#Entity.set_qos"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdds.core.entity.Entity.set_qos" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set <code class="docutils literal notranslate"><span class="pre">Qos</span></code> policies on this entity. Note, only a limited number of <code class="docutils literal notranslate"><span class="pre">Qos</span></code> policies can be set after
 the object is created (<code class="docutils literal notranslate"><span class="pre">Policy.LatencyBudget</span></code> and <code class="docutils literal notranslate"><span class="pre">Policy.OwnershipStrength</span></code>). Any policies not set
 explicitly in the supplied <code class="docutils literal notranslate"><span class="pre">Qos</span></code> remain.</p>
@@ -1696,7 +1696,7 @@ explicitly in the supplied <code class="docutils literal notranslate"><span clas
 
 <dl class="py method">
 <dt id="cdds.core.entity.Entity.get_listener">
-<code class="sig-name descname">get_listener</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/entity.html#Entity.get_listener"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdds.core.entity.Entity.get_listener" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">get_listener</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/entity.html#Entity.get_listener"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdds.core.entity.Entity.get_listener" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a listener associated with this object. Modifying the returned listener object does not modify
 this entity, you will have to call set_listener() with the changed object.</p>
 <dl class="field-list simple">
@@ -1714,7 +1714,7 @@ this entity, you will have to call set_listener() with the changed object.</p>
 
 <dl class="py method">
 <dt id="cdds.core.entity.Entity.set_listener">
-<code class="sig-name descname">set_listener</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">listener</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/entity.html#Entity.set_listener"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdds.core.entity.Entity.set_listener" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">set_listener</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">listener</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/entity.html#Entity.set_listener"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdds.core.entity.Entity.set_listener" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set the listener for this object. If a listener already exist for this object only the fields you explicitly
 have set on your new listener are overwritten.</p>
 <dl class="field-list simple">
@@ -1732,7 +1732,7 @@ have set on your new listener are overwritten.</p>
 
 <dl class="py method">
 <dt id="cdds.core.entity.Entity.get_parent">
-<code class="sig-name descname">get_parent</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/entity.html#Entity.get_parent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdds.core.entity.Entity.get_parent" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">get_parent</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/entity.html#Entity.get_parent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdds.core.entity.Entity.get_parent" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the parent entity associated with this entity. A <code class="docutils literal notranslate"><span class="pre">Domain</span></code> object is the only object without parent, but if the domain is
 not created through the Python API this call won’t find it and return None from the DomainParticipant.</p>
 <dl class="field-list simple">
@@ -1750,7 +1750,7 @@ not created through the Python API this call won’t find it and return None fro
 
 <dl class="py method">
 <dt id="cdds.core.entity.Entity.get_participant">
-<code class="sig-name descname">get_participant</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/entity.html#Entity.get_participant"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdds.core.entity.Entity.get_participant" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">get_participant</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/entity.html#Entity.get_participant"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdds.core.entity.Entity.get_participant" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the domain participant for this entity. This should work on all valid Entity objects except a Domain.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -1767,7 +1767,7 @@ not created through the Python API this call won’t find it and return None fro
 
 <dl class="py method">
 <dt id="cdds.core.entity.Entity.get_children">
-<code class="sig-name descname">get_children</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/entity.html#Entity.get_children"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdds.core.entity.Entity.get_children" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">get_children</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/entity.html#Entity.get_children"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdds.core.entity.Entity.get_children" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the list of children of this entity. For example, the list of datareaders belonging to a subscriber. Opposite of parent.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -1784,7 +1784,7 @@ not created through the Python API this call won’t find it and return None fro
 
 <dl class="py method">
 <dt id="cdds.core.entity.Entity.get_domainid">
-<code class="sig-name descname">get_domainid</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/entity.html#Entity.get_domainid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdds.core.entity.Entity.get_domainid" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">get_domainid</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/entity.html#Entity.get_domainid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdds.core.entity.Entity.get_domainid" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the id of the domain this entity resides in.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -1803,13 +1803,13 @@ not created through the Python API this call won’t find it and return None fro
 
 <dl class="py class">
 <dt id="cdds.core.exception.DDSException">
-<em class="property">class </em><code class="sig-prename descclassname">cdds.core.exception.</code><code class="sig-name descname">DDSException</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">code</span></em>, <em class="sig-param"><span class="n">msg</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/exception.html#DDSException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdds.core.exception.DDSException" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">cdds.core.exception.</span></code><code class="sig-name descname"><span class="pre">DDSException</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">code</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">msg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/exception.html#DDSException"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdds.core.exception.DDSException" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></a></p>
 <p>This exception is thrown when a return code from the underlying C api indicates non-valid use of the API.
 Print the exception directly or convert it to string for a detailed description.</p>
 <dl class="py attribute">
 <dt id="cdds.core.exception.DDSException.code">
-<code class="sig-name descname">code</code><a class="headerlink" href="#cdds.core.exception.DDSException.code" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">code</span></code><a class="headerlink" href="#cdds.core.exception.DDSException.code" title="Permalink to this definition">¶</a></dt>
 <dd><p>One of the <code class="docutils literal notranslate"><span class="pre">DDS_RETCODE_</span></code> constants that indicates the type of error.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -1820,7 +1820,7 @@ Print the exception directly or convert it to string for a detailed description.
 
 <dl class="py attribute">
 <dt id="cdds.core.exception.DDSException.msg">
-<code class="sig-name descname">msg</code><a class="headerlink" href="#cdds.core.exception.DDSException.msg" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">msg</span></code><a class="headerlink" href="#cdds.core.exception.DDSException.msg" title="Permalink to this definition">¶</a></dt>
 <dd><p>A human readable description of where the error occurred</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -1833,13 +1833,13 @@ Print the exception directly or convert it to string for a detailed description.
 
 <dl class="py class">
 <dt id="cdds.core.exception.DDSAPIException">
-<em class="property">class </em><code class="sig-prename descclassname">cdds.core.exception.</code><code class="sig-name descname">DDSAPIException</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">msg</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/exception.html#DDSAPIException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cdds.core.exception.DDSAPIException" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">cdds.core.exception.</span></code><code class="sig-name descname"><span class="pre">DDSAPIException</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cdds/core/exception.html#DDSAPIException"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdds.core.exception.DDSAPIException" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></a></p>
 <p>This exception is thrown when misuse of the Python API is detected that are not explicitly bound to
 any C API functions.</p>
 <dl class="py attribute">
 <dt id="cdds.core.exception.DDSAPIException.msg">
-<code class="sig-name descname">msg</code><a class="headerlink" href="#cdds.core.exception.DDSAPIException.msg" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">msg</span></code><a class="headerlink" href="#cdds.core.exception.DDSAPIException.msg" title="Permalink to this definition">¶</a></dt>
 <dd><p>A human readable description of what went wrong.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
