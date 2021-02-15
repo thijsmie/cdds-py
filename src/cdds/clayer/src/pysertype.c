@@ -798,6 +798,9 @@ ddspy_topic_create(PyObject *self, PyObject *args)
     ddsi_sertype_t *rsertype = (ddsi_sertype_t*) sertype;
 
     sts = dds_create_topic_sertype(participant, name, (void**) &rsertype, qos, listener, NULL);
+
+    if (PyErr_Occurred()) return NULL;
+    
     return PyLong_FromLong((long)sts);
 }
 
