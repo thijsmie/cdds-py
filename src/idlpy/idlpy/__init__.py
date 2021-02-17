@@ -1,6 +1,7 @@
 import os
+import sys
 import tempfile
-import importlib.util
+import importlib
 import subprocess
 
 
@@ -42,12 +43,12 @@ def run_idlc(arg):
 def compile(idl_path):
     dir = run_idlc(idl_path)
     module = os.listdir(dir)[0]
-    modpath = os.path.join(dir, module)
+
+    sys.path.insert(0, dir)
 
     if module.endswith('.py'):
         module = module[:-3]
     
-    spec = importlib.util.spec_from_file_location(module, modpath)
-    foo = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(foo)
-    return foo
+    module = importlib.import_module(module)
+    sys.path.pop(0)
+    return module
