@@ -9,9 +9,17 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
  */
+#ifndef IDLPY_GENERATOR_H
+#define IDLPY_GENERATOR_H
 
-#include "idlpy/backend.h"
-#include "idlpy/export.h"
+#include <stdio.h>
 
-idl_retcode_t
-IDLPY_EXPORT idl_backendGenerateType(idl_backend_ctx ctx, const idl_pstate_t *parse_tree);
+#include "idl/processor.h"
+
+
+#if _WIN32
+__declspec(dllexport)
+#endif
+idl_retcode_t generate(const idl_pstate_t *pstate);
+
+#endif /* GENERATOR_H */

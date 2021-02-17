@@ -12,7 +12,7 @@
 
 #include <Python.h>
 
-#include <execinfo.h>
+//#include <execinfo.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
