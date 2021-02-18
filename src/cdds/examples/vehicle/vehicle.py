@@ -1,10 +1,8 @@
-from cdds.topic import Sample
-import os
-from ctypes import c_char_p, c_int16
+from pycdr import cdr
 
 
-@Sample("vehicle")
+@cdr
 class Vehicle:
-    name: c_char_p
-    x: c_int16
-    y: c_int16
+    name: str
+    x: int
+    y: int

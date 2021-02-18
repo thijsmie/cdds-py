@@ -22,13 +22,13 @@ publisher = Publisher(domain_participant)
 writer = DataWriter(publisher, topic)
 
 
-cart = Vehicle(name=b"Fiat Panda", x=200, y=200)
+cart = Vehicle(name=b"Dallara IL-15", x=200, y=200)
 
 
 while True:
     cart.x += random.choice([-1, 0, 1])
     cart.y += random.choice([-1, 0, 1])
     writer.write(cart)
-    print(">> Wrote cart")
+    print(">> Wrote vehicle")
     time.sleep(random.random() * 0.9 + 0.1)
     
