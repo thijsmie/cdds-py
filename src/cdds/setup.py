@@ -19,11 +19,15 @@ def cyclone_config(arg, default=None):
 include_dir = cyclone_config('includedir')
 library_dir = cyclone_config('libdir')
 
+# On windows ddsc.dll is in the binary dir!
+binary_dir = cyclone_config('bindir')
+
+
 ddspy = Extension('ddspy', 
     sources = ['clayer/src/pysertype.c'], 
     libraries=['ddsc'], 
     include_dirs=[include_dir] if include_dir else None,
-    library_dirs=[library_dir] if library_dir else None
+    library_dirs=[library_dir, binary_dir] if library_dir else None
 )
 
 setup(

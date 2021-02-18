@@ -43,11 +43,6 @@ class Topic(Entity):
 
     typename = property(get_type_name, doc="Get topic type name")
 
-    @c_call("dds_create_topic")
-    def _create_topic(self, domain_participant: dds_entity_t, topic_descriptor: dds_topic_descriptor_p_t,
-                      topic_name: c_char_p, qos: dds_qos_p_t, listener: dds_listener_p_t) -> dds_entity_t:
-        pass
-
     @c_call("dds_get_name")
     def _get_name(self, topic: dds_entity_t, name: c_char_p, size: c_size_t) -> dds_return_t:
         pass

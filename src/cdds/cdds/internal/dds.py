@@ -1,9 +1,9 @@
-from cdds.internal import load_library
+from cdds.internal import load_cyclone
 
 
 class DDS:
     """Common class for all DDS related classes. This class enables the c_call magic."""
-    _dll_handle = load_library("ddsc")
+    _dll_handle = load_cyclone()
 
     # These types will be filled upon import, which makes sure that no circular imports are needed
     _entity_type = None
