@@ -6,7 +6,7 @@ Work in progress on the Python Cyclone DDS API.
 
 ## Getting started 
 
-First, get a python and pip installation of a sufficiently high version (3.6+). Next, you'll need to have CycloneDDS installed on your system. You can then install PyCDR and CDDS as contained in this repo:
+First, get a python and pip installation of a sufficiently high version (3.6+). Next, you'll need to have CycloneDDS installed on your system. Set a CYCLONEDDS_HOME environment variable to your installation directory. You can then install PyCDR and CDDS as contained in this repo:
 
 ```bash
 $ cd src

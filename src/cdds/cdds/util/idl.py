@@ -1,43 +1,40 @@
 import os
 import sys
+import platform
 import tempfile
 import importlib
 import subprocess
 from importlib.abc import MetaPathFinder
 
 
-def cyclone_config(arg, default=None):
-    proc = subprocess.Popen(["cyclone-config", f"--{arg}"], stdout=subprocess.PIPE)
-    try:
-        out, _ = proc.communicate(timeout=0.5)
-        if out:
-            return out.decode()
-        return default
-    except subprocess.TimeoutExpired:
-        proc.kill()
-    return default
+if "CYCLONEDDS_HOME" in os.environ:
+    home = os.environ["CYCLONEDDS_HOME"]
+    idlc = os.path.join(home, "bin", "idlc")
 
-
-prefix = cyclone_config('prefix')
-bin = cyclone_config('bindir')
-
-rundir = os.path.abspath(os.path.dirname(__file__))
-idlc = os.path.join(bin, "idlc")
-
-
-class IDLException(Exception):
-    pass
+    if platform.system() == "Windows":
+        libidlpy = os.path.join(home, "bin", "idlpy.dll")
+        idlc += ".exe"
+    elif platform.system() == "Darwin":
+        libidlpy = os.path.join(home, "lib", "libidlpy.dylib")
+    else:
+        libidlpy = os.path.join(home, "lib", "libidlpy.so")
+else:
+    # Hopefully they are on the PATH
+    if platform.system() == "Windows":
+        idlc = "idlc.exe"
+        libidlpy = "idlpy.dll"
+    elif platform.system() == "Darwin":
+        libidlpy = "libidlpy.dylib"
+        idlc = "idlc"
+    else:
+        libidlpy = "libidlpy.so"
+        idlc = "idlc"
 
 
 def run_idlc(arg, dir):
     path = os.path.abspath(arg)
-
-    proc = subprocess.Popen([idlc, "-l", os.path.join(rundir, "libidlpy.so"), path], cwd=dir, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-
-    try:
-        out, err = proc.communicate()
-    except subprocess.CalledProcessError:
-        raise IDLException(out + err)
+    proc = subprocess.Popen([idlc, "-l", libidlpy, path], cwd=dir)
+    proc.communicate()
 
 
 def compile(idl_path):
@@ -68,16 +65,7 @@ class JITIDL(MetaPathFinder):
 
         loc_idl = None
         for entry in path:
-            if os.path.isdir(os.path.join(entry, name)):
-                # Found, system can import
-                return None
-            
-            filename_py = os.path.join(entry, name + ".py")
             filename_idl = os.path.join(entry, name + ".idl")
-
-            if os.path.exists(filename_py):
-                # Found, system can import
-                return None
             
             if os.path.exists(filename_idl):
                 # IDL file located
@@ -93,4 +81,5 @@ class JITIDL(MetaPathFinder):
         return None 
 
 
-sys.meta_path.insert(0, JITIDL())
+def allow_jit():
+    sys.meta_path.insert(0, JITIDL())

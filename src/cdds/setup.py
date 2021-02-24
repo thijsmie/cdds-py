@@ -1,34 +1,22 @@
 #!/usr/bin/env python
 
-import subprocess
+import os
 from setuptools import setup, find_packages, Extension
 
 
-def cyclone_config(arg, default=None):
-    proc = subprocess.Popen(["cyclone-config", f"--{arg}"], stdout=subprocess.PIPE)
-    try:
-        out, _ = proc.communicate(timeout=0.5)
-        if out:
-            return out.decode()
-        return default
-    except subprocess.TimeoutExpired:
-        proc.kill()
-    return default
-
-
-include_dir = cyclone_config('includedir')
-library_dir = cyclone_config('libdir')
-
-# On windows ddsc.dll is in the binary dir!
-binary_dir = cyclone_config('bindir')
-
-
-ddspy = Extension('ddspy', 
-    sources = ['clayer/src/pysertype.c'], 
-    libraries=['ddsc'], 
-    include_dirs=[include_dir] if include_dir else None,
-    library_dirs=[library_dir, binary_dir] if library_dir else None
-)
+if "CYCLONEDDS_HOME" in os.environ:
+    home = os.environ["CYCLONEDDS_HOME"]
+    ddspy = Extension('ddspy', 
+        sources = ['clayer/src/pysertype.c'], 
+        libraries=['ddsc'], 
+        include_dirs=[os.path.join(home, "include")],
+        library_dirs=[os.path.join(home, "lib"), os.path.join(home, "bin")]
+    )
+else:
+    ddspy = Extension('ddspy', 
+        sources = ['clayer/src/pysertype.c'], 
+        libraries=['ddsc']
+    )
 
 setup(
     name='cdds',

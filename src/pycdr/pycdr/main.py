@@ -2,26 +2,47 @@ from .machinery import build_machine, build_key_machine, Buffer, MaxSizeFinder
 
 from hashlib import md5
 from collections import defaultdict
+from inspect import isclass
 
+
+def module_prefix(cls):
+    cls = cls.__class__ if not isclass(cls) else cls
+    module = cls.__module__
+    if module is None or module == str.__class__.__module__:
+        return ""
+    return module + "."
+
+
+def qualified_name(instance):
+    cls = instance.__class__ if not isclass(instance) else instance
+    return module_prefix(cls) + cls.__name__
 
 
 class CDR:
+    defined_references = {}
     deferred_references = defaultdict(list)
 
-    @classmethod
-    def defer(cls, type_name, instance):
-        cls.deferred_references[type_name].append(instance)
+    def resolve(self, type_name, instance):
+        if '.' in qualified_name(self.datatype) and not '.' in type_name:
+            # We got a local name, but we only deal in full paths
+            type_name = module_prefix(self.datatype) + type_name
+
+        if type_name not in self.defined_references:
+            self.deferred_references[type_name].append(instance)
+            return None
+        return self.defined_references[type_name]
 
     @classmethod
     def refer(cls, type_name, object):
         for instance in cls.deferred_references[type_name]:
             instance.refer(object)
         del cls.deferred_references[type_name]
+        cls.defined_references[type_name] = object
 
     def __init__(self, datatype, final=False, mutable=False, appendable=True, nested=False, autoid_hash=False, keylist=None):
         self.buffer = Buffer()
         self.datatype = datatype
-        self.typename = datatype.__name__
+        self.typename = qualified_name(datatype)
         self.final = final
         self.mutable = mutable
         self.appendable = appendable

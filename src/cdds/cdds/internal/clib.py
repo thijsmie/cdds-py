@@ -1,19 +1,6 @@
 import os
 import platform
-import subprocess
 from ctypes import CDLL
-
-
-def cyclone_config(arg, default=None):
-    proc = subprocess.Popen(["cyclone-config", f"--{arg}"], stdout=subprocess.PIPE)
-    try:
-        out, _ = proc.communicate(timeout=0.5)
-        if out:
-            return out.decode()
-        return default
-    except subprocess.TimeoutExpired:
-        proc.kill()
-    return default
 
 
 def load_cyclone():
@@ -24,33 +11,27 @@ def load_cyclone():
         return None
 
     if 'ddsc' in os.environ:
-        # library was specified in environment variables
+        # library was directly specified in environment variables
         load_method = 'env'
         load_path = [os.environ['ddsc']]
-    elif platform.system() == "Windows":
-        bindir = cyclone_config('bindir')
-        if bindir:
-            # cyclone-config returned binary dir
-            load_method = "cyclone-config"
-            load_path = [os.path.join(bindir, "ddsc.dll")]
-        else:
-            # No cyclone-config binary dir, hope the dll is on windows path
-            load_method = "guess"
-            load_path = ["ddsc.dll"]
-    elif platform.system() == "Linux" or platform.system() == "Darwin":
-        libdir = cyclone_config('libdir')
-        if libdir:
-            # cyclone-config returned binary dir
-            load_method = "cyclone-config"
-            load_path = [os.path.join(libdir, "libddsc.so")]
-        else:
-            # No cyclone-config binary dir, hope the dll is in guessed directories
-            load_method = "guess"
-            load_path = [os.path.join(p, "libddsc.so") for p in ["", "/usr/lib/", "/usr/local/lib/", "/usr/lib64/", "/lib/", "/lib64/"]]
+    elif "CYCLONEDDS_HOME" in os.environ and platform.system() == "Linux":
+        load_method = 'home'
+        load_path = [os.path.join(os.environ["CYCLONEDDS_HOME"], "lib", "libddsc.so")]
+    elif "CYCLONEDDS_HOME" in os.environ and platform.system() == "Darwin":
+        load_method = 'home'
+        load_path = [os.path.join(os.environ["CYCLONEDDS_HOME"], "lib", "libddsc.dylib")]
+    elif "CYCLONEDDS_HOME" in os.environ and platform.system() == "Windows":
+        load_method = 'home'
+        load_path = [os.path.join(os.environ["CYCLONEDDS_HOME"], "bin", "ddsc.dll")]
+    elif platform.system() == "Linux":
+        load_method = "guess"
+        load_path = [os.path.join(p, "libddsc.so") for p in ["", "/usr/lib/", "/usr/local/lib/", "/usr/lib64/", "/lib/", "/lib64/"]]
+    elif platform.system() == "Darwin":
+        load_method = "guess"
+        load_path = [os.path.join(p, "libddsc.dylib") for p in ["", "/usr/lib/", "/usr/local/lib/", "/usr/lib64/", "/lib/", "/lib64/"]]
     else:
-        # All bets are off, we better just hope the lib is loadable
-        load_method = "AllBetsAreOff"
-        load_path = ["libddsc.so"]
+        load_method = "guess"
+        load_path = ["libddsc.so", "ddsc.dll", "libddsc.dylib"]
 
     lib = None
     for path in load_path:

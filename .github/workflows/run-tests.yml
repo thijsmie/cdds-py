@@ -73,6 +73,7 @@ jobs:
 
     - name: Update pip 🐍
       run: python -m pip install --upgrade pip
+           pip install pytest pytest-cov flake8
 
     - name: Install pycdr 🐍
       working-directory: ./src/pycdr
@@ -82,12 +83,9 @@ jobs:
     - name: Install cdds 🐍
       working-directory: ./src/cdds
       env:
-        LIBRARY_PATH: ${{ github.workspace }}/cyclonedds/install/lib
-        LD_LIBRARY_PATH: ${{ github.workspace }}/cyclonedds/install/lib
-        DDS_INCLUDE_DIR: ${{ github.workspace }}/cyclonedds/install/include
+        CYCLONEDDS_HOME: ${{ github.workspace }}/cyclonedds/install
       run: |
-        pip install --global-option=build_ext --global-option="-I$DDS_INCLUDE_DIR" .
-        pip install pytest pytest-cov flake8
+        pip install .
 
     - name: Lint with flake8 ❄
       run: |
@@ -97,7 +95,7 @@ jobs:
     - name: Run tests 🧪
       working-directory: ./src/cdds
       env:
-        LD_LIBRARY_PATH: ${{ github.workspace }}/cyclonedds/install/lib
+        CYCLONEDDS_HOME: ${{ github.workspace }}/cyclonedds/install
       run: pytest
 
     - name: Upload coverage report to codecov 🚀
