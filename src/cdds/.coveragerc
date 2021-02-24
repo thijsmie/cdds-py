@@ -1,3 +1,11 @@
+[run]
+source_pkgs=cdds
+
+[paths]
+source =
+    cdds/
+    */cdds/
+
 [report]
 exclude_lines =
     pragma: no cover
