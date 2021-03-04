@@ -231,7 +231,7 @@ emit_enum(
         value = enumerator->value;
 
         /* IDL 3.5 did not support fixed enumerator values */
-        if (value == skip || (pstate->version == IDL35))
+        if (value == skip) // || (pstate->version == IDL35))
             fmt = "    %s = auto()\n";
         else
             fmt = "    %s = %" PRIu32;

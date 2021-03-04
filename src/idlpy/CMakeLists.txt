@@ -12,6 +12,7 @@
 cmake_minimum_required(VERSION 3.7)
 project(CycloneDDS-Py VERSION 0.1.0 LANGUAGES C)
 set(CMAKE_BUILD_TYPE Debug)
+find_package(CycloneDDS REQUIRED)
 
 # By default don't treat warnings as errors, else anyone building it with a
 # different compiler that just happens to generate a warning, as well as
@@ -139,20 +140,20 @@ install(
   DESTINATION "${CMAKE_INSTALL_CMAKEDIR}"
   COMPONENT dev)
 
-find_package(CycloneDDS REQUIRED)
-
 add_library(
   idlpy SHARED
     src/context.c
     src/generator.c
     src/naming.c
-    src/types.c)
+    src/types.c
+    src/util.c)
 
 target_include_directories(
   idlpy
   PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>)
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>)
 
 target_link_libraries(idlpy PUBLIC CycloneDDS::idl)
 

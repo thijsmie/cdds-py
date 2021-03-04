@@ -17,25 +17,14 @@
 #include <assert.h>
 
 #include "context.h"
+#include "util.h"
+
 
 #include "idl/string.h"
 #include "idl/tree.h"
 #include "idl/stream.h"
 #include "idl/file.h"
 #include "idl/version.h"
-
-#if defined _MSC_VER
-# include <locale.h>
-typedef _locale_t locale_t;
-#else
-# include <pthread.h>
-# include <strings.h>
-# if __APPLE__ || __FreeBSD__
-#   include <xlocale.h>
-# else
-#   include <locale.h>
-# endif
-#endif
 
 
 #ifdef WIN32
@@ -46,8 +35,6 @@ typedef _locale_t locale_t;
 #endif
 
 /// * IDL UTILITIES * ///
-
-static locale_t posix_locale(void);
 
 void idlpy_exit_memory_error()
 {
@@ -255,7 +242,7 @@ void idlpy_enter_module(idlpy_ctx octx, const void *module)
 
     if (octx->real == NULL)
     {
-        // This is the top level module
+        // This is a top level module
         size_t pathlen = strlen(octx->path);
         size_t namelen = strlen(ctx->name);
 
@@ -322,7 +309,7 @@ char *idlpy_imported_name(idlpy_ctx octx, const void *node)
             /// Nice!
             return idl_strdup(idl_identifier(node));
         } else {
-            /// This will is forward declared and can be locally resolved
+            /// This is forward declared but can be locally resolved
             const char *fmt = "'%s'";
             char *result;
             idl_asprintf(&result, fmt, idl_identifier(node));
@@ -434,70 +421,23 @@ void idlpy_printf(idlpy_ctx octx, const char *fmt, ...)
     idlpy_module_ctx ctx = octx->real;
     assert(ctx);
 
-#if _WIN32
-    va_list ap;
-    va_start(ap, fmt);
-    va_copy(cp, ap);
-
-    int len = _vscprintf_p_l(fmt, posix_locale(), ap) + 1;
-    while (ctx->buffer_size + len > ctx->buffer_capacity)
-    {
-        idlpy_grow_buffer(ctx);
-    }
-    _vsprintf_p_l(ctx->buffer + ctx->buffer_size, len, fmt, posix_locale(), cp);
-    ctx->buffer_size += len - 1;
-
-    va_end(ap);
-    va_end(cp);
-
-#elif __APPLE__ || __FreeBSD__
     va_list ap, cp;
     va_start(ap, fmt);
     va_copy(cp, ap);
 
-    int len = vsnprintf_l(NULL, 0, posix_locale(), fmt, ap) + 1;
-    while (ctx->buffer_size + len > ctx->buffer_capacity)
-    {
-        idlpy_grow_buffer(ctx);
+    int len = idl_vsnprintf(ctx->buffer + ctx->buffer_size, ctx->buffer_capacity - ctx->buffer_size, fmt, ap);
+    if (ctx->buffer_size + len > ctx->buffer_capacity) {
+        while (ctx->buffer_size + len > ctx->buffer_capacity)
+        {
+            idlpy_grow_buffer(ctx);
+        }
+        idl_vsnprintf(ctx->buffer + ctx->buffer_size, ctx->buffer_capacity - ctx->buffer_size, fmt, ap);
     }
-    vsnprintf_l(ctx->buffer + ctx->buffer_size, len, posix_locale(), fmt, cp);
-    ctx->buffer_size += len - 1;
+
+    ctx->buffer_size += len;
 
     va_end(ap);
     va_end(cp);
-#else
-    va_list cp, ap;
-    locale_t loc, posixloc = posix_locale();
-    loc = uselocale(posixloc);
-    va_start(ap, fmt);
-    va_copy(cp, ap);
-
-    int len = vsnprintf(NULL, 0, fmt, ap) + 1;
-    while (ctx->buffer_size + len > ctx->buffer_capacity)
-    {
-        idlpy_grow_buffer(ctx);
-    }
-    vsnprintf(ctx->buffer + ctx->buffer_size, len, fmt, cp);
-    ctx->buffer_size += len - 1;
-
-    va_end(ap);
-    va_end(cp);
-    
-    loc = uselocale(loc);
-    assert(loc == posixloc);
-#endif
-}
-
-FILE* open_file(const char *pathname, const char *mode)
-{
-#if _WIN32
-    FILE *handle = NULL;
-    if (fopen_s(&handle, pathname, mode) != 0)
-        return NULL;
-    return handle;
-#else
-    return fopen(pathname, mode);
-#endif
 }
 
 void idlpy_exit_module(idlpy_ctx octx)
@@ -557,74 +497,3 @@ void idlpy_report_error(idlpy_ctx ctx, const char* error)
 {
     fprintf(stderr, "[ERROR] Module %s: %s\n", ctx->real->name, error);
 }
-
-
-#if defined _WIN32
-static __declspec(thread) locale_t locale = NULL;
-
-void WINAPI
-idl_cdtor(PVOID handle, DWORD reason, PVOID reserved)
-{
-  switch (reason) {
-    case DLL_PROCESS_ATTACH:
-      /* fall through */
-    case DLL_THREAD_ATTACH:
-      locale = _create_locale(LC_ALL, "C");
-      break;
-    case DLL_THREAD_DETACH:
-      /* fall through */
-    case DLL_PROCESS_DETACH:
-      _free_locale(locale);
-      locale = NULL;
-      break;
-    default:
-      break;
-  }
-}
-
-#if defined _WIN64
-  #pragma comment (linker, "/INCLUDE:_tls_used")
-  #pragma comment (linker, "/INCLUDE:tls_callback_func")
-  #pragma const_seg(".CRT$XLZ")
-  EXTERN_C const PIMAGE_TLS_CALLBACK tls_callback_func = idl_cdtor;
-  #pragma const_seg()
-#else
-  #pragma comment (linker, "/INCLUDE:__tls_used")
-  #pragma comment (linker, "/INCLUDE:_tls_callback_func")
-  #pragma data_seg(".CRT$XLZ")
-  EXTERN_C PIMAGE_TLS_CALLBACK tls_callback_func = idl_cdtor;
-  #pragma data_seg()
-#endif /* _WIN64 */
-static locale_t posix_locale(void)
-{
-  return locale;
-}
-#else /* _WIN32 */
-static pthread_key_t key;
-static pthread_once_t once = PTHREAD_ONCE_INIT;
-
-static void free_locale(void *ptr)
-{
-  freelocale((locale_t)ptr);
-}
-
-static void make_key(void)
-{
-  (void)pthread_key_create(&key, free_locale);
-}
-
-static locale_t posix_locale(void)
-{
-  locale_t locale;
-  (void)pthread_once(&once, make_key);
-  if ((locale = pthread_getspecific(key)))
-    return locale;
-#if __APPLE__ || __FreeBSD__
-  locale = newlocale(LC_ALL_MASK, NULL, NULL);
-#else
-  locale = newlocale(LC_ALL, "C", (locale_t)0);
-#endif
-  pthread_setspecific(key, locale);
-  return locale;
-}
-#endif /* _WIN32 */

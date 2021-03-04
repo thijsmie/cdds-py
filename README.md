@@ -11,7 +11,7 @@ First, get a python and pip installation of a sufficiently high version (3.6+). 
 ```bash
 $ cd src
 $ pip install ./pycdr
-$ pip install ./cdds
+$ pip install ./cyclonedds
 ```
 
 If you get permission errors you are using your system python. This is not recommended, please use a [virtualenv](https://docs.python.org/3/tutorial/venv.html) or use something like pipenv/pyenv/poetry.

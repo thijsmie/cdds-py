@@ -80,8 +80,8 @@ jobs:
       run: |
         pip install .
 
-    - name: Install cdds 🐍
-      working-directory: ./src/cdds
+    - name: Install cyclonedds 🐍
+      working-directory: ./src/cyclonedds
       env:
         CYCLONEDDS_HOME: ${{ github.workspace }}/cyclonedds/install
       run: |
@@ -89,11 +89,11 @@ jobs:
 
     - name: Lint with flake8 ❄
       run: |
-        flake8 ./src/cdds/cdds --count --select=E9,F63,F7,F82 --show-source --statistics
-        flake8 ./src/cdds/cdds --count --exit-zero --max-complexity=10 --max-line-length=127 --per-file-ignores="__init__.py:F401" --statistics
+        flake8 ./src/cyclonedds/cyclonedds --count --select=E9,F63,F7,F82 --show-source --statistics
+        flake8 ./src/cyclonedds/cyclonedds --count --exit-zero --max-complexity=10 --max-line-length=127 --per-file-ignores="__init__.py:F401" --statistics
 
     - name: Run tests 🧪
-      working-directory: ./src/cdds
+      working-directory: ./src/cyclonedds
       env:
         CYCLONEDDS_HOME: ${{ github.workspace }}/cyclonedds/install
       run: pytest
@@ -102,7 +102,7 @@ jobs:
       uses: codecov/codecov-action@v1
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
-        file: ./src/cdds/cov.xml
+        file: ./src/cyclonedds/cov.xml
         flags: unittests
         env_vars: OS,PYTHON
         name: codecov-umbrella
