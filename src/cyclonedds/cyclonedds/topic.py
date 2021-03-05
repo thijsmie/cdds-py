@@ -1,16 +1,27 @@
 import ctypes as ct
-from typing import Any, AnyStr
+from typing import Any, AnyStr, TYPE_CHECKING
 
 from .internal import c_call, dds_c_t
 from .core import Entity, DDSException
 from ddspy import ddspy_topic_create
 
 
+# The TYPE_CHECKING variable will always evaluate to False, incurring no runtime costs
+# But the import here allows your static type checker to resolve fully qualified cyclonedds names
+if TYPE_CHECKING:
+    import cyclonedds
+
+
 class Topic(Entity):
     """Representing a Topic"""
 
-    def __init__(self, domain_participant: 'cyclonedds.domain.DomainParticipant',
-                 topic_name: AnyStr, data_type: Any, qos: 'cyclonedds.core.Qos'=None, listener: 'cyclonedds.core.Listener'=None):
+    def __init__(
+            self,
+            domain_participant: 'cyclonedds.domain.DomainParticipant',
+            topic_name: AnyStr,
+            data_type: Any,
+            qos: 'cyclonedds.core.Qos' = None,
+            listener: 'cyclonedds.core.Listener' = None):
         self.data_type = data_type
         super().__init__(
             ddspy_topic_create(
@@ -49,4 +60,3 @@ class Topic(Entity):
     @c_call("dds_get_type_name")
     def _get_type_name(self, topic: dds_c_t.entity, name: ct.c_char_p, size: ct.c_size_t) -> dds_c_t.returnv:
         pass
-

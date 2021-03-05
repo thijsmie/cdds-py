@@ -33,7 +33,7 @@ def compile(idl_path):
 
     if module.endswith('.py'):
         module = module[:-3]
-    
+
     module = importlib.import_module(module)
     sys.path.pop(0)
     return module
@@ -42,7 +42,7 @@ def compile(idl_path):
 class JITIDL(MetaPathFinder):
     def find_spec(self, fullname, path, target=None):
         if path is None or path == "":
-            path = [os.getcwd()] # top level import -- 
+            path = [os.getcwd()]  # top level import --
 
         # We are always only interested in the toplevel module
         if "." in fullname:
@@ -53,7 +53,7 @@ class JITIDL(MetaPathFinder):
         loc_idl = None
         for entry in path:
             filename_idl = os.path.join(entry, name + ".idl")
-            
+
             if os.path.exists(filename_idl):
                 # IDL file located
                 loc_idl = filename_idl
@@ -65,8 +65,8 @@ class JITIDL(MetaPathFinder):
 
         # Even if we have compiled the idl module we will let the normal python
         # system handle the import.
-        return None 
+        return None
 
 
-def allow_jit():
+def enable_jit():
     sys.meta_path.insert(0, JITIDL())

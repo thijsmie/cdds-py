@@ -1,12 +1,18 @@
 import uuid
 import ctypes as ct
 from dataclasses import dataclass
-from typing import Optional, Union, ClassVar
+from typing import Optional, Union, ClassVar, TYPE_CHECKING
 
 from .core import Entity, DDSException, Qos
 from .topic import Topic
 from .sub import DataReader
 from .internal import c_call, dds_c_t
+
+
+# The TYPE_CHECKING variable will always evaluate to False, incurring no runtime costs
+# But the import here allows your static type checker to resolve fully qualified cyclonedds names
+if TYPE_CHECKING:
+    import cyclonedds
 
 
 class _builtintopic_participant(ct.Structure):
@@ -57,7 +63,7 @@ class DcpsEndpoint:
     @classmethod
     def from_struct(cls, struct: _builtintopic_endpoint):
         return cls(
-            key=struct.key.as_python_guid(), 
+            key=struct.key.as_python_guid(),
             participant_key=struct.participant_key.as_python_guid(),
             participant_instance_handle=int(struct.participant_instance_handle),
             topic_name=bytes(struct.topic_name).decode('utf-8'),
@@ -66,12 +72,11 @@ class DcpsEndpoint:
 
 
 class BuiltinDataReader(DataReader):
-    def __init__(self, 
-        subscriber_or_participant: Union['cyclonedds.sub.Subscriber', 'cyclonedds.domain.DomainParticipant'],
-        builtin_topic: 'cyclonedds.topic.BuiltinTopic', 
-        qos: Optional['cyclonedds.core.Qos']=None, 
-        listener: Optional['cyclonedds.core.Listener']=None
-    ):
+    def __init__(self,
+                 subscriber_or_participant: Union['cyclonedds.sub.Subscriber', 'cyclonedds.domain.DomainParticipant'],
+                 builtin_topic: 'cyclonedds.topic.BuiltinTopic',
+                 qos: Optional['cyclonedds.core.Qos'] = None,
+                 listener: Optional['cyclonedds.core.Listener'] = None):
         self._topic = builtin_topic
         self._N = 0
         self._sampleinfos = None
@@ -79,7 +84,8 @@ class BuiltinDataReader(DataReader):
         self._samples = None
         self._pt_samples = None
         self._pt_void_samples = None
-        Entity.__init__(self,
+        Entity.__init__(
+            self,
             self._create_reader(
                 subscriber_or_participant._ref,
                 builtin_topic._ref,

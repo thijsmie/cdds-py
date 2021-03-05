@@ -1,16 +1,22 @@
-from typing import Optional, Union
+from typing import Optional, Union, TYPE_CHECKING
 
 from .core import Entity, DDSException
 from .internal import c_call, dds_c_t
 from ddspy import ddspy_read, ddspy_take
 
 
+# The TYPE_CHECKING variable will always evaluate to False, incurring no runtime costs
+# But the import here allows your static type checker to resolve fully qualified cyclonedds names
+if TYPE_CHECKING:
+    import cyclonedds
+
+
 class Subscriber(Entity):
-    def __init__(self, 
-        domain_participant: 'cyclonedds.domain.DomainParticipant', 
-        qos: Optional['cyclonedds.core.Qos']=None, 
-        listener: Optional['cyclonedds.core.Listener']=None
-    ):
+    def __init__(
+            self,
+            domain_participant: 'cyclonedds.domain.DomainParticipant',
+            qos: Optional['cyclonedds.core.Qos'] = None,
+            listener: Optional['cyclonedds.core.Listener'] = None):
         super().__init__(
             self._create_subscriber(
                 domain_participant._ref,
@@ -29,12 +35,12 @@ class DataReader(Entity):
     """
     """
 
-    def __init__(self, 
-        subscriber_or_participant: Union['cyclonedds.sub.Subscriber', 'cyclonedds.domain.DomainParticipant'],
-        topic: 'cyclonedds.topic.Topic', 
-        qos: Optional['cyclonedds.core.Qos']=None, 
-        listener: Optional['cyclonedds.core.Listener']=None
-    ):
+    def __init__(
+            self,
+            subscriber_or_participant: Union['cyclonedds.sub.Subscriber', 'cyclonedds.domain.DomainParticipant'],
+            topic: 'cyclonedds.topic.Topic',
+            qos: Optional['cyclonedds.core.Qos'] = None,
+            listener: Optional['cyclonedds.core.Listener'] = None):
         super().__init__(
             self._create_reader(
                 subscriber_or_participant._ref,

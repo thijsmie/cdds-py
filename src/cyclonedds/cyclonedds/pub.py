@@ -1,16 +1,22 @@
-from typing import Optional
+from typing import Optional, TYPE_CHECKING
 
 from .internal import c_call, dds_c_t
 from .core import Entity, DDSException
 from ddspy import ddspy_write, ddspy_dispose
 
 
+# The TYPE_CHECKING variable will always evaluate to False, incurring no runtime costs
+# But the import here allows your static type checker to resolve fully qualified cyclonedds names
+if TYPE_CHECKING:
+    import cyclonedds
+
+
 class Publisher(Entity):
-    def __init__(self, 
-        domain_participant: 'cyclonedds.domain.DomainParticipant', 
-        qos: Optional['cyclonedds.core.Qos']=None, 
-        listener: Optional['cyclonedds.core.Listener']=None
-    ):
+    def __init__(
+            self,
+            domain_participant: 'cyclonedds.domain.DomainParticipant',
+            qos: Optional['cyclonedds.core.Qos'] = None,
+            listener: Optional['cyclonedds.core.Listener'] = None):
         super().__init__(
             self._create_publisher(
                 domain_participant._ref,

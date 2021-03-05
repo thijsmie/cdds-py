@@ -12,7 +12,7 @@ import ctypes as ct
 
 def load_cyclone() -> ct.CDLL:
     """
-        Internal method to load the Cyclone Dynamic Library. 
+        Internal method to load the Cyclone Dynamic Library.
         Handles platform specific naming/configuration.
     """
     load_method = ""
@@ -56,7 +56,7 @@ def load_cyclone() -> ct.CDLL:
             continue
         if lib:
             break
-    
+
     if not lib:
         raise Exception(f"Failed to load CycloneDDS with method {load_method} from path(s): {', '.join(load_path)}.")
 
@@ -84,7 +84,8 @@ def c_call(cname):
 
             # Note: in python 3.10 we get NoneType for voids instead of None
             # This confuses ctypes a lot, so we explicitly test for it
-            cfunc.restype = s.return_annotation if s.return_annotation != type(None) else None
+            # We also add the ignore for the error that flake8 generates
+            cfunc.restype = s.return_annotation if s.return_annotation != type(None) else None  # noqa: E721
 
             # Note: ignoring the 'self' argument
             cfunc.argtypes = [p.annotation for i, p in enumerate(s.parameters.values()) if i > 0]
@@ -95,7 +96,7 @@ def c_call(cname):
 
             # replace class named method with c call
             setattr(cls, name, final_func)
-    
+
     return DllCall
 
 
@@ -143,11 +144,9 @@ class dds_c_t:
         _fields_ = [('total_count', ct.c_uint32),
                     ('total_count_change', ct.c_int32)]
 
-
     class liveliness_lost_status(ct.Structure):
         _fields_ = [('total_count', ct.c_uint32),
                     ('total_count_change', ct.c_int32)]
-
 
     class liveliness_changed_status(ct.Structure):
         _fields_ = [('alive_count', ct.c_uint32),
@@ -155,12 +154,10 @@ class dds_c_t:
                     ('alive_count_change', ct.c_int32),
                     ('not_alive_count_change', ct.c_int32)]
 
-
     class offered_deadline_missed_status(ct.Structure):
         _fields_ = [('total_count', ct.c_uint32),
                     ('total_count_change', ct.c_int32),
                     ('last_instance_handle', ct.c_int64)]
-
 
     class guid(ct.Structure):
         _fields_ = [('v', ct.c_uint8 * 16)]
