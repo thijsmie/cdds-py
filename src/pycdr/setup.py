@@ -38,6 +38,7 @@ setup(
     version='0.1.3',
     description='Python CDR serialization',
     long_description=long_description,
+    install_requires=REQUIRES,
     author='Thijs Miedema',
     author_email='thijs.miedema@adlinktech.com',
     long_description_content_type="text/markdown",

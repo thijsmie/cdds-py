@@ -1,6 +1,6 @@
 # cyclonedds-python
 [![codecov](https://codecov.io/gh/thijsmie/cdds-py/branch/master/graph/badge.svg?token=BL8314M28L)](https://codecov.io/gh/thijsmie/cdds-py)
-![GitHub](https://img.shields.io/github/license/thijsmie/cdds-py)
+[![GitHub](https://img.shields.io/github/license/thijsmie/cdds-py)](https://codecov.io/gh/thijsmie/cdds-py/LICENCE)
 
 Work in progress on the CycloneDDS Python API.
 
