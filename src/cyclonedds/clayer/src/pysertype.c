@@ -1,5 +1,5 @@
 /*
- * Copyright(c) 2020 ADLINK Technology Limited and others
+ * Copyright(c) 2021 ADLINK Technology Limited and others
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -12,7 +12,6 @@
 
 #include <Python.h>
 
-//#include <execinfo.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
