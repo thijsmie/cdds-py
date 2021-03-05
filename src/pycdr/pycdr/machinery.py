@@ -382,10 +382,9 @@ class InstanceMachine(Machine):
 
 class DeferredInstanceMachine(Machine):
     def __init__(self, object_type_name, cdr):
-        self.type = None
         self.alignment = 1
         self.object_type_name = object_type_name
-        cdr.defer(object_type_name, self)
+        self.type = cdr.resolve(object_type_name, self)
 
     def refer(self, type):
         self.type = type
