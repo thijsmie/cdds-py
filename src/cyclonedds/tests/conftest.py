@@ -26,6 +26,7 @@ class Common:
         self.dw = DataWriter(self.pub, self.tp, qos=self.qos)
         self.dr = DataReader(self.sub, self.tp, qos=self.qos)
         self.msg = Message(message="hi")
+        self.msg2 = Message(message="hi2")
 
 global domain_id_counter
 domain_id_counter = 0
@@ -49,6 +50,7 @@ class Manual:
         self._dw = None
         self._dr = None
         self.msg = Message(message="hi")
+        self.msg2 = Message(message="hi2")
 
     def tp(self, qos=None, listener=None):
         self._tp = Topic(self.dp, 'Message', Message, qos=qos, listener=listener)

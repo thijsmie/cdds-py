@@ -1,4 +1,7 @@
+from time import time_ns as _time_ns
+
 from .core import Entity
+
 
 
 def isgoodentity(v: object) -> bool:
@@ -57,3 +60,9 @@ def duration(*, weeks: float = 0, days: float = 0, hours: float = 0, minutes: fl
     microseconds += milliseconds * 1000
     nanoseconds += microseconds * 1000
     return int(nanoseconds)
+
+
+class timestamp:
+    @staticmethod
+    def now():
+        return _time_ns()

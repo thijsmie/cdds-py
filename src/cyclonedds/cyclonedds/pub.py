@@ -2,7 +2,7 @@ from typing import Optional, TYPE_CHECKING
 
 from .internal import c_call, dds_c_t
 from .core import Entity, DDSException
-from ddspy import ddspy_write, ddspy_dispose
+from ddspy import ddspy_write, ddspy_write_ts, ddspy_dispose
 
 
 # The TYPE_CHECKING variable will always evaluate to False, incurring no runtime costs
@@ -78,6 +78,11 @@ class DataWriter(Entity):
 
     def write(self, sample):
         ret = ddspy_write(self._ref, sample)
+        if ret < 0:
+            raise DDSException(ret, f"Occurred while writing sample in {repr(self)}")
+
+    def write_ts(self, sample, timestamp):
+        ret = ddspy_write_ts(self._ref, sample, timestamp)
         if ret < 0:
             raise DDSException(ret, f"Occurred while writing sample in {repr(self)}")
 

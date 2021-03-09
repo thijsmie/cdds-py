@@ -820,6 +820,22 @@ ddspy_write(PyObject *self, PyObject *args)
 }
 
 static PyObject *
+ddspy_write_ts(PyObject *self, PyObject *args)
+{
+    ddspy_sample_container_t container;
+    dds_entity_t writer;
+    dds_return_t sts;
+    dds_time_t time;
+
+    if (!PyArg_ParseTuple(args, "iOL", &writer, &container.sample, &time))
+        return NULL;
+
+    sts = dds_write_ts(writer, &container, time);
+
+    return PyLong_FromLong((long) sts);
+}
+
+static PyObject *
 ddspy_dispose(PyObject *self, PyObject *args)
 {
     ddspy_sample_container_t container;
@@ -935,6 +951,10 @@ PyMethodDef ddspy_funcs[] = {
 		ddspy_docs},
     {	"ddspy_write",
 		(PyCFunction)ddspy_write,
+		METH_VARARGS,
+		ddspy_docs},
+    {	"ddspy_write_ts",
+		(PyCFunction)ddspy_write_ts,
 		METH_VARARGS,
 		ddspy_docs},
     {	"ddspy_dispose",

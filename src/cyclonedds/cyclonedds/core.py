@@ -272,7 +272,7 @@ class Policy:
             return _PolicyType.History, (_QosHistory.KeepLast, amount)
 
     @staticmethod
-    def ResourceLimits(max_samples: int, max_instances: int, max_samples_per_instance: int) \
+    def ResourceLimits(max_samples: int = -1, max_instances: int = -1, max_samples_per_instance: int = -1) \
             -> Tuple[_PolicyType, Tuple[int, int, int]]:
         """The ResourceLimits Qos Policy
 
@@ -1359,12 +1359,6 @@ class Entity(DDS):
     status_mask: int
                  The status mask for this entity. It is a set of bits formed
                  from ``DDSStatus``. This is a proxy for get/set_status_mask().
-    qos:         Qos
-                 The quality of service policies for this entity. This is a
-                 proxy for get/set_qos().
-    listener:    Listener
-                 The listener associated with this entity. This is a
-                 proxy for get/set_listener().
     parent:      Entity, optional
                  The entity that is this entities parent. For example: the subscriber for a
                  datareader, the participant for a topic.
@@ -1607,7 +1601,7 @@ class Entity(DDS):
 
     status_mask = property(get_status_mask, set_status_mask)
 
-    def copy_qos(self) -> Qos:
+    def get_qos(self) -> Qos:
         """Get the set of ``Qos`` policies associated with this entity. Note that the object returned is not
         the same python object that you used to set the ``Qos`` on this object. Modifications to the ``Qos`` object
         that is returned does _not_ modify the Qos of the Entity.
@@ -1627,7 +1621,7 @@ class Entity(DDS):
             return qos
         raise DDSException(ret, f"Occurred when getting the Qos Policies for {repr(self)}")
 
-    def adapt_qos(self, qos: Qos) -> None:
+    def set_qos(self, qos: Qos) -> None:
         """Adapt ``Qos`` policies on this entity. Note, only a limited number of ``Qos`` policies can be set after
         the object is created (``Policy.LatencyBudget`` and ``Policy.OwnershipStrength``). Any policies not set
         explicitly in the supplied ``Qos`` remain.
@@ -1648,7 +1642,7 @@ class Entity(DDS):
             return
         raise DDSException(ret, f"Occurred when setting the Qos Policies for {repr(self)}")
 
-    def copy_listener(self) -> 'Listener':
+    def get_listener(self) -> 'Listener':
         """Return a listener with the right methods set. Modifying the returned listener object does not modify
         this entity, you will have to call set_listener() with the changed object.
 
@@ -1659,7 +1653,7 @@ class Entity(DDS):
         """
         return self._listener.copy() if self._listener else Listener()
 
-    def adapt_listener(self, listener: 'Listener') -> None:
+    def set_listener(self, listener: 'Listener') -> None:
         """Update the listener for this object. If a listener already exist for this object only the fields you explicitly
         have set on your new listener are overwritten.
 

@@ -173,12 +173,12 @@ def test_get_qos():
     dp = DomainParticipant(0)
     qos = dp.copy_qos()
     assert qos == dp.copy_qos()
-    dp.adapt_qos(qos)
+    dp.set_qos(qos)
 
 
-def test_adapt_listener():
+def test_set_listener():
     dp = DomainParticipant(0)
-    dp.adapt_listener(Listener())
+    dp.set_listener(Listener())
 
 
 def test_retain_listener():
