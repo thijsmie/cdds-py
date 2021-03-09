@@ -36,6 +36,7 @@ extensions = [
     'sphinx.ext.napoleon',
     'sphinx.ext.intersphinx',
     "sphinx.ext.viewcode",
+    'sphinx_markdown_builder'
 ]
 autodoc_mock_imports=["ctypes.CDLL"]
 autodoc_member_order = 'bysource'

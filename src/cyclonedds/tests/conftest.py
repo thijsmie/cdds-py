@@ -1,4 +1,5 @@
 import pytest
+import threading
 
 from cyclonedds.core import Qos, Policy
 from cyclonedds.domain import DomainParticipant
@@ -24,6 +25,7 @@ class Common:
         self.sub = Subscriber(self.dp)
         self.dw = DataWriter(self.pub, self.tp, qos=self.qos)
         self.dr = DataReader(self.sub, self.tp, qos=self.qos)
+        self.msg = Message(message="hi")
 
 global domain_id_counter
 domain_id_counter = 0
@@ -34,3 +36,60 @@ def common_setup():
     global domain_id_counter
     domain_id_counter += 1
     return Common(domain_id=domain_id_counter)
+
+
+class Manual:
+    def __init__(self, domain_id=0):
+        self.qos = Qos(Policy.Reliability.Reliable(duration(seconds=2)), Policy.History.KeepLast(10))
+
+        self.dp = DomainParticipant(domain_id)
+        self.tp = Topic(self.dp, 'Message', Message)
+        self._pub = None
+        self._sub = None
+        self.msg = Message(message="hi")
+
+    def pub(self, qos=None, listener=None):
+        self._pub = Publisher(self.dp, qos=qos, listener=listener)
+        return self._pub
+
+    def sub(self, qos=None, listener=None):
+        self._sub = Subscriber(self.dp, qos=qos, listener=listener)
+        return self._sub
+
+    def dw(self, qos=None, listener=None):
+        return DataWriter(self._pub if self._pub else self.pub(), self.tp, qos=qos, listener=listener)
+
+    def dr(self, qos=None, listener=None):
+        self.dr = DataReader(self._sub if self._sub else self.sub(), self.tp, qos=qos, listener=listener)
+
+
+@pytest.fixture
+def manual_setup():
+    # Ensuring a unique domain id for each setup ensures parellization options
+    global domain_id_counter
+    domain_id_counter += 1
+    return Manual(domain_id=domain_id_counter)
+
+
+class HitPoint():
+    def __init__(self) -> None:
+        self.hp = threading.Event()
+
+    def was_hit(self, timeout=10.0):
+        return self.hp.wait(timeout)
+
+    def was_not_hit(self, timeout=0.5):
+        return not self.hp.wait(timeout)
+
+    def hit(self):
+        self.hp.set()
+
+
+@pytest.fixture
+def hitpoint():
+    return HitPoint()
+
+
+@pytest.fixture
+def hitpoint_factory():
+    return HitPoint

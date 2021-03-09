@@ -159,6 +159,45 @@ class dds_c_t:
                     ('total_count_change', ct.c_int32),
                     ('last_instance_handle', ct.c_int64)]
 
+    class offered_incompatible_qos_status(ct.Structure):
+        _fields_ = [('total_count', ct.c_uint32),
+                    ('total_count_change', ct.c_int32),
+                    ('last_policy_id', ct.c_uint32)]
+
+    class sample_lost_status(ct.Structure):
+        _fields_ = [('total_count', ct.c_uint32),
+                    ('total_count_change', ct.c_int32)]
+
+    class sample_rejected_status(ct.Structure):
+        _fields_ = [('total_count', ct.c_uint32),
+                    ('total_count_change', ct.c_int32),
+                    ('last_reason', ct.c_int),
+                    ('last_instance_handle', ct.c_int64)]
+
+    class requested_deadline_missed_status(ct.Structure):
+        _fields_ = [('total_count', ct.c_uint32),
+                    ('total_count_change', ct.c_int32),
+                    ('last_instance_handle', ct.c_int64)]
+
+    class requested_incompatible_qos_status(ct.Structure):
+        _fields_ = [('total_count', ct.c_uint32),
+                    ('total_count_change', ct.c_int32),
+                    ('last_policy_id', ct.c_uint32)]
+
+    class publication_matched_status(ct.Structure):
+        _fields_ = [('total_count', ct.c_uint32),
+                    ('total_count_change', ct.c_int32),
+                    ('current_count', ct.c_uint32),
+                    ('current_count_change', ct.c_int32),
+                    ('last_subscription_handle', ct.c_int64)]
+
+    class subscription_matched_status(ct.Structure):
+        _fields_ = [('total_count', ct.c_uint32),
+                    ('total_count_change', ct.c_int32),
+                    ('current_count', ct.c_uint32),
+                    ('current_count_change', ct.c_int32),
+                    ('last_publication_handle', ct.c_int64)]
+
     class guid(ct.Structure):
         _fields_ = [('v', ct.c_uint8 * 16)]
 

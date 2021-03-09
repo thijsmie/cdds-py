@@ -1891,6 +1891,14 @@ _data_available_fn = c_callable(None, [dds_c_t.entity, ct.c_void_p])
 _liveliness_lost_fn = c_callable(None, [dds_c_t.entity, dds_c_t.liveliness_lost_status, ct.c_void_p])
 _liveliness_changed_fn = c_callable(None, [dds_c_t.entity, dds_c_t.liveliness_changed_status, ct.c_void_p])
 _offered_deadline_missed_fn = c_callable(None, [dds_c_t.entity, dds_c_t.offered_deadline_missed_status, ct.c_void_p])
+_offered_incompatible_qos_fn = c_callable(None, [dds_c_t.entity, dds_c_t.offered_incompatible_qos_status, ct.c_void_p])
+_data_on_readers_fn = c_callable(None, [dds_c_t.entity, ct.c_void_p])
+_on_sample_lost_fn = c_callable(None, [dds_c_t.entity, dds_c_t.sample_lost_status, ct.c_void_p])
+_on_sample_rejected_fn = c_callable(None, [dds_c_t.entity, dds_c_t.sample_rejected_status, ct.c_void_p])
+_on_requested_deadline_missed_fn = c_callable(None, [dds_c_t.entity, dds_c_t.requested_deadline_missed_status, ct.c_void_p])
+_on_requested_incompatible_qos_fn = c_callable(None, [dds_c_t.entity, dds_c_t.requested_incompatible_qos_status, ct.c_void_p])
+_on_publication_matched_fn = c_callable(None, [dds_c_t.entity, dds_c_t.publication_matched_status, ct.c_void_p])
+_on_subscription_matched_fn = c_callable(None, [dds_c_t.entity, dds_c_t.subscription_matched_status, ct.c_void_p])
 
 
 def _is_override(func):
@@ -1921,12 +1929,44 @@ class Listener(DDS):
         if _is_override(self.on_offered_deadline_missed):
             self.set_on_offered_deadline_missed(self.on_offered_deadline_missed)
 
+        if _is_override(self.on_offered_incompatible_qos):
+            self.set_on_offered_incompatible_qos(self.on_offered_incompatible_qos)
+
+        if _is_override(self.on_data_on_readers):
+            self.set_on_data_on_readers(self.on_data_on_readers)
+
+        if _is_override(self.on_sample_lost):
+            self.set_on_sample_lost(self.on_sample_lost)
+
+        if _is_override(self.on_sample_rejected):
+            self.set_on_sample_rejected(self.on_sample_rejected)
+
+        if _is_override(self.on_requested_deadline_missed):
+            self.set_on_requested_deadline_missed(self.on_requested_deadline_missed)
+
+        if _is_override(self.on_requested_incompatible_qos):
+            self.set_on_requested_incompatible_qos(self.on_requested_incompatible_qos)
+
+        if _is_override(self.on_publication_matched):
+            self.set_on_publication_matched(self.on_publication_matched)
+
+        if _is_override(self.on_subscription_matched):
+            self.set_on_subscription_matched(self.on_subscription_matched)
+
         self.setters = {
             "on_data_available": self.set_on_data_available,
             "on_inconsistent_topic": self.set_on_inconsistent_topic,
             "on_liveliness_lost": self.set_on_liveliness_lost,
             "on_liveliness_changed": self.set_on_liveliness_changed,
-            "on_offered_deadline_missed": self.set_on_offered_deadline_missed
+            "on_offered_deadline_missed": self.set_on_offered_deadline_missed,
+            "on_offered_incompatible_qos": self.set_on_offered_incompatible_qos,
+            "on_data_on_readers": self.set_on_data_on_readers,
+            "on_sample_lost": self.set_on_sample_lost,
+            "on_sample_rejected": self.set_on_sample_rejected,
+            "on_requested_deadline_missed": self.set_on_requested_deadline_missed,
+            "on_requested_incompatible_qos": self.set_on_requested_incompatible_qos,
+            "on_publication_matched": self.set_on_publication_matched,
+            "on_subscription_matched": self.set_on_subscription_matched
         }
 
         for name, value in kwargs.items():
@@ -1990,12 +2030,12 @@ class Listener(DDS):
             self._on_liveliness_lost = _liveliness_lost_fn(call)
             self._set_liveliness_lost(self._ref, self._on_liveliness_lost)
 
-    def on_liveliness_changed(self, reader: 'cyclonedds.sub.DataReader', status: dds_c_t.liveliness_changed_status) -> None:
+    def on_liveliness_changed(self, reader: 'cyclonedds.pub.DataReader', status: dds_c_t.liveliness_changed_status) -> None:
         pass
 
     def set_on_liveliness_changed(
             self,
-            callable: Callable[['cyclonedds.sub.DataReader', dds_c_t.liveliness_changed_status], None]):
+            callable: Callable[['cyclonedds.pub.DataReader', dds_c_t.liveliness_changed_status], None]):
         self.on_liveliness_changed = callable
         if callable is None:
             self._set_liveliness_changed(self._ref, None)
@@ -2006,11 +2046,11 @@ class Listener(DDS):
             self._set_liveliness_changed(self._ref, self._on_liveliness_changed)
 
     def on_offered_deadline_missed(self,
-                                   writer: 'cyclonedds.sub.DataWriter',
+                                   writer: 'cyclonedds.pub.DataWriter',
                                    status: dds_c_t.offered_deadline_missed_status) -> None:
         pass
 
-    def set_on_offered_deadline_missed(self, callable: Callable[['cyclonedds.sub.DataWriter',
+    def set_on_offered_deadline_missed(self, callable: Callable[['cyclonedds.pub.DataWriter',
                                                                  dds_c_t.offered_deadline_missed_status], None]):
         self.on_offered_deadline_missed = callable
         if callable is None:
@@ -2021,14 +2061,138 @@ class Listener(DDS):
             self._on_offered_deadline_missed = _offered_deadline_missed_fn(call)
             self._set_on_offered_deadline_missed(self._ref, self._on_offered_deadline_missed)
 
-    # TODO: on_offered_incompatible_qos
-    # TODO: on_data_on_readers
-    # TODO: on_sample_lost
-    # TODO: on_sample_rejected
-    # TODO: on_requested_deadline_missed
-    # TODO: on_requested_incompatible_qos
-    # TODO: on_publication_matched
-    # TODO: on_subscription_matched
+    def on_offered_incompatible_qos(self,
+                                    writer: 'cyclonedds.pub.DataWriter',
+                                    status: dds_c_t.offered_incompatible_qos_status) -> None:
+        pass
+
+    def set_on_offered_incompatible_qos(self, callable: Callable[['cyclonedds.pub.DataWriter',
+                                                                 dds_c_t.offered_incompatible_qos_status], None]):
+        self.on_offered_incompatible_qos = callable
+        if callable is None:
+            self._set_on_offered_incompatible_qos(self._ref, None)
+        else:
+            def call(writer, status, arg):
+                self.on_offered_incompatible_qos(Entity.get_entity(writer), status)
+            self._on_offered_incompatible_qos = _offered_incompatible_qos_fn(call)
+            self._set_on_offered_incompatible_qos(self._ref, self._on_offered_incompatible_qos)
+
+    def on_data_on_readers(self, subscriber: 'cyclonedds.sub.Subscriber') -> None:
+        pass
+
+    def set_on_data_on_readers(self, callable: Callable[['cyclonedds.sub.Subscriber'], None]):
+        self.on_data_on_readers = callable
+        if callable is None:
+            self._set_data_available(self._ref, None)
+        else:
+            def call(subscriber, arg):
+                self.on_data_on_readers(Entity.get_entity(subscriber))
+            self._on_data_on_readers = _data_on_readers_fn(call)
+            self._set_on_data_on_readers(self._ref, self._on_data_on_readers)
+
+    def on_sample_lost(self, writer: 'cyclonedds.pub.DataWriter',
+                       status: dds_c_t.sample_lost_status) -> None:
+        pass
+
+    def set_on_sample_lost(self, callable: Callable[['cyclonedds.pub.DataWriter',
+                                                     dds_c_t.sample_lost_status], None]):
+        self.on_sample_lost = callable
+        if callable is None:
+            self._set_on_sample_lost(self._ref, None)
+        else:
+            def call(writer, status, arg):
+                self.on_sample_lost(Entity.get_entity(writer), status)
+            self._on_sample_lost = _on_sample_lost_fn(call)
+            self._set_on_sample_lost(self._ref, self._on_sample_lost)
+
+    def on_sample_lost(self, writer: 'cyclonedds.sub.DataWriter',
+                       status: dds_c_t.sample_lost_status) -> None:
+        pass
+
+    def set_on_sample_lost(self, callable: Callable[['cyclonedds.sub.DataWriter',
+                                                     dds_c_t.sample_lost_status], None]):
+        self.on_sample_lost = callable
+        if callable is None:
+            self._set_on_sample_lost(self._ref, None)
+        else:
+            def call(writer, status, arg):
+                self.on_sample_lost(Entity.get_entity(writer), status)
+            self._on_sample_lost = _on_sample_lost_fn(call)
+            self._set_on_sample_lost(self._ref, self._on_sample_lost)
+
+    def on_sample_rejected(self, reader: 'cyclonedds.sub.DataReader',
+                       status: dds_c_t.sample_rejected_status) -> None:
+        pass
+
+    def set_on_sample_rejected(self, callable: Callable[['cyclonedds.sub.DataReader',
+                                                     dds_c_t.sample_rejected_status], None]):
+        self.on_sample_rejected = callable
+        if callable is None:
+            self._set_on_sample_rejected(self._ref, None)
+        else:
+            def call(writer, status, arg):
+                self.on_sample_rejected(Entity.get_entity(writer), status)
+            self._on_sample_rejected = _on_sample_rejected_fn(call)
+            self._set_on_sample_rejected(self._ref, self._on_sample_rejected)
+    def on_requested_deadline_missed(self, reader: 'cyclonedds.sub.DataReader',
+                       status: dds_c_t.requested_deadline_missed_status) -> None:
+        pass
+
+    def set_on_requested_deadline_missed(self, callable: Callable[['cyclonedds.sub.DataReader',
+                                                     dds_c_t.requested_deadline_missed_status], None]):
+        self.on_requested_deadline_missed = callable
+        if callable is None:
+            self._set_on_requested_deadline_missed(self._ref, None)
+        else:
+            def call(reader, status, arg):
+                self.on_requested_deadline_missed(Entity.get_entity(reader), status)
+            self._on_requested_deadline_missed = _on_requested_deadline_missed_fn(call)
+            self._set_on_requested_deadline_missed(self._ref, self._on_requested_deadline_missed)
+
+    def on_requested_incompatible_qos(self, reader: 'cyclonedds.sub.DataReader',
+                       status: dds_c_t.requested_incompatible_qos_status) -> None:
+        pass
+
+    def set_on_requested_incompatible_qos(self, callable: Callable[['cyclonedds.sub.DataReader',
+                                                     dds_c_t.requested_incompatible_qos_status], None]):
+        self.on_requested_incompatible_qos = callable
+        if callable is None:
+            self._set_on_requested_incompatible_qos(self._ref, None)
+        else:
+            def call(reader, status, arg):
+                self.on_requested_incompatible_qos(Entity.get_entity(reader), status)
+            self._on_requested_incompatible_qos = _on_requested_incompatible_qos_fn(call)
+            self._set_on_requested_incompatible_qos(self._ref, self._on_requested_incompatible_qos)
+
+    def on_publication_matched(self, writer: 'cyclonedds.pub.DataWriter',
+                       status: dds_c_t.publication_matched_status) -> None:
+        pass
+
+    def set_on_publication_matched(self, callable: Callable[['cyclonedds.pub.DataWriter',
+                                                     dds_c_t.publication_matched_status], None]):
+        self.on_publication_matched = callable
+        if callable is None:
+            self._set_on_publication_matched(self._ref, None)
+        else:
+            def call(writer, status, arg):
+                self.on_publication_matched(Entity.get_entity(writer), status)
+            self._on_publication_matched = _on_publication_matched_fn(call)
+            self._set_on_publication_matched(self._ref, self._on_publication_matched)
+
+    def on_subscription_matched(self, reader: 'cyclonedds.sub.DataReader',
+                       status: dds_c_t.subscription_matched_status) -> None:
+        pass
+
+    def set_on_subscription_matched(self, callable: Callable[['cyclonedds.sub.DataReader',
+                                                     dds_c_t.subscription_matched_status], None]):
+        self.on_subscription_matched = callable
+        if callable is None:
+            self._set_on_subscription_matched(self._ref, None)
+        else:
+            def call(reader, status, arg):
+                self.on_subscription_matched(Entity.get_entity(reader), status)
+            self._on_subscription_matched = _on_subscription_matched_fn(call)
+            self._set_on_subscription_matched(self._ref, self._on_subscription_matched)
 
     @c_call("dds_create_listener")
     def _create_listener(self, arg: ct.c_void_p) -> dds_c_t.listener_p:
@@ -2064,6 +2228,35 @@ class Listener(DDS):
 
     @c_call("dds_lset_offered_deadline_missed")
     def _set_on_offered_deadline_missed(self, listener: dds_c_t.listener_p, callback: _offered_deadline_missed_fn) -> None:
+        pass
+
+    @c_call("dds_lset_offered_incompatible_qos")
+    def _set_on_offered_incompatible_qos(self, listener: dds_c_t.listener_p, callback: _offered_incompatible_qos_fn) -> None:
+        pass
+
+    @c_call("dds_lset_sample_lost")
+    def _set_on_sample_lost(self, listener: dds_c_t.listener_p, callback: _on_sample_lost_fn) -> None:
+        pass
+
+    @c_call("dds_lset_sample_rejected")
+    def _set_on_sample_rejected(self, listener: dds_c_t.listener_p, callback: _on_sample_rejected_fn) -> None:
+        pass
+
+    @c_call("dds_lset_requested_deadline_missed")
+    def _set_on_requested_deadline_missed(self, listener: dds_c_t.listener_p, callback: _on_requested_deadline_missed_fn) -> None:
+        pass
+
+    @c_call("dds_lset_requested_incompatible_qos")
+    def _set_on_requested_incompatible_qos(self, listener: dds_c_t.listener_p,
+                                           callback: _on_requested_incompatible_qos_fn) -> None:
+        pass
+
+    @c_call("dds_lset_publication_matched")
+    def _set_on_publication_matched(self, listener: dds_c_t.listener_p, callback: _on_publication_matched_fn) -> None:
+        pass
+
+    @c_call("dds_lset_subscription_matched")
+    def _set_on_subscription_matched(self, listener: dds_c_t.listener_p, callback: _on_subscription_matched_fn) -> None:
         pass
 
     @c_call("dds_delete_listener")
