@@ -22,7 +22,8 @@ class Publisher(Entity):
                 domain_participant._ref,
                 qos._ref if qos else None,
                 listener._ref if listener else None
-            )
+            ),
+            listener=listener
         )
 
     def suspend(self):
@@ -71,7 +72,8 @@ class DataWriter(Entity):
                 topic._ref,
                 qos._ref if qos else None,
                 listener._ref if listener else None
-            )
+            ),
+            listener=listener
         )
 
     def write(self, sample):

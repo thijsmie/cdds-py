@@ -152,7 +152,8 @@ class dds_c_t:
         _fields_ = [('alive_count', ct.c_uint32),
                     ('not_alive_count', ct.c_uint32),
                     ('alive_count_change', ct.c_int32),
-                    ('not_alive_count_change', ct.c_int32)]
+                    ('not_alive_count_change', ct.c_int32),
+                    ('last_publication_handle', ct.c_int64)]
 
     class offered_deadline_missed_status(ct.Structure):
         _fields_ = [('total_count', ct.c_uint32),

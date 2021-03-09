@@ -43,10 +43,16 @@ class Manual:
         self.qos = Qos(Policy.Reliability.Reliable(duration(seconds=2)), Policy.History.KeepLast(10))
 
         self.dp = DomainParticipant(domain_id)
-        self.tp = Topic(self.dp, 'Message', Message)
+        self._tp = None
         self._pub = None
         self._sub = None
+        self._dw = None
+        self._dr = None
         self.msg = Message(message="hi")
+
+    def tp(self, qos=None, listener=None):
+        self._tp = Topic(self.dp, 'Message', Message, qos=qos, listener=listener)
+        return self._tp
 
     def pub(self, qos=None, listener=None):
         self._pub = Publisher(self.dp, qos=qos, listener=listener)
@@ -57,10 +63,18 @@ class Manual:
         return self._sub
 
     def dw(self, qos=None, listener=None):
-        return DataWriter(self._pub if self._pub else self.pub(), self.tp, qos=qos, listener=listener)
+        self._dw = DataWriter(
+            self._pub if self._pub else self.pub(), 
+            self._tp if self._tp else self.tp(),
+            qos=qos, listener=listener)
+        return self._dw
 
     def dr(self, qos=None, listener=None):
-        self.dr = DataReader(self._sub if self._sub else self.sub(), self.tp, qos=qos, listener=listener)
+        self._dr = DataReader(
+            self._sub if self._sub else self.sub(), 
+            self._tp if self._tp else self.tp(),
+            qos=qos, listener=listener)
+        return self._dr
 
 
 @pytest.fixture
@@ -74,6 +88,7 @@ def manual_setup():
 class HitPoint():
     def __init__(self) -> None:
         self.hp = threading.Event()
+        self.data = None
 
     def was_hit(self, timeout=10.0):
         return self.hp.wait(timeout)
@@ -81,7 +96,8 @@ class HitPoint():
     def was_not_hit(self, timeout=0.5):
         return not self.hp.wait(timeout)
 
-    def hit(self):
+    def hit(self, data=None):
+        self.data = data
         self.hp.set()
 
 

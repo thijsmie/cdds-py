@@ -13,8 +13,7 @@ def test_on_data_available(manual_setup, hitpoint):
         def on_data_available(self, _):
             hitpoint.hit()
 
-    listener = L()
-    dr = manual_setup.dr(listener=listener)
+    dr = manual_setup.dr(listener=L())
     manual_setup.dw().write(manual_setup.msg)
 
     assert hitpoint.was_hit()
@@ -128,33 +127,23 @@ def test_data_available_listeners(manual_setup, hitpoint_factory):
 
 def test_on_offered_deadline_missed(manual_setup, hitpoint):
     class MyListener(Listener):
-        def __init__(self) -> None:
-            super().__init__()
-            self.time = 0
-
         def on_offered_deadline_missed(self, writer, status):
-            self.time = time.time()
-            hitpoint.hit()
+            hitpoint.hit(data=time.time())
 
-    datawriter_listener = MyListener()
     wqos = Qos(Policy.Deadline(duration(milliseconds=200)))
-    dw = manual_setup.dw(qos=wqos, listener=datawriter_listener)
+    dw = manual_setup.dw(qos=wqos, listener=MyListener())
     dr = manual_setup.dr()
 
     write_time = time.time()
     dw.write(manual_setup.msg)
 
     assert hitpoint.was_hit()
-    delay = datawriter_listener.time - write_time
+    delay = hitpoint.data - write_time
     assert delay >= 0.2  # seconds
 
 
 def test_on_offered_incompatible_qos(manual_setup, hitpoint):
     class MyListener(Listener):
-        def __init__(self) -> None:
-            super().__init__()
-            self.time = 0
-
         def on_offered_incompatible_qos(self, writer, status):
             hitpoint.hit()
 
@@ -169,114 +158,57 @@ def test_on_offered_incompatible_qos(manual_setup, hitpoint):
     assert hitpoint.was_hit()
 
 
-"""
-def test_liveliness(self):
-    handlerTriggered = threading.Event()
-    aliveTriggered = threading.Event()
-    notaliveTriggered = threading.Event()
-    write_time = 0.0
-    delay = 0.0
-    saved_lost_status = None
-    saved_changed_status = None
-    class L(Listener):
+def test_liveliness(manual_setup, hitpoint_factory):
+    handler = hitpoint_factory()
+    alive = hitpoint_factory()
+    notalive = hitpoint_factory()
+
+    class MyListenerWriter(Listener):
         def on_liveliness_lost(self, writer, status):
-            nonlocal delay
-            nonlocal saved_lost_status
-            saved_lost_status = status
-            handlerTriggered.set()
-            delay = time.time() - write_time
+            handler.hit(data=time.time())
 
-    class RL(Listener):
+    class MyListenerReader(Listener):
         def on_liveliness_changed(self, reader, status):
-            nonlocal saved_changed_status
-            saved_changed_status = status
             if status.alive_count == 1:
-                aliveTriggered.set()
+                alive.hit(data=status.alive_count_change)
             else:
-                notaliveTriggered.set()
+                notalive.hit(data=status.alive_count_change)
 
-    qos = Qos(policies=[
-            LivelinessQosPolicy(DDSLivelinessKind.MANUAL_BY_TOPIC,
-                                DDSDuration(1,0)),
-            OwnershipQosPolicy(DDSOwnershipKind.EXCLUSIVE)
-        ])
-    dp = DomainParticipant()
+    qos = Qos(
+        Policy.Liveliness.ManualByTopic(duration(seconds=0.2)),
+        Policy.Ownership.Exclusive
+    )
 
-    topic_name = 'ST_liveliness'
+    manual_setup.tp(qos=qos)
+    manual_setup.dr(listener=MyListenerReader())
+    datawriter = manual_setup.dw(listener=MyListenerWriter())
 
-    gci = ddsutil.get_dds_classes_from_idl(self.idl_path, self.shape_type_name)
-
-    t = gci.register_topic(dp, topic_name, qos)
-
-    wr = dp.create_datawriter(t, qos=qos, listener=L())
-    rd = dp.create_datareader(t, qos=qos, listener=RL())
-
-    ShapeType = gci.get_class('ShapeType')
-    Inner = gci.get_class('Inner_Shapes')
-
-    data = ShapeType(color='GREEN', x=22, y=33, z=44, t=Inner(foo=55))
-
-    wr.write(data)
     write_time = time.time()
-    self.assertTrue(handlerTriggered.wait(self.time_out), 'Event not triggered')
-    self.assertGreaterEqual(delay, 1.0 - 0.05, 'Delay not >= 1.0s')
-    self.assertTrue(aliveTriggered.wait(self.time_out), 'Alive not signaled to reader')
-    self.assertTrue(notaliveTriggered.wait(self.time_out), 'Not Alive not signaled to reader')
-    self._check_status(saved_lost_status, LivelinessLostStatus, [
-        Info('total_count', int), 
-        Info('total_count_change', int), 
-        ])
-    self._check_status(saved_changed_status, LivelinessChangedStatus, [
-        Info('alive_count', int), 
-        Info('not_alive_count', int), 
-        Info('alive_count_change', int), 
-        Info('not_alive_count_change', int), 
-        Info('last_publication_handle', int), 
-        ])
+    datawriter.write(manual_setup.msg)
+
+    assert handler.was_hit()
+    assert handler.data - write_time >= 0.2
+    assert alive.was_hit() and alive.data == 1
+    assert notalive.was_hit() and notalive.data == -1
 
 
-def test_on_requested_deadline_missed(self):
-    handlerTriggered = threading.Event()
-    write_time = 0.0
-    delay = 0.0
-    saved_status = None
-    class L(Listener):
+def test_on_requested_deadline_missed(manual_setup, hitpoint):
+    class MyListener(Listener):
         def on_requested_deadline_missed(self, reader, status):
-            nonlocal delay
-            nonlocal saved_status
-            saved_status = status
-            handlerTriggered.set()
-            delay = time.time() - write_time
+            hitpoint.hit(data=time.time())
 
-    dp = DomainParticipant()
-
-    topic_name = 'ST_on_requested_deadline_missed'
-
-    gci = ddsutil.get_dds_classes_from_idl(self.idl_path, self.shape_type_name)
-
-    t = gci.register_topic(dp, topic_name)
-
-    qos = Qos(policies=[
-            DeadlineQosPolicy(DDSDuration(1,0))
-        ])
-    wr = dp.create_datawriter(t, qos)
-    rd = dp.create_datareader(t, qos, L())
-
-    ShapeType = gci.get_class('ShapeType')
-    Inner = gci.get_class('Inner_Shapes')
-
-    data = ShapeType(color='GREEN', x=22, y=33, z=44, t=Inner(foo=55))
-
-    wr.write(data)
+    qos = Qos(Policy.Deadline(duration(seconds=0.2)))
+    wr = manual_setup.dw(qos=qos)
+    manual_setup.dr(qos=qos, listener=MyListener())
+    
     write_time = time.time()
-    self.assertTrue(handlerTriggered.wait(self.time_out), 'Event not triggered')
-    self.assertGreaterEqual(delay, 1.0 - 0.05, 'Delay not >= 1.0s')
-    self._check_status(saved_status, RequestedDeadlineMissedStatus, [
-        Info('total_count', int), 
-        Info('total_count_change', int), 
-        Info('last_instance_handle', int), 
-        ])
+    wr.write(manual_setup.msg)
 
+    assert hitpoint.was_hit()
+    assert hitpoint.data - write_time >= 0.2
+
+
+"""
 def test_on_requested_incompatible_qos(self):
     handlerTriggered = threading.Event()
     saved_status = None

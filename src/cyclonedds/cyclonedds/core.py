@@ -1381,7 +1381,7 @@ class Entity(DDS):
 
     _entities: Dict[dds_c_t.entity, 'Entity'] = WeakValueDictionary()
 
-    def __init__(self, ref: int) -> None:
+    def __init__(self, ref: int, listener = None) -> None:
         """Initialize an Entity. You should never need to initialize an Entity manually.
 
         Parameters
@@ -1398,6 +1398,7 @@ class Entity(DDS):
             raise DDSException(ref, f"Occurred upon initialisation of a {self.__class__.__module__}.{self.__class__.__name__}")
         super().__init__(ref)
         self._entities[self._ref] = self
+        self._listener = listener
 
     def __del__(self):
         if not hasattr(self, "_ref") or self._ref not in self._entities:
@@ -1606,7 +1607,7 @@ class Entity(DDS):
 
     status_mask = property(get_status_mask, set_status_mask)
 
-    def get_qos(self) -> Qos:
+    def copy_qos(self) -> Qos:
         """Get the set of ``Qos`` policies associated with this entity. Note that the object returned is not
         the same python object that you used to set the ``Qos`` on this object. Modifications to the ``Qos`` object
         that is returned does _not_ modify the Qos of the Entity.
@@ -1626,8 +1627,8 @@ class Entity(DDS):
             return qos
         raise DDSException(ret, f"Occurred when getting the Qos Policies for {repr(self)}")
 
-    def set_qos(self, qos: Qos) -> None:
-        """Set ``Qos`` policies on this entity. Note, only a limited number of ``Qos`` policies can be set after
+    def adapt_qos(self, qos: Qos) -> None:
+        """Adapt ``Qos`` policies on this entity. Note, only a limited number of ``Qos`` policies can be set after
         the object is created (``Policy.LatencyBudget`` and ``Policy.OwnershipStrength``). Any policies not set
         explicitly in the supplied ``Qos`` remain.
 
@@ -1647,29 +1648,19 @@ class Entity(DDS):
             return
         raise DDSException(ret, f"Occurred when setting the Qos Policies for {repr(self)}")
 
-    qos = property(get_qos, set_qos)
-
-    def get_listener(self) -> 'Listener':
-        """Return a listener associated with this object. Modifying the returned listener object does not modify
+    def copy_listener(self) -> 'Listener':
+        """Return a listener with the right methods set. Modifying the returned listener object does not modify
         this entity, you will have to call set_listener() with the changed object.
 
         Returns
         -------
         Listener
             A listener with which you can add additional callbacks.
-
-        Raises
-        ------
-        DDSException
         """
-        listener = Listener()
-        ret = self._get_listener(self._ref, listener._ref)
-        if ret == 0:
-            return listener
-        raise DDSException(ret, f"Occurred when getting the Listener for {repr(self)}")
+        return self._listener.copy() if self._listener else Listener()
 
-    def set_listener(self, listener: 'Listener') -> None:
-        """Set the listener for this object. If a listener already exist for this object only the fields you explicitly
+    def adapt_listener(self, listener: 'Listener') -> None:
+        """Update the listener for this object. If a listener already exist for this object only the fields you explicitly
         have set on your new listener are overwritten.
 
         Parameters
@@ -1681,12 +1672,13 @@ class Entity(DDS):
         ------
         DDSException
         """
+        if self._listener != listener:
+            listener.copy_to(self._listener)
+
         ret = self._set_listener(self._ref, listener._ref)
         if ret == 0:
             return
         raise DDSException(ret, f"Occurred when setting the Listener for {repr(self)}")
-
-    listener = property(get_listener, set_listener)
 
     def get_parent(self) -> Optional['Entity']:
         """Get the parent entity associated with this entity. A ``Domain`` object is the only object without parent,
@@ -1913,45 +1905,59 @@ def _is_override(func):
 class Listener(DDS):
     def __init__(self, **kwargs):
         super().__init__(self._create_listener(None))
+        self._set_functors = {}
 
         if _is_override(self.on_data_available):
             self.set_on_data_available(self.on_data_available)
+            self._set_functors["on_data_available"] = self.on_data_available
 
         if _is_override(self.on_inconsistent_topic):
             self.set_on_inconsistent_topic(self.on_inconsistent_topic)
+            self._set_functors["on_inconsistent_topic"] = self.on_inconsistent_topic
 
         if _is_override(self.on_liveliness_lost):
             self.set_on_liveliness_lost(self.on_liveliness_lost)
+            self._set_functors["on_liveliness_lost"] = self.on_liveliness_lost
 
         if _is_override(self.on_liveliness_changed):
             self.set_on_liveliness_changed(self.on_liveliness_changed)
+            self._set_functors["on_liveliness_changed"] = self.on_liveliness_changed
 
         if _is_override(self.on_offered_deadline_missed):
             self.set_on_offered_deadline_missed(self.on_offered_deadline_missed)
+            self._set_functors["on_offered_deadline_missed"] = self.on_offered_deadline_missed
 
         if _is_override(self.on_offered_incompatible_qos):
             self.set_on_offered_incompatible_qos(self.on_offered_incompatible_qos)
+            self._set_functors["on_offered_incompatible_qos"] = self.on_offered_incompatible_qos
 
         if _is_override(self.on_data_on_readers):
             self.set_on_data_on_readers(self.on_data_on_readers)
+            self._set_functors["on_data_on_readers"] = self.on_data_on_readers
 
         if _is_override(self.on_sample_lost):
             self.set_on_sample_lost(self.on_sample_lost)
+            self._set_functors["on_sample_lost"] = self.on_sample_lost
 
         if _is_override(self.on_sample_rejected):
             self.set_on_sample_rejected(self.on_sample_rejected)
+            self._set_functors["on_data_available"] = self.on_data_available
 
         if _is_override(self.on_requested_deadline_missed):
             self.set_on_requested_deadline_missed(self.on_requested_deadline_missed)
+            self._set_functors["on_requested_deadline_missed"] = self.on_requested_deadline_missed
 
         if _is_override(self.on_requested_incompatible_qos):
             self.set_on_requested_incompatible_qos(self.on_requested_incompatible_qos)
+            self._set_functors["on_requested_incompatible_qos"] = self.on_requested_incompatible_qos
 
         if _is_override(self.on_publication_matched):
             self.set_on_publication_matched(self.on_publication_matched)
+            self._set_functors["on_publication_matched"] = self.on_publication_matched
 
         if _is_override(self.on_subscription_matched):
             self.set_on_subscription_matched(self.on_subscription_matched)
+            self._set_functors["on_subscription_matched"] = self.on_subscription_matched
 
         self.setters = {
             "on_data_available": self.set_on_data_available,
@@ -1981,15 +1987,15 @@ class Listener(DDS):
         self._reset_listener(self._ref)
 
     def copy(self) -> 'Listener':
-        listener = Listener()
-        self._copy_listener(listener._ref, self._ref)
+        listener = Listener(**self._set_functors)
         return listener
 
     def copy_to(self, listener: 'Listener') -> None:
-        self._copy_listener(listener._ref, self._ref)
+        for name, functor in self._set_functors.items():
+            listener.setters[name](functor)
 
     def merge(self, listener: 'Listener') -> None:
-        self._merge_listener(self._ref, listener._ref)
+        listener.copy_to(self)
 
     def on_inconsistent_topic(self, reader: 'cyclonedds.sub.DataReader', status: dds_c_t.inconsistent_topic_status) -> None:
         pass
@@ -1998,7 +2004,9 @@ class Listener(DDS):
         self.on_inconsistent_topic = callable
         if callable is None:
             self._set_inconsistent_topic(self._ref, None)
+            del self._set_functors['on_inconsistent_topic']
         else:
+            self._set_functors['on_inconsistent_topic'] = self.on_inconsistent_topic
             def call(topic, status, arg):
                 self.on_inconsistent_topic(Entity.get_entity(topic), status)
             self._on_inconsistent_topic = _inconsistent_topic_fn(call)
@@ -2011,7 +2019,9 @@ class Listener(DDS):
         self.on_data_available = callable
         if callable is None:
             self._set_data_available(self._ref, None)
+            del self._set_functors['on_data_available']
         else:
+            self._set_functors['on_data_available'] = self.on_data_available
             def call(reader, arg):
                 self.on_data_available(Entity.get_entity(reader))
             self._on_data_available = _data_available_fn(call)
@@ -2024,7 +2034,9 @@ class Listener(DDS):
         self.on_liveliness_lost = callable
         if callable is None:
             self._set_liveliness_lost(self._ref, None)
+            del self._set_functors['on_liveliness_lost']
         else:
+            self._set_functors['on_liveliness_lost'] = self.on_liveliness_lost
             def call(writer, status, arg):
                 self.on_liveliness_lost(Entity.get_entity(writer), status)
             self._on_liveliness_lost = _liveliness_lost_fn(call)
@@ -2039,7 +2051,9 @@ class Listener(DDS):
         self.on_liveliness_changed = callable
         if callable is None:
             self._set_liveliness_changed(self._ref, None)
+            del self._set_functors['on_liveliness_changed']
         else:
+            self._set_functors['on_liveliness_changed'] = self.on_liveliness_changed
             def call(reader, status, arg):
                 self.on_liveliness_changed(Entity.get_entity(reader), status)
             self._on_liveliness_changed = _liveliness_changed_fn(call)
@@ -2055,7 +2069,9 @@ class Listener(DDS):
         self.on_offered_deadline_missed = callable
         if callable is None:
             self._set_on_offered_deadline_missed(self._ref, None)
+            del self._set_functors['on_offered_deadline_missed']
         else:
+            self._set_functors['on_offered_deadline_missed'] = self.on_offered_deadline_missed
             def call(writer, status, arg):
                 self.on_offered_deadline_missed(Entity.get_entity(writer), status)
             self._on_offered_deadline_missed = _offered_deadline_missed_fn(call)
@@ -2071,7 +2087,9 @@ class Listener(DDS):
         self.on_offered_incompatible_qos = callable
         if callable is None:
             self._set_on_offered_incompatible_qos(self._ref, None)
+            del self._set_functors['on_offered_incompatible_qos']
         else:
+            self._set_functors['on_offered_incompatible_qos'] = self.on_offered_incompatible_qos
             def call(writer, status, arg):
                 self.on_offered_incompatible_qos(Entity.get_entity(writer), status)
             self._on_offered_incompatible_qos = _offered_incompatible_qos_fn(call)
@@ -2084,7 +2102,9 @@ class Listener(DDS):
         self.on_data_on_readers = callable
         if callable is None:
             self._set_data_available(self._ref, None)
+            del self._set_functors['on_data_on_readers']
         else:
+            self._set_functors['on_data_on_readers'] = self.on_data_on_readers
             def call(subscriber, arg):
                 self.on_data_on_readers(Entity.get_entity(subscriber))
             self._on_data_on_readers = _data_on_readers_fn(call)
@@ -2099,7 +2119,9 @@ class Listener(DDS):
         self.on_sample_lost = callable
         if callable is None:
             self._set_on_sample_lost(self._ref, None)
+            del self._set_functors['on_sample_lost']
         else:
+            self._set_functors['on_sample_lost'] = self.on_sample_lost
             def call(writer, status, arg):
                 self.on_sample_lost(Entity.get_entity(writer), status)
             self._on_sample_lost = _on_sample_lost_fn(call)
@@ -2114,7 +2136,9 @@ class Listener(DDS):
         self.on_sample_lost = callable
         if callable is None:
             self._set_on_sample_lost(self._ref, None)
+            del self._set_functors['on_sample_lost']
         else:
+            self._set_functors['on_sample_lost'] = self.on_sample_lost
             def call(writer, status, arg):
                 self.on_sample_lost(Entity.get_entity(writer), status)
             self._on_sample_lost = _on_sample_lost_fn(call)
@@ -2129,7 +2153,9 @@ class Listener(DDS):
         self.on_sample_rejected = callable
         if callable is None:
             self._set_on_sample_rejected(self._ref, None)
+            del self._set_functors['on_sample_rejected']
         else:
+            self._set_functors['on_sample_rejected'] = self.on_sample_rejected
             def call(writer, status, arg):
                 self.on_sample_rejected(Entity.get_entity(writer), status)
             self._on_sample_rejected = _on_sample_rejected_fn(call)
@@ -2143,7 +2169,9 @@ class Listener(DDS):
         self.on_requested_deadline_missed = callable
         if callable is None:
             self._set_on_requested_deadline_missed(self._ref, None)
+            del self._set_functors['on_requested_deadline_missed']
         else:
+            self._set_functors['on_requested_deadline_missed'] = self.on_requested_deadline_missed
             def call(reader, status, arg):
                 self.on_requested_deadline_missed(Entity.get_entity(reader), status)
             self._on_requested_deadline_missed = _on_requested_deadline_missed_fn(call)
@@ -2158,7 +2186,9 @@ class Listener(DDS):
         self.on_requested_incompatible_qos = callable
         if callable is None:
             self._set_on_requested_incompatible_qos(self._ref, None)
+            del self._set_functors['on_requested_incompatible_qos']
         else:
+            self._set_functors['on_requested_incompatible_qos'] = self.on_requested_incompatible_qos
             def call(reader, status, arg):
                 self.on_requested_incompatible_qos(Entity.get_entity(reader), status)
             self._on_requested_incompatible_qos = _on_requested_incompatible_qos_fn(call)
@@ -2173,7 +2203,9 @@ class Listener(DDS):
         self.on_publication_matched = callable
         if callable is None:
             self._set_on_publication_matched(self._ref, None)
+            del self._set_functors['on_publication_matched']
         else:
+            self._set_functors['on_publication_matched'] = self.on_publication_matched
             def call(writer, status, arg):
                 self.on_publication_matched(Entity.get_entity(writer), status)
             self._on_publication_matched = _on_publication_matched_fn(call)
@@ -2188,7 +2220,9 @@ class Listener(DDS):
         self.on_subscription_matched = callable
         if callable is None:
             self._set_on_subscription_matched(self._ref, None)
+            del self._set_functors['on_subscription_matched']
         else:
+            self._set_functors['on_subscription_matched'] = self.on_subscription_matched
             def call(reader, status, arg):
                 self.on_subscription_matched(Entity.get_entity(reader), status)
             self._on_subscription_matched = _on_subscription_matched_fn(call)

@@ -22,7 +22,8 @@ class Subscriber(Entity):
                 domain_participant._ref,
                 qos._ref if qos else None,
                 listener._ref if listener else None
-            )
+            ),
+            listener=listener
         )
 
     @c_call("dds_create_subscriber")

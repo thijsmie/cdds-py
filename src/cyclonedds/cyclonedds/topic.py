@@ -30,7 +30,8 @@ class Topic(Entity):
                 data_type,
                 qos._ref if qos else None,
                 listener._ref if listener else None
-            )
+            ),
+            listener=listener
         )
 
     def get_name(self, max_size=256):

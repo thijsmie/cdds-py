@@ -161,7 +161,7 @@ def test_get_pubsub():
 def test_get_listener():
     dp = DomainParticipant(0, listener=Listener())
 
-    assert dp.listener
+    assert dp.copy_listener()
 
 
 def test_get_domainid():
@@ -171,13 +171,22 @@ def test_get_domainid():
 
 def test_get_qos():
     dp = DomainParticipant(0)
-    qos = dp.qos 
-    assert qos == dp.get_qos()
-    dp.qos = qos
+    qos = dp.copy_qos()
+    assert qos == dp.copy_qos()
+    dp.adapt_qos(qos)
 
-def test_set_listener():
+
+def test_adapt_listener():
     dp = DomainParticipant(0)
-    dp.set_listener(Listener())
+    dp.adapt_listener(Listener())
+
+
+def test_retain_listener():
+    m = lambda x, y: 0
+    l = Listener(on_data_available=m)
+    dp = DomainParticipant(0, listener=l)
+    l = dp.copy_listener()
+    assert l.on_data_available == m
 
 
 def test_get_guid():

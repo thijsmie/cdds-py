@@ -10,3 +10,4 @@ cov.xml
 .inputrc
 .python-version
 snippets.txt
+src/pycdr/dist
