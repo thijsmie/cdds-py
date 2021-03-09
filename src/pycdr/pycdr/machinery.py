@@ -1,4 +1,4 @@
-from dataclasses import fields, is_dataclass
+from dataclasses import is_dataclass
 from enum import Enum
 from typing import Union
 import struct
@@ -476,9 +476,3 @@ def build_machine(cdr, _type, top=False) -> Machine:
 
     print(get_origin(_type), get_args(_type))
     raise TypeError(f"{_type} is not valid in CDR classes because it cannot be encoded.")
-
-
-def build_key_machine(cdr, keys, cls) -> Machine:
-    _fields = get_type_hints(cls, include_extras=True)
-    _members = { k: build_machine(cdr, v) for k,v in _fields.items()}
-    return StructMachine(cls, _members)

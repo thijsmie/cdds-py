@@ -1,8 +1,10 @@
-from .machinery import build_machine, build_key_machine, Buffer, MaxSizeFinder
+from .machinery import build_machine, Buffer, MaxSizeFinder
+from .type_helper import get_type_hints
 
 from hashlib import md5
 from collections import defaultdict
 from inspect import isclass
+from dataclasses import make_dataclass
 
 
 def module_prefix(cls):
@@ -16,6 +18,14 @@ def module_prefix(cls):
 def qualified_name(instance):
     cls = instance.__class__ if not isclass(instance) else instance
     return module_prefix(cls) + cls.__name__
+
+
+def make_keyholder(datatype, keylist):
+    name = datatype.__name__
+    namespace = module_prefix(datatype).lstrip('.')
+    namespace = None if not len(namespace) else namespace
+    fields = [(k,v) for k,v in get_type_hints(datatype, include_extras=True).items() if k in keylist]
+    return make_dataclass(name, fields, namespace=namespace)
 
 
 class CDR:
@@ -50,8 +60,10 @@ class CDR:
         self.autoid_hash = autoid_hash
         self.keylist = keylist
 
+        self.keyholder = make_keyholder(datatype, keylist) if keylist else datatype
+
         self.machine = build_machine(self, datatype, True)
-        self.key_machine = build_key_machine(self, keylist, datatype) if keylist else self.machine
+        self.key_machine = build_machine(self, self.keyholder, True) if keylist else self.machine
 
         self.keyless = keylist is None
 
