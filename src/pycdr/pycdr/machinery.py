@@ -283,14 +283,14 @@ class UnionMachine(Machine):
             raise Exception(f"Failed to encode union, {self.type}, value is {union.value}")
 
     def deserialize(self, buffer):
-        label = self.disciminator.deserialize(buffer)
+        label = self.discriminator.deserialize(buffer)
 
         if label not in self.labels_submachines:
             contents = self.default.deserialize(buffer)
         else:
             contents = self.labels_submachines[label].deserialize(buffer)
 
-        return self.type(**{label: contents})
+        return self.type(discriminator=label, value=contents)
 
     def max_size(self, finder: MaxSizeFinder):
         self.discriminator.max_size(finder)
@@ -444,6 +444,9 @@ def build_machine(cdr, _type, top=False) -> Machine:
         args = get_args(_type)
         if len(args) >= 2:
             holder = args[1]
+            if type(holder) == tuple:
+                # Edge case for python 3.6: bug in backport? TODO: investigate and report
+                holder = holder[0]
             if isinstance(holder, ArrayHolder):
                 return ArrayMachine(
                     build_machine(cdr, holder.type),

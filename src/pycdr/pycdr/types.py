@@ -10,9 +10,9 @@
  * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
 """
 
-from typing import NewType, get_type_hints, List, Dict, Any, Optional
+from typing import NewType, List, Dict, Any, Optional
 from enum import Enum
-from .type_helper import Annotated, get_origin, get_args
+from .type_helper import Annotated, get_origin, get_args, get_type_hints
 
 
 char = NewType("char", int)
@@ -160,6 +160,17 @@ class IdlUnion:
         self.discriminator = discriminator
         self.value = value
 
+    def __repr__(self):
+        return f"<{self.__name__} discriminator={self.discriminator} value={self.value}>"
+
+    def __str__(self):
+        return self.__repr__()
+
+    def __eq__(self, other):
+        return self._original_cls == other._original_cls and \
+               self.discriminator == other.discriminator and \
+               self.value == other.value
+
 
 def _union_default_finder(type, cases):
     if isinstance(type, Enum):
@@ -209,10 +220,16 @@ def union(discriminator):
                 raise TypeError("Fields of a union need to be case or default.")
 
             tup = get_args(_type)
-            if len(tup) != 2 or not isinstance(tup[1], ValidUnionHolder):
+            if len(tup) != 2:
                 raise TypeError("Fields of a union need to be case or default.")
 
             holder = tup[1]
+            if type(holder) == tuple:
+                # Edge case for python 3.6: bug in backport? TODO: investigate and report
+                holder = holder[0]
+                
+            if not isinstance(holder, ValidUnionHolder):
+                raise TypeError("Fields of a union need to be case or default.")
 
             if isinstance(holder, CaseHolder):
                 if type(holder.discriminator_value) == list:
@@ -243,9 +260,6 @@ def union(discriminator):
             _default = default
             _default_val = _union_default_finder(discriminator, cases) if default else None
             _field_set = field_set
-
-            def __repr__(self):
-                return repr(cls)
-
+    
         return MyUnion
     return wraps

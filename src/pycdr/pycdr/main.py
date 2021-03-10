@@ -33,11 +33,12 @@ def qualified_name(instance):
 
 
 def make_keyholder(datatype, keylist):
-    name = datatype.__name__
-    namespace = module_prefix(datatype).lstrip('.')
-    namespace = None if not len(namespace) else namespace
     fields = [(k,v) for k,v in get_type_hints(datatype, include_extras=True).items() if k in keylist]
-    return make_dataclass(name, fields, namespace=namespace)
+    cls = make_dataclass(qualified_name(datatype) + "KeyHolder", fields)
+    cls.cdr = CDR(cls)
+    cls.serialize = proto_serialize
+    cls.deserialize = classmethod(proto_deserialize)
+    return cls
 
 
 class CDR:
@@ -61,7 +62,7 @@ class CDR:
         del cls.deferred_references[type_name]
         cls.defined_references[type_name] = object
 
-    def __init__(self, datatype, final=False, mutable=False, appendable=True, nested=False, autoid_hash=False, keylist=None):
+    def __init__(self, datatype, final=True, mutable=False, appendable=False, nested=False, autoid_hash=False, keylist=None):
         self.buffer = Buffer()
         self.datatype = datatype
         self.typename = qualified_name(datatype)

@@ -1,7 +1,8 @@
 from pycdr import cdr
-from pycdr.types import sequence, bound_str, array, uint16
+import pycdr.types as pt
 
 from enum import IntEnum, auto
+
 
 
 @cdr
@@ -26,27 +27,27 @@ class SingleBool:
 
 @cdr
 class SingleSequence:
-    value: sequence[int]
+    value: pt.sequence[int]
 
 
 @cdr
 class SingleArray:
-    value: array[uint16, 3]
+    value: pt.array[pt.uint16, 3]
 
 
 @cdr
 class SingleUint16:
-    value: uint16
+    value: pt.uint16
 
 
 @cdr
 class SingleBoundedSequence:
-    value: sequence[int, 3]
+    value: pt.sequence[int, 3]
 
 
 @cdr
 class SingleBoundedString:
-    value: bound_str[10]
+    value: pt.bound_str[10]
 
 
 class BasicEnum(IntEnum):
@@ -63,3 +64,34 @@ class SingleEnum:
 @cdr
 class SingleNested:
     value: SingleInt
+
+
+@cdr(keylist=['a'])
+class Keyed:
+    a: int
+    b: int
+
+
+@cdr
+class AllPrimitives:
+    a: pt.int8 = 123
+    b: pt.uint8 = 212
+    c: pt.int16 = 7834
+    d: pt.uint16 = 2817
+    e: pt.int32 = 12987421
+    f: pt.uint32 = 328732
+    g: pt.int64 = 84987349873
+    h: pt.uint64 = 12987181827
+    i: pt.float32 = 1.0
+    j: pt.float64 = 1287.1878
+
+
+@pt.union(int)
+class EasyUnion:
+    a: pt.case[1, int]
+    b: pt.case[2, bool]
+
+
+@cdr
+class SingleUnion:
+    value: EasyUnion
