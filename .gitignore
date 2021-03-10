@@ -10,4 +10,5 @@ cov.xml
 .inputrc
 .python-version
 snippets.txt
-src/pycdr/dist
+src/cyclonedds/dist/
+src/pycdr/dist/

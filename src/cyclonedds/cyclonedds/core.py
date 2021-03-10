@@ -1,12 +1,20 @@
 """
-    CycloneDDS Core functionality
+ * Copyright(c) 2021 ADLINK Technology Limited and others
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0, or the Eclipse Distribution License
+ * v. 1.0 which is available at
+ * http://www.eclipse.org/org/documents/edl-v10.php.
+ *
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
 """
 
 import uuid
 import ctypes as ct
 from enum import Enum, auto
 from weakref import WeakValueDictionary
-from typing import Any, Callable, Dict, Optional, List, Tuple, TYPE_CHECKING
+from typing import Any, Callable, Dict, Optional, List, Sequence, Tuple, TYPE_CHECKING
 
 from .internal import c_call, c_callable, dds_c_t, DDS
 
@@ -62,7 +70,7 @@ class DDSException(Exception):
             ("DDS_RETCODE_NOT_ALLOWED_BY_SECURITY", "Insufficient credentials supplied to use the function")
     }
 
-    def __init__(self, code, msg=None, *args, **kwargs):
+    def __init__(self, code, *args, msg=None, **kwargs):
         self.code = code
         self.msg = msg or ""
         super().__init__(*args, **kwargs)
@@ -71,8 +79,7 @@ class DDSException(Exception):
         if self.code in self.error_message_mapping:
             msg = self.error_message_mapping[self.code]
             return f"[{msg[0]}] {msg[1]}. {self.msg}"
-        else:
-            return f"[DDSException] Got an unexpected error code '{self.code}'. {self.msg}"
+        return f"[DDSException] Got an unexpected error code '{self.code}'. {self.msg}"
 
     def __repr__(self) -> str:
         return str(self)
@@ -535,7 +542,7 @@ class Policy:
             return _PolicyType.Liveliness, (_QosLiveliness.ManualByTopic, lease_duration)
 
     @staticmethod
-    def TimeBasedFilter(filter: int) -> Tuple[_PolicyType, int]:
+    def TimeBasedFilter(filter_fn: int) -> Tuple[_PolicyType, int]:
         """The TimeBasedFilter Qos Policy
 
         Examples
@@ -554,7 +561,7 @@ class Policy:
             The type of this entity is not publicly specified.
         """
 
-        return _PolicyType.TimeBasedFilter, filter
+        return _PolicyType.TimeBasedFilter, filter_fn
 
     @staticmethod
     def Partitions(*partitions: List[str]) -> Tuple[_PolicyType, List[str]]:
@@ -670,15 +677,15 @@ class Qos(DDS):
             setter = getattr(self, "set_" + name)
             setter(value)
 
-    def __iadd__(self, policy):
+    def __iadd__(self, policy: Sequence):
         if not policy or len(policy) < 2 or policy[0] not in self._attr_dispatch:
             raise QosException(f"Passed invalid argument to Qos: {policy}")
         getattr(self, self._attr_dispatch[policy[0]])(policy)
         return self
 
     @classmethod
-    def get_qos(cls, id):
-        return cls._qosses.get(id)
+    def get_qos(cls, qos_id: int):
+        return cls._qosses.get(qos_id)
 
     def __del__(self):
         if self.destructor:
@@ -990,7 +997,7 @@ class Qos(DDS):
         ps = [p.encode() for p in partitions[1]]
         p_pt = (ct.c_char_p * len(ps))()
         for i, p in enumerate(ps):
-            p_pt[i] = ps[i]
+            p_pt[i] = p
         self._set_partitions(self._ref, len(ps), p_pt)
 
     def set_reliability(self, reliability: Tuple[_PolicyType, Tuple[_QosReliability, int]]) -> None:
@@ -1359,6 +1366,15 @@ class Entity(DDS):
     status_mask: int
                  The status mask for this entity. It is a set of bits formed
                  from ``DDSStatus``. This is a proxy for get/set_status_mask().
+<<<<<<< HEAD
+=======
+    qos:         Qos
+                 The quality of service policies for this entity. This is a
+                 proxy for get/set_qos().
+    listener:    Listener
+                 The listener associated with this entity. This is a
+                 proxy for get/set_listener().
+>>>>>>> master
     parent:      Entity, optional
                  The entity that is this entities parent. For example: the subscriber for a
                  datareader, the participant for a topic.
@@ -1622,7 +1638,7 @@ class Entity(DDS):
         raise DDSException(ret, f"Occurred when getting the Qos Policies for {repr(self)}")
 
     def set_qos(self, qos: Qos) -> None:
-        """Adapt ``Qos`` policies on this entity. Note, only a limited number of ``Qos`` policies can be set after
+        """Set ``Qos`` policies on this entity. Note, only a limited number of ``Qos`` policies can be set after
         the object is created (``Policy.LatencyBudget`` and ``Policy.OwnershipStrength``). Any policies not set
         explicitly in the supplied ``Qos`` remain.
 
@@ -1689,9 +1705,11 @@ class Entity(DDS):
         DDSException
         """
         ret = self._get_parent(self._ref)
+
         if ret > 0:
             return self.get_entity(ret)
-        elif ret is None or ret == 0:
+
+        if ret is None or ret == 0:
             return None
 
         raise DDSException(ret, f"Occurred when getting the parent of {repr(self)}")
@@ -1711,9 +1729,11 @@ class Entity(DDS):
         DDSException
         """
         ret = self._get_participant(self._ref)
+
         if ret > 0:
             return self.get_entity(ret)
-        elif ret is None or ret == 0:
+
+        if ret is None or ret == 0:
             return None
 
         raise DDSException(ret, f"Occurred when getting the participant of {repr(self)}")
@@ -1736,7 +1756,7 @@ class Entity(DDS):
         num_children = self._get_children(self._ref, None, 0)
         if num_children < 0:
             raise DDSException(num_children, f"Occurred when getting the number of children of {repr(self)}")
-        elif num_children == 0:
+        if num_children == 0:
             return []
 
         children_list = (dds_c_t.entity * int(num_children))()
@@ -1772,8 +1792,8 @@ class Entity(DDS):
     domainid = property(get_domainid)
 
     @classmethod
-    def get_entity(cls, id) -> Optional['Entity']:
-        return cls._entities.get(id)
+    def get_entity(cls, entity_id) -> Optional['Entity']:
+        return cls._entities.get(entity_id)
 
     @classmethod
     def _init_from_retcode(cls, code):
