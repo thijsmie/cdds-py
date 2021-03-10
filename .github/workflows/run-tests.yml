@@ -112,11 +112,13 @@ jobs:
 
     - name: Upload coverage report to codecov 🚀
       uses: codecov/codecov-action@v1
+      env:
+        PYTHON: '${{ matrix.python }}'
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
         file: coverage.xml
         flags: unittests
-        env_vars: OS,PYTHON
+        env_vars: PYTHON
         name: codecov-umbrella
         fail_ci_if_error: true
         verbose: false
