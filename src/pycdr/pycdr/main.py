@@ -75,11 +75,11 @@ class CDR:
 
     def serialize(self, object, buffer=None) -> bytes:
         buffer = buffer or self.buffer.seek(0)
-        self.machine.serialize(self.buffer, object)
-        return self.buffer.asbytes()
+        self.machine.serialize(buffer, object)
+        return buffer.asbytes()
 
     def deserialize(self, data) -> object:
-        buffer = Buffer(data)
+        buffer = Buffer(data) if not isinstance(data, Buffer) else data
         return self.machine.deserialize(buffer)
 
     def key(self, object) -> bytes:

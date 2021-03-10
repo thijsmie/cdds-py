@@ -1,0 +1,15 @@
+[run]
+source_pkgs=pycdr
+
+[paths]
+source =
+    pycdr/
+    */pycdr/
+
+[report]
+exclude_lines =
+    pragma: no cover
+    pass
+
+[xml]
+output=cov.xml
