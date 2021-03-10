@@ -90,20 +90,31 @@ jobs:
 
     - name: Lint with flake8 ❄
       run: |
+        flake8 ./src/pycdr/pycdr --count --select=E9,F63,F7,F82 --show-source --statistics
+        flake8 ./src/pycdr/pycdr --count --exit-zero --max-complexity=10 --max-line-length=127 --per-file-ignores="__init__.py:F401" --statistics
         flake8 ./src/cyclonedds/cyclonedds --count --select=E9,F63,F7,F82 --show-source --statistics
         flake8 ./src/cyclonedds/cyclonedds --count --exit-zero --max-complexity=10 --max-line-length=127 --per-file-ignores="__init__.py:F401" --statistics
 
-    - name: Run tests 🧪
+    - name: Run pycdr tests 🧪
+      working-directory: ./src/pycdr
+      run: pytest
+
+    - name: Run cyclonedds tests 🧪
       working-directory: ./src/cyclonedds
       env:
         CYCLONEDDS_HOME: ${{ github.workspace }}/cyclonedds/install
       run: pytest
 
+    - name: Collect test coverage 🧪
+      run: |
+        coverage combine src/cyclonedds/.coverage src/pycdr/.coverage
+        coverage xml
+
     - name: Upload coverage report to codecov 🚀
       uses: codecov/codecov-action@v1
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
-        file: ./src/cyclonedds/cov.xml
+        file: coverage.xml
         flags: unittests
         env_vars: OS,PYTHON
         name: codecov-umbrella

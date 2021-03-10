@@ -6,6 +6,7 @@ docs/_build
 .coverage
 .env
 cov.xml
+coverage.xml
 *.egg-info
 .inputrc
 .python-version
