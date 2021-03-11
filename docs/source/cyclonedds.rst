@@ -1,5 +1,5 @@
-The cdds python module
-======================
+CycloneDDS-Python
+=================
 
 .. toctree::
    :maxdepth: 4

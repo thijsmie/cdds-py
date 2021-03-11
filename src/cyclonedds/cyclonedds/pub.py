@@ -14,13 +14,17 @@ from typing import Optional, TYPE_CHECKING
 
 from .internal import c_call, dds_c_t
 from .core import Entity, DDSException
-from ddspy import ddspy_write, ddspy_write_ts, ddspy_dispose
 
 
 # The TYPE_CHECKING variable will always evaluate to False, incurring no runtime costs
 # But the import here allows your static type checker to resolve fully qualified cyclonedds names
 if TYPE_CHECKING:
     import cyclonedds
+    ddspy_write = lambda e, s: None
+    ddspy_write_ts = lambda e, s, t: None
+    ddspy_dispose = lambda e, s: None
+else:
+    from ddspy import ddspy_write, ddspy_write_ts, ddspy_dispose
 
 
 class Publisher(Entity):

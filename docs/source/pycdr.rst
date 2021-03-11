@@ -217,30 +217,3 @@ pycdr.types module
    :members:
    :undoc-members:
    :show-inheritance:
-
-
-
-pycdr.machinery module
-----------------------
-
-.. automodule:: pycdr.machinery
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-pycdr.serdata module
---------------------
-
-.. automodule:: pycdr.serdata
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-pycdr.sertopic module
----------------------
-
-.. automodule:: pycdr.sertopic
-   :members:
-   :undoc-members:
-   :show-inheritance:
-

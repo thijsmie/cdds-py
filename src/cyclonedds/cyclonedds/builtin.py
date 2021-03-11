@@ -46,15 +46,31 @@ class _builtintopic_endpoint(ct.Structure):
 
 
 class BuiltinTopic(Topic):
+    """ Represent a built-in CycloneDDS Topic by magic reference number. """
     def __init__(self, _ref, data_type):
-        Entity.__init__(self, _ref)
+        self._ref = _ref
         self.data_type = data_type
+
+    def __del__(self):
+        pass
+
 
 
 @dataclass
 class DcpsParticipant:
+    """
+    Data sample as returned when you subscribe to the BuiltinTopicDcpsParticipant topic.
+
+    Attributes
+    ----------
+    key: uuid.UUID
+        Unique participant identifier
+    qos: Qos
+        Qos policies associated with the participant.
+    """
+
     struct_class: ClassVar[ct.Structure] = _builtintopic_participant
-    key: uuid
+    key: uuid.UUID
     qos: Qos
 
     @classmethod
@@ -64,6 +80,25 @@ class DcpsParticipant:
 
 @dataclass
 class DcpsEndpoint:
+    """
+    Data sample as returned when you subscribe to the BuiltinTopicDcpsTopic,
+    BuiltinTopicDcpsPublication or BuiltinTopicDcpsSubscription topic.
+
+    Attributes
+    ----------
+    key: uuid.UUID
+        Unique identifier for the topic, publication or subscription endpoint.
+    participant_key: uuid.UUID
+        Unique identifier of the participant the endpoint belongs to.
+    participant_instance_handle: int
+        Instance handle
+    topic_name: str
+        Name of the associated topic.
+    type_name: str
+        Name of the type.
+    qos: Qos
+        Qos policies associated with the endpoint.
+    """
     struct_class: ClassVar[ct.Structure] = _builtintopic_endpoint
     key: uuid.UUID
     participant_key: uuid.UUID
@@ -84,6 +119,10 @@ class DcpsEndpoint:
 
 
 class BuiltinDataReader(DataReader):
+    """
+    Builtin topics have sligtly different behaviour than normal topics, so you should use this BuiltinDataReader
+    instead of the normal DataReader. They are identical in the rest of their functionality.
+    """
     def __init__(self,
                  subscriber_or_participant: Union['cyclonedds.sub.Subscriber', 'cyclonedds.domain.DomainParticipant'],
                  builtin_topic: 'cyclonedds.topic.BuiltinTopic',
@@ -117,7 +156,21 @@ class BuiltinDataReader(DataReader):
             self._pt_samples[i] = ct.pointer(self._samples[i])
         self._pt_void_samples = ct.cast(self._pt_samples, ct.POINTER(ct.c_void_p))
 
-    def read(self, N=1, condition=None):
+    def read(self, N: int = 1, condition=None):
+        """Read a maximum of N samples, non-blocking. Optionally use a read/query-condition to select which samples
+        you are interested in.
+
+        Parameters
+        ----------
+        N: int
+            The maximum number of samples to read.
+
+        Raises
+        ------
+        DDSException
+            If any error code is returned by the DDS API it is converted into an exception.
+        """
+
         ref = condition._ref if condition else self._ref
         self._ensure_memory(N)
 
@@ -133,7 +186,20 @@ class BuiltinDataReader(DataReader):
 
         return return_samples
 
-    def take(self, N=1, condition=None):
+    def take(self, N: int = 1, condition=None):
+        """Take a maximum of N samples, non-blocking. Optionally use a read/query-condition to select which samples
+        you are interested in.
+
+        Parameters
+        ----------
+        N: int
+            The maximum number of samples to read.
+
+        Raises
+        ------
+        DDSException
+            If any error code is returned by the DDS API it is converted into an exception.
+        """
         ref = condition._ref if condition else self._ref
         self._ensure_memory(N)
 
@@ -162,6 +228,14 @@ class BuiltinDataReader(DataReader):
 
 _pseudo_handle = 0x7fff0000
 BuiltinTopicDcpsParticipant = BuiltinTopic(_pseudo_handle + 1, DcpsParticipant)
+"""Built-in topic, is published to when a new participants appear on the network."""
+
 BuiltinTopicDcpsTopic = BuiltinTopic(_pseudo_handle + 2, DcpsEndpoint)
+"""Built-in topic, is published to when a new topic appear on the network."""
+
 BuiltinTopicDcpsPublication = BuiltinTopic(_pseudo_handle + 3, DcpsEndpoint)
+"""Built-in topic, is published to when a publication happens."""
+
 BuiltinTopicDcpsSubscription = BuiltinTopic(_pseudo_handle + 4, DcpsEndpoint)
+"""Built-in topic, is published to when a subscription happens."""
+

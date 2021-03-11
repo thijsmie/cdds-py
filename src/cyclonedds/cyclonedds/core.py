@@ -547,11 +547,11 @@ class Policy:
 
         Examples
         --------
-        >>> Policy.TimeBasedFilter(filter=duration(seconds=2))
+        >>> Policy.TimeBasedFilter(filter_fn=duration(seconds=2))
 
         Parameters
         ----------
-        filter : int
+        filter_fn: int
             Minimum time between samples in nanoseconds.  Use the helper function :func:`duration<cdds.util.duration>`
             to write the duration in a human readable format.
 
@@ -1366,15 +1366,6 @@ class Entity(DDS):
     status_mask: int
                  The status mask for this entity. It is a set of bits formed
                  from ``DDSStatus``. This is a proxy for get/set_status_mask().
-<<<<<<< HEAD
-=======
-    qos:         Qos
-                 The quality of service policies for this entity. This is a
-                 proxy for get/set_qos().
-    listener:    Listener
-                 The listener associated with this entity. This is a
-                 proxy for get/set_listener().
->>>>>>> master
     parent:      Entity, optional
                  The entity that is this entities parent. For example: the subscriber for a
                  datareader, the participant for a topic.

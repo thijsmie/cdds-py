@@ -12,7 +12,7 @@ All communication within a DDS network happens through *domains*. A domain is a 
 :: code-block: python
     :linenos:
 
-    from cdds.domain import Participant
+    from cyclonedds.domain import Participant
 
     dp = Participant(0)
 

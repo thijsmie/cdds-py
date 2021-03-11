@@ -17,7 +17,7 @@ import platform
 import ctypes as ct
 
 
-def load_cyclone() -> ct.CDLL:
+def load_cyclonedds() -> ct.CDLL:
     """
         Internal method to load the Cyclone Dynamic Library.
         Handles platform specific naming/configuration.
@@ -118,7 +118,7 @@ class DDS:
     """
         Common class for all DDS related classes. This class enables the c_call magic.
     """
-    _dll_handle = load_cyclone()
+    _dll_handle = load_cyclonedds()
 
     def __init__(self, reference: int) -> None:
         self._ref = reference

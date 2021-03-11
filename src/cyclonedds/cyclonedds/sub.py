@@ -14,13 +14,16 @@ from typing import Optional, Union, TYPE_CHECKING
 
 from .core import Entity, DDSException
 from .internal import c_call, dds_c_t
-from ddspy import ddspy_read, ddspy_take
 
 
 # The TYPE_CHECKING variable will always evaluate to False, incurring no runtime costs
 # But the import here allows your static type checker to resolve fully qualified cyclonedds names
 if TYPE_CHECKING:
     import cyclonedds
+    ddspy_read = lambda e, n: None
+    ddspy_take = lambda e, n: None
+else:
+    from ddspy import ddspy_read, ddspy_take
 
 
 class Subscriber(Entity):

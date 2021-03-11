@@ -11,12 +11,10 @@
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
 import os
-import sys
-root_dir = os.path.join(os.path.abspath(os.path.dirname(__file__)), "../..")
-sys.path.insert(0, os.path.join(root_dir, "src/cdds"))
-sys.path.insert(0, os.path.join(root_dir, "src/pycdr"))
+import typing
 
 os.environ['CDDS_NO_IMPORT_LIBS'] = "1"
+typing.TYPE_CHECKING = True
 
 # -- Project information -----------------------------------------------------
 
