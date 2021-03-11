@@ -1,54 +1,64 @@
 import pytest
 
-from cyclonedds.core import Entity, ReadCondition, SampleState, InstanceState, ViewState
+from cyclonedds.core import Entity, QueryCondition, SampleState, InstanceState, ViewState
 from cyclonedds.util import isgoodentity
 
 from  testtopics import Message
 
 
-def test_readcondition_init(common_setup):
-    rc = ReadCondition(common_setup.dr, SampleState.Any | InstanceState.Any | ViewState.Any)
-    assert isgoodentity(rc)
+def test_querycondition_init(common_setup):
+    qc = QueryCondition(
+        common_setup.dr,
+        SampleState.Any | InstanceState.Any | ViewState.Any, 
+        lambda x: False
+    )
+    assert isgoodentity(qc)
 
 
-def test_readcondition_get_mask(common_setup):
+def test_querycondition_get_mask(common_setup):
     mask = SampleState.Any | InstanceState.Any | ViewState.Any
-    rc = ReadCondition(common_setup.dr, mask)
+    qc = QueryCondition(common_setup.dr, mask, lambda x: False)
 
-    assert rc.mask == rc.get_mask() == mask
+    assert qc.mask == qc.get_mask() == mask
 
     mask = SampleState.NotRead | InstanceState.NotAliveNoWriters | ViewState.Old
 
-    assert rc.mask == rc.get_mask() != mask
+    assert qc.mask == qc.get_mask() != mask
 
-    rc = ReadCondition(common_setup.dr, mask)
+    qc = QueryCondition(common_setup.dr, mask, lambda x: False)
 
-    assert rc.mask == rc.get_mask() == mask
-
-
-def test_readcondition_get_reader(common_setup):
-    rc = ReadCondition(common_setup.dr, SampleState.Any | InstanceState.Any | ViewState.Any)
-    assert rc.get_datareader() == common_setup.dr
+    assert qc.mask == qc.get_mask() == mask
 
 
-def test_readcondition_read(common_setup):
-    rc = ReadCondition(common_setup.dr, SampleState.Any | ViewState.Any | InstanceState.NotAliveDisposed)
+def test_querycondition_get_reader(common_setup):
+    qc = QueryCondition(common_setup.dr, SampleState.Any | InstanceState.Any | ViewState.Any, lambda x: False)
+    assert qc.get_datareader() == common_setup.dr
 
-    assert not rc.triggered
 
-    messages = [Message(message=f"Hi {i}!") for i in range(5)]
+@pytest.mark.xfail(reason="TODO: implement typeless serdata")
+def test_querycondition_read(common_setup):
+    qc = QueryCondition(
+        common_setup.dr,
+        SampleState.Any | ViewState.Any | InstanceState.NotAliveDisposed,
+        lambda msg: msg.message.startswith("Hi")
+    )
+
+    assert not qc.triggered
+
+    messages = [Message(message=f"Hi {i}!") for i in range(5)] + [Message(message="Goodbye")]
     for m in messages:
         common_setup.dw.write(m)
 
-    received = common_setup.dr.read(N=5)
+    received = common_setup.dr.read(N=6)
 
     assert messages == received
 
-    common_setup.dw.dispose(messages[1])
-    assert rc.triggered
+    common_setup.dw.dispose(messages[5])
+    assert not qc.triggered
 
-    received = common_setup.dr.read(condition=rc)
+    common_setup.dw.dispose(messages[1])
+    assert qc.triggered
+
+    received = common_setup.dr.read(condition=qc)
 
     assert len(received) == 1 and received[0] == messages[1]
-
-
