@@ -10,12 +10,12 @@
  * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
 """
 
-from .machinery import build_machine, Buffer, MaxSizeFinder
+from .machinery import build_machine, Buffer, MaxSizeFinder, Endianness
 from .type_helper import get_type_hints
 
 from hashlib import md5
-from collections import defaultdict
 from inspect import isclass
+from collections import defaultdict
 from dataclasses import make_dataclass
 
 
@@ -27,9 +27,9 @@ def module_prefix(cls):
     return module + "."
 
 
-def qualified_name(instance):
+def qualified_name(instance, sep="."):
     cls = instance.__class__ if not isclass(instance) else instance
-    return module_prefix(cls) + cls.__name__
+    return (module_prefix(cls) + cls.__name__).replace('.', sep)
 
 
 def make_keyholder(datatype, keylist):
@@ -86,21 +86,56 @@ class CDR:
             self.key_machine.max_size(finder)
             self.key_max_size = finder.size
 
-    def serialize(self, object, buffer=None) -> bytes:
+    def serialize(self, object, buffer=None, endianness=None) -> bytes:
         buffer = buffer or self.buffer.seek(0)
+        if endianness is not None:
+            buffer.set_endianness(endianness)
+
+        if buffer.tell() == 0:
+            if buffer.endianness == Endianness.Big:
+                buffer.write('b', 1, 0)
+                buffer.write('b', 1, 0)
+                buffer.write('b', 1, 0)
+                buffer.write('b', 1, 0)
+            else:
+                buffer.write('b', 1, 0)
+                buffer.write('b', 1, 1)
+                buffer.write('b', 1, 0)
+                buffer.write('b', 1, 0)
+
         self.machine.serialize(buffer, object)
         return buffer.asbytes()
 
     def deserialize(self, data) -> object:
         buffer = Buffer(data) if not isinstance(data, Buffer) else data
+
+        if buffer.tell() == 0:
+            buffer.read('b', 1)
+            v = buffer.read('b', 1)
+            if v == 0:
+                buffer.set_endianness(Endianness.Big)
+            else:
+                buffer.set_endianness(Endianness.Little)
+            buffer.read('b', 1)
+            buffer.read('b', 1)
+
         return self.machine.deserialize(buffer)
 
     def key(self, object) -> bytes:
         self.buffer.seek(0)
+        self.buffer.set_endianness(Endianness.Big)
+        self.buffer.write('b', 1, 0)
+        self.buffer.write('b', 1, 0)
+        self.buffer.write('b', 1, 0)
+        self.buffer.write('b', 1, 0)
+
         self.key_machine.serialize(self.buffer, object)
         return self.buffer.asbytes()
 
     def keyhash(self, object) -> bytes:
+        if not hasattr(self, 'key_max_size'):
+            self.finalize()
+
         if self.key_max_size <= 16:
             return self.key(object).ljust(16, b'\0')
         
@@ -109,8 +144,8 @@ class CDR:
         return m.digest()
 
 
-def proto_serialize(self, buffer=None):
-    return self.cdr.serialize(self, buffer=buffer)
+def proto_serialize(self, buffer=None, endianness=None):
+    return self.cdr.serialize(self, buffer=buffer, endianness=endianness)
 
 
 def proto_deserialize(cls, data):

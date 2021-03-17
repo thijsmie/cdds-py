@@ -189,7 +189,7 @@ void ddspy_serdata_ensure_sample(ddspy_serdata_t* this)
     PyGILState_STATE state = PyGILState_Ensure();
 
     /// This is not a copy
-    PyObject* memory = PyMemoryView_FromMemory((char*) this->data + 4, this->data_size - 4, PyBUF_READ);
+    PyObject* memory = PyMemoryView_FromMemory((char*) this->data, this->data_size, PyBUF_READ);
     PyObject* arglist = Py_BuildValue("(O)", memory);
 
     PyObject* result = PyObject_CallObject(sertype(this)->deserialize_attr, arglist);
@@ -388,8 +388,8 @@ ddsi_serdata_t *serdata_from_sample(
             const char* buf = PyBytes_AsString(result);
             int size = PyBytes_Size(result);
 
-            d = ddspy_serdata_new(type, kind, size + 4);
-            memcpy((char*) d->data + 4, buf, size);
+            d = ddspy_serdata_new(type, kind, size);
+            memcpy((char*) d->data, buf, size);
             Py_DECREF(result);
         }
         break;
@@ -410,8 +410,8 @@ ddsi_serdata_t *serdata_from_sample(
             const char* buf = PyBytes_AsString(result);
             int size = PyBytes_Size(result);
 
-            d = ddspy_serdata_new(type, kind, size + 4);
-            memcpy((char*) d->data + 4, buf, size);
+            d = ddspy_serdata_new(type, kind, size);
+            memcpy((char*) d->data, buf, size);
             Py_DECREF(result);
         }
         break;
@@ -424,10 +424,6 @@ ddsi_serdata_t *serdata_from_sample(
     d->sample = container->sample;
     py_take_ref(d->sample);
     PyGILState_Release(state);
-
-    memset(d->data, 0x0, 4);
-    if (DDSRT_ENDIAN == DDSRT_LITTLE_ENDIAN)
-        memset((char*) d->data + 1, 0x1, 1);
 
     ddspy_serdata_populate_hash(d);
     return (ddsi_serdata_t*) d;

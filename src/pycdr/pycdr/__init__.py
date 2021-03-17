@@ -12,7 +12,7 @@
 
 from dataclasses import dataclass
 
-from .main import CDR, proto_deserialize, proto_serialize
+from .main import CDR, proto_deserialize, proto_serialize, Endianness
 
 
 def cdr(*args, final=True, mutable=False, appendable=False, keylist=None):

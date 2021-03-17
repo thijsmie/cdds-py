@@ -93,7 +93,7 @@ generate(const idl_pstate_t *pstate)
     idlpy_free_ctx(ctx);
 
 err_setup:
-    free(pkgpath)
+    free(pkgpath);
 err_pkgpath:
     free(basename);
 err_basename:

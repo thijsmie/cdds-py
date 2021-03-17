@@ -11,13 +11,20 @@
 """
 
 from dataclasses import is_dataclass
-from enum import Enum
+from enum import Enum, auto
 from typing import Union
 import struct
+import sys
 from inspect import isclass
 
 from .types import ArrayHolder, BoundStringHolder, SequenceHolder, default, primitive_types, IdlUnion, NoneType
 from .type_helper import Annotated, get_origin, get_args, get_type_hints
+
+
+class Endianness(Enum):
+    Little = auto()
+    Big = auto()
+    Native = Little if sys.byteorder == "little" else Big
 
 
 class Buffer:
@@ -25,11 +32,22 @@ class Buffer:
         self._bytes = bytearray(bytes) if bytes else bytearray(512)
         self._pos = 0
         self._size = len(self._bytes)
-        self._alignc = '@'
+        self._endian = '='
+        self.endianness = Endianness.Native
+
+    def set_endianness(self, endianness):
+        endianness = endianness
+        if endianness == Endianness.Little:
+            self._endian = "<"
+        else:
+            self._endian = ">"
 
     def seek(self, pos):
         self._pos = pos
         return self
+
+    def tell(self):
+        return self._pos
 
     def ensure_size(self, size):
         if self._pos + size > self._size:
@@ -45,7 +63,7 @@ class Buffer:
 
     def write(self, pack, size, value):
         self.ensure_size(size)
-        struct.pack_into(self._alignc + pack, self._bytes, self._pos, value)
+        struct.pack_into(self._endian + pack, self._bytes, self._pos, value)
         self._pos += size
         return self
 
@@ -62,7 +80,7 @@ class Buffer:
         return b
 
     def read(self, pack, size):
-        v = struct.unpack_from(self._alignc + pack, buffer=self._bytes, offset=self._pos)
+        v = struct.unpack_from(self._endian + pack, buffer=self._bytes, offset=self._pos)
         self._pos += size
         return v[0]
 

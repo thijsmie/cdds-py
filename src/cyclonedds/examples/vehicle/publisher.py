@@ -17,12 +17,12 @@ qos = Qos(
 qos += Policy.History.KeepLast(10)
 
 domain_participant = DomainParticipant(0)
-topic = Topic(domain_participant, Vehicle, 'Vehicle', qos=qos)
+topic = Topic(domain_participant, 'Vehicle', Vehicle, qos=qos)
 publisher = Publisher(domain_participant)
 writer = DataWriter(publisher, topic)
 
 
-cart = Vehicle(name=b"Dallara IL-15", x=200, y=200)
+cart = Vehicle(name="Dallara IL-15", x=200, y=200)
 
 
 while True:
