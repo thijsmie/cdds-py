@@ -58,7 +58,7 @@ class Buffer:
             self._bytes[0:old_size] = old_bytes
 
     def align(self, alignment):
-        self._pos = (self._pos + alignment - 1) & ~(alignment - 1)
+        self._pos = ((self._pos - 4 + alignment - 1) & ~(alignment - 1)) + 4
         return self
 
     def write(self, pack, size, value):
