@@ -1,47 +1,54 @@
 import pytest
-
-from cyclonedds.core import Qos, Policy
-from cyclonedds.util import duration
+from cyclonedds.qos import Policy, Qos, _CQos
 
 
-def test_all_qos():
-    qos = Qos()
-    qos += Policy.Reliability.BestEffort(duration(weeks=2))
-    qos += Policy.Durability.Persistent
-    qos += Policy.History.KeepLast(12)
-    qos += Policy.ResourceLimits(max_samples=10, max_instances=100, max_samples_per_instance=12)
-    qos += Policy.PresentationAccessScope.Group(coherent_access=True, ordered_access=False)
-    qos += Policy.Lifespan(duration(nanoseconds=12, hours=2))
-    qos += Policy.Deadline(duration(minutes=1.2))
-    qos += Policy.LatencyBudget(duration(seconds=12))
-    qos += Policy.Ownership.Exclusive
-    qos += Policy.OwnershipStrength(12)
-    qos += Policy.Liveliness.Automatic(duration(microseconds=42))
-    qos += Policy.TimeBasedFilter(duration(weeks=21))
-    qos += Policy.Partitions("No", "Way", "Man!")
-    qos += Policy.TransportPriority(3)
-    qos += Policy.DestinationOrder.BySourceTimestamp
-    qos += Policy.WriterDataLifecycle(autodispose=True)
-    qos += Policy.ReaderDataLifecycle(9, 8)
-    qos += Policy.DurabilityService(12, Policy.History.KeepAll, 4, 2, 3)
-    qos += Policy.IgnoreLocal.Participant
+some_qosses = [
+    Qos(Policy.Reliability.BestEffort(12)),
+    Qos(Policy.Reliability.Reliable(22)),
+    Qos(Policy.Durability.Volatile),
+    Qos(Policy.Durability.TransientLocal),
+    Qos(Policy.Durability.Transient),
+    Qos(Policy.Durability.Persistent),
+    Qos(Policy.History.KeepAll),
+    Qos(Policy.History.KeepLast(10)),
+    Qos(Policy.ResourceLimits(3, 4, 5)),
+    Qos(Policy.PresentationAccessScope.Instance(False, True)),
+    Qos(Policy.PresentationAccessScope.Topic(True, True)),
+    Qos(Policy.PresentationAccessScope.Group(False, False)),
+    Qos(Policy.Lifespan(12001)),
+    Qos(Policy.Deadline(2129981)),
+    Qos(Policy.LatencyBudget(1337)),
+    Qos(Policy.Ownership.Shared),
+    Qos(Policy.Ownership.Exclusive),
+    Qos(Policy.OwnershipStrength(8)),
+    Qos(Policy.Liveliness.Automatic(898989)),
+    Qos(Policy.Liveliness.ManualByParticipant(898989)),
+    Qos(Policy.Liveliness.ManualByTopic(898989)),
+    Qos(Policy.TimeBasedFilter(999900999)),
+    Qos(Policy.Partition(["a", "b", "8isdfijsdifij3e8"])),
+    Qos(Policy.TransportPriority(9)),
+    Qos(Policy.DestinationOrder.ByReceptionTimestamp),
+    Qos(Policy.DestinationOrder.BySourceTimestamp),
+    Qos(Policy.WriterDataLifecycle(False)),
+    Qos(Policy.ReaderDataLifecycle(7, 9)),
+    Qos(Policy.DurabilityService(12, Policy.History.KeepAll, 99, 88, 77)),
+    Qos(Policy.DurabilityService(112, Policy.History.KeepLast(66), 199, 188, 177)),
+    Qos(Policy.IgnoreLocal.Nothing),
+    Qos(Policy.IgnoreLocal.Participant),
+    Qos(Policy.IgnoreLocal.Process),
+    Qos(Policy.Userdata(b"1298129891lsakdjflksadjflas")),
+    Qos(Policy.Groupdata(b"\0ksdlfkjsldkfj")),
+    Qos(Policy.Topicdata(b"\n\nrrlskdjflsdj"))
+]
 
-    assert qos.get_reliability() == Policy.Reliability.BestEffort(duration(weeks=2))
-    assert qos.get_durability() == Policy.Durability.Persistent
-    assert qos.get_history() == Policy.History.KeepLast(12)
-    assert qos.get_resource_limits() == Policy.ResourceLimits(max_samples=10, max_instances=100, max_samples_per_instance=12)
-    assert qos.get_presentation_access_scope() == Policy.PresentationAccessScope.Group(coherent_access=True, ordered_access=False)
-    assert qos.get_lifespan() == Policy.Lifespan(duration(nanoseconds=12, hours=2))
-    assert qos.get_deadline() == Policy.Deadline(duration(minutes=1.2))
-    assert qos.get_latency_budget() == Policy.LatencyBudget(duration(seconds=12))
-    assert qos.get_ownership() == Policy.Ownership.Exclusive
-    assert qos.get_ownership_strength() == Policy.OwnershipStrength(12)
-    assert qos.get_liveliness() == Policy.Liveliness.Automatic(duration(microseconds=42))
-    assert qos.get_time_based_filter() == Policy.TimeBasedFilter(duration(weeks=21))
-    assert qos.get_partitions() == Policy.Partitions("No", "Way", "Man!")
-    assert qos.get_transport_priority() == Policy.TransportPriority(3)
-    assert qos.get_destination_order() == Policy.DestinationOrder.BySourceTimestamp
-    assert qos.get_writer_data_lifecycle() == Policy.WriterDataLifecycle(autodispose=True)
-    assert qos.get_reader_data_lifecycle() == Policy.ReaderDataLifecycle(9, 8)
-    assert qos.get_durability_service() == Policy.DurabilityService(12, Policy.History.KeepAll, 4, 2, 3)
-    assert qos.get_ignore_local() == Policy.IgnoreLocal.Participant
+
+def to_c_and_back(qos):
+    cqos = _CQos.qos_to_cqos(qos)
+    nqos = _CQos.cqos_to_qos(cqos)
+    _CQos.cqos_destroy(cqos)
+    return nqos
+
+
+@pytest.mark.parametrize("qos", some_qosses)
+def test_qos_conversion(qos):
+    assert qos == to_c_and_back(qos)

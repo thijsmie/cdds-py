@@ -14,6 +14,7 @@ from typing import Optional, TYPE_CHECKING
 
 from .internal import c_call, dds_c_t
 from .core import Entity, DDSException
+from .qos import _CQos
 
 
 # The TYPE_CHECKING variable will always evaluate to False, incurring no runtime costs
@@ -33,14 +34,17 @@ class Publisher(Entity):
             domain_participant: 'cyclonedds.domain.DomainParticipant',
             qos: Optional['cyclonedds.core.Qos'] = None,
             listener: Optional['cyclonedds.core.Listener'] = None):
+        cqos = _CQos.qos_to_cqos(qos) if qos else None
         super().__init__(
             self._create_publisher(
                 domain_participant._ref,
-                qos._ref if qos else None,
+                cqos,
                 listener._ref if listener else None
             ),
             listener=listener
         )
+        if cqos:
+            _CQos.cqos_destroy(cqos)
 
     def suspend(self):
         ret = self._suspend(self._ref)
@@ -82,15 +86,18 @@ class Publisher(Entity):
 
 class DataWriter(Entity):
     def __init__(self, publisher: 'cyclonedds.pub.Publisher', topic: 'cyclonedds.topic.Topic', qos=None, listener=None):
+        cqos = _CQos.qos_to_cqos(qos) if qos else None
         super().__init__(
             self._create_writer(
                 publisher._ref,
                 topic._ref,
-                qos._ref if qos else None,
+                cqos,
                 listener._ref if listener else None
             ),
             listener=listener
         )
+        if cqos:
+            _CQos.cqos_destroy(cqos)
 
     def write(self, sample):
         ret = ddspy_write(self._ref, sample)

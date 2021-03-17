@@ -15,6 +15,7 @@ import uuid
 import inspect
 import platform
 import ctypes as ct
+from functools import wraps
 
 
 def load_cyclonedds() -> ct.CDLL:
@@ -98,7 +99,45 @@ def c_call(cname):
             cfunc.argtypes = [p.annotation for i, p in enumerate(s.parameters.values()) if i > 0]
 
             # Need to rebuild this function to ignore the 'self' attribute
+            @wraps(self.function)
             def final_func(self_, *args):
+                return cfunc(*args)
+
+            # replace class named method with c call
+            setattr(cls, name, final_func)
+
+    return DllCall
+
+
+def static_c_call(cname):
+    """
+        Decorator. Convert a function into call into the class associated dll.
+    """
+
+    class DllCall:
+        def __init__(self, function):
+            self.function = function
+
+        # This gets called when the class is finalized
+        def __set_name__(self, cls, name):
+            if 'CDDS_NO_IMPORT_LIBS' in os.environ:
+                return
+
+            s = inspect.signature(self.function)
+
+            # Set c function types based on python type annotations
+            cfunc = getattr(cls._dll_handle, cname)
+
+            # Note: in python 3.10 we get NoneType for voids instead of None
+            # This confuses ctypes a lot, so we explicitly test for it
+            # We also add the ignore for the error that flake8 generates
+            cfunc.restype = s.return_annotation if s.return_annotation != type(None) else None  # noqa: E721
+
+            # Note: ignoring the 'self' argument
+            cfunc.argtypes = [p.annotation for i, p in enumerate(s.parameters.values()) if i > 0]
+
+            @wraps(self.function)
+            def final_func(*args):
                 return cfunc(*args)
 
             # replace class named method with c call

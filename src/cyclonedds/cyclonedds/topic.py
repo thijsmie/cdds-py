@@ -15,6 +15,7 @@ from typing import Any, AnyStr, TYPE_CHECKING
 
 from .internal import c_call, dds_c_t
 from .core import Entity, DDSException
+from .qos import _CQos
 
 # The TYPE_CHECKING variable will always evaluate to False, incurring no runtime costs
 # But the import here allows your static type checker to resolve fully qualified cyclonedds names
@@ -38,16 +39,19 @@ class Topic(Entity):
             qos: 'cyclonedds.core.Qos' = None,
             listener: 'cyclonedds.core.Listener' = None):
         self.data_type = data_type
+        cqos = _CQos.qos_to_cqos(qos) if qos else None
         super().__init__(
             ddspy_topic_create(
                 domain_participant._ref,
                 topic_name,
                 data_type,
-                qos._ref if qos else None,
+                cqos,
                 listener._ref if listener else None
             ),
             listener=listener
         )
+        if cqos:
+            _CQos.cqos_destroy(cqos)
 
     def get_name(self, max_size=256):
         name = (ct.c_char * max_size)()

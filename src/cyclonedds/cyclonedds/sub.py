@@ -14,6 +14,7 @@ from typing import Optional, Union, TYPE_CHECKING
 
 from .core import Entity, DDSException
 from .internal import c_call, dds_c_t
+from .qos import _CQos
 
 
 # The TYPE_CHECKING variable will always evaluate to False, incurring no runtime costs
@@ -32,14 +33,17 @@ class Subscriber(Entity):
             domain_participant: 'cyclonedds.domain.DomainParticipant',
             qos: Optional['cyclonedds.core.Qos'] = None,
             listener: Optional['cyclonedds.core.Listener'] = None):
+        cqos = _CQos.qos_to_cqos(qos) if qos else None
         super().__init__(
             self._create_subscriber(
                 domain_participant._ref,
-                qos._ref if qos else None,
+                cqos,
                 listener._ref if listener else None
             ),
             listener=listener
         )
+        if cqos:
+            _CQos.cqos_destroy(cqos)
 
     @c_call("dds_create_subscriber")
     def _create_subscriber(self, domain_participant: dds_c_t.entity, qos: dds_c_t.qos_p,
@@ -57,15 +61,18 @@ class DataReader(Entity):
             topic: 'cyclonedds.topic.Topic',
             qos: Optional['cyclonedds.core.Qos'] = None,
             listener: Optional['cyclonedds.core.Listener'] = None):
+        cqos = _CQos.qos_to_cqos(qos) if qos else None
         super().__init__(
             self._create_reader(
                 subscriber_or_participant._ref,
                 topic._ref,
-                qos._ref if qos else None,
+                cqos,
                 listener._ref if listener else None
             ),
             listener=listener
         )
+        if cqos:
+            _CQos.cqos_destroy(cqos)
 
     def read(self, N=1, condition=None):
         ret = ddspy_read(condition._ref if condition else self._ref, N)

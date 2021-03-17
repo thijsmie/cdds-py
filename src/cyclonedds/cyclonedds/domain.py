@@ -16,6 +16,7 @@ from typing import List, Optional, TYPE_CHECKING
 from .internal import c_call, dds_c_t
 from .core import Entity, DDSException
 from .topic import Topic
+from .qos import _CQos
 
 
 # The TYPE_CHECKING variable will always evaluate to False, incurring no runtime costs
@@ -64,8 +65,11 @@ class Domain(Entity):
 
 class DomainParticipant(Entity):
     def __init__(self, domain_id: int = 0, qos: 'cyclonedds.core.Qos' = None, listener: 'cyclonedds.core.Listener' = None):
-        super().__init__(self._create_participant(domain_id, qos._ref if qos else None, listener._ref if listener else None),
+        cqos = _CQos.qos_to_cqos(qos) if qos else None
+        super().__init__(self._create_participant(domain_id, cqos, listener._ref if listener else None),
                          listener=listener)
+        if cqos:
+            _CQos.cqos_destroy(cqos)
 
     def find_topic(self, name) -> Optional[Topic]:
         ret = self._find_topic(self._ref, name.encode("ASCII"))

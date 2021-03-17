@@ -19,6 +19,7 @@ from .core import Entity, DDSException, Qos
 from .topic import Topic
 from .sub import DataReader
 from .internal import c_call, dds_c_t
+from .qos import _CQos
 
 
 # The TYPE_CHECKING variable will always evaluate to False, incurring no runtime costs
@@ -75,7 +76,7 @@ class DcpsParticipant:
 
     @classmethod
     def from_struct(cls, struct: _builtintopic_participant):
-        return cls(key=struct.key.as_python_guid(), qos=Qos(_reference=struct.qos))
+        return cls(key=struct.key.as_python_guid(), qos=_CQos.cqos_to_qos(struct.qos))
 
 
 @dataclass
@@ -115,7 +116,7 @@ class DcpsEndpoint:
             participant_instance_handle=int(struct.participant_instance_handle),
             topic_name=bytes(struct.topic_name).decode('utf-8'),
             type_name=bytes(struct.type_name).decode('utf-8'),
-            qos=Qos(_reference=struct.qos))
+            qos=_CQos.cqos_to_qos(struct.qos))
 
 
 class BuiltinDataReader(DataReader):
@@ -135,15 +136,18 @@ class BuiltinDataReader(DataReader):
         self._samples = None
         self._pt_samples = None
         self._pt_void_samples = None
+        cqos = _CQos.qos_to_cqos(qos) if qos else None
         Entity.__init__(
             self,
             self._create_reader(
                 subscriber_or_participant._ref,
                 builtin_topic._ref,
-                qos._ref if qos else None,
+                cqos,
                 listener._ref if listener else None
             )
         )
+        if cqos:
+            _CQos.cqos_destroy(cqos)
 
     def _ensure_memory(self, N):
         if N <= self._N:
