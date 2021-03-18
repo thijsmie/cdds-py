@@ -16,7 +16,7 @@ from cyclonedds.topic import Topic
 from cyclonedds.sub import Subscriber, DataReader
 from cyclonedds.util import duration
 
-from vehicle import Vehicle
+from vehicles import Vehicle
 
 
 

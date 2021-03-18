@@ -476,7 +476,8 @@ class Qos:
         "Policy.TimeBasedFilter": Policy.TimeBasedFilter,
         "Policy.Partition": Policy.Partition,
         "Policy.TransportPriority": Policy.TransportPriority,
-        "Policy.DestinationOrder": Policy.DestinationOrder,
+        "Policy.DestinationOrder.ByReceptionTimestamp": Policy.DestinationOrder.ByReceptionTimestamp,
+        "Policy.DestinationOrder.BySourceTimestamp": Policy.DestinationOrder.BySourceTimestamp,
         "Policy.WriterDataLifecycle": Policy.WriterDataLifecycle,
         "Policy.ReaderDataLifecycle": Policy.ReaderDataLifecycle,
         "Policy.DurabilityService": Policy.DurabilityService,
@@ -575,18 +576,47 @@ class Qos:
     __str__ = __repr__
 
     def asdict(self):
-        return {p.__class__.__qualname__: asdict(p) for p in self.policies}
+        ret = {}
+        for p in self.policies:
+            path = p.__class__.__qualname__.split(".")
+            data = asdict(p)
+            if len(path) == 2:
+                ret[path[1]] = data
+            else:  # if len(path) == 3:
+                ret[path[1]] = {"kind": path[2]}
+                if data:
+                    ret[path[1]].update(data)
+        return ret
 
     @classmethod
     def fromdict(cls, data: dict):
         policies = []
         for k, v in data.items():
-            if k not in cls._policy_mapper:
-                raise ValueError(f"No such policy {k}")
-            if v:
-                policies.append(cls._policy_mapper[k](**v))
-            else:
-                policies.append(cls._policy_mapper[k])
+            # Special case
+            if k == "DurabilityService":
+                if not v["history"]:
+                    v["history"] = Policy.History.KeepAll
+                else:
+                    v["history"] = Policy.History.KeepLast(v["history"]["depth"])
+
+            name = f"Policy.{k}"
+            if name in cls._policy_mapper:
+                if v:
+                    policies.append(cls._policy_mapper[name](**v))
+                else:
+                    policies.append(cls._policy_mapper[name])
+                continue
+            if "kind" in v:
+                name += f".{v['kind']}"
+                del v["kind"]
+                if name in cls._policy_mapper:
+                    if v:
+                        policies.append(cls._policy_mapper[name](**v))
+                    else:
+                        policies.append(cls._policy_mapper[name])
+                    continue
+            raise ValueError("Not a valid Qos dictionary.")
+
         return cls(*policies)
 
 

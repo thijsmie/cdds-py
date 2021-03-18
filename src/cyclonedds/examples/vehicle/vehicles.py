@@ -11,10 +11,11 @@
 """
 
 from pycdr import cdr
+from pycdr.types import int64
 
 
 @cdr
 class Vehicle:
     name: str
-    x: int
-    y: int
+    x: int64
+    y: int64

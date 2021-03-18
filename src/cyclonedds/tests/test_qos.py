@@ -52,3 +52,8 @@ def to_c_and_back(qos):
 @pytest.mark.parametrize("qos", some_qosses)
 def test_qos_conversion(qos):
     assert qos == to_c_and_back(qos)
+
+
+@pytest.mark.parametrize("qos", some_qosses)
+def test_qos_conversion(qos):
+    assert qos == Qos.fromdict(qos.asdict())

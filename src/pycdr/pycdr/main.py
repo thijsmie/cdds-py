@@ -65,7 +65,7 @@ class CDR:
     def __init__(self, datatype, final=True, mutable=False, appendable=False, nested=False, autoid_hash=False, keylist=None):
         self.buffer = Buffer()
         self.datatype = datatype
-        self.typename = qualified_name(datatype)
+        self.typename = qualified_name(datatype, sep='::')
         self.final = final
         self.mutable = mutable
         self.appendable = appendable

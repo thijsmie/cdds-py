@@ -194,6 +194,7 @@ void ddspy_serdata_ensure_sample(ddspy_serdata_t* this)
 
     PyObject* result = PyObject_CallObject(sertype(this)->deserialize_attr, arglist);
     // We already have a ref to result.
+    // TODO: check for failure
 
     Py_DECREF(arglist);
     Py_DECREF(memory);
@@ -220,6 +221,7 @@ void ddspy_serdata_populate_hash(ddspy_serdata_t* this)
     PyGILState_STATE state = PyGILState_Ensure();
 
     PyObject* arglist = Py_BuildValue("(O)", this->sample);
+    // TODO: check for failure
     PyObject* result = PyObject_CallObject(sertype(this)->keyhash_calc_attr, arglist);
     Py_DECREF(arglist);
 

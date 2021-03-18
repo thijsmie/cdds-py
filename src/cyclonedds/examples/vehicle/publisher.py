@@ -7,14 +7,14 @@ from cyclonedds.pub import Publisher, DataWriter
 from cyclonedds.topic import Topic
 from cyclonedds.util import duration
 
-from vehicle import Vehicle
+from vehicles import Vehicle
 
 qos = Qos(
     Policy.Reliability.BestEffort(duration(seconds=1)),
     Policy.Deadline(duration(microseconds=10)),
-    Policy.Durability.Transient
+    Policy.Durability.Transient,
+    Policy.History.KeepLast(10)
 )
-qos += Policy.History.KeepLast(10)
 
 domain_participant = DomainParticipant(0)
 topic = Topic(domain_participant, 'Vehicle', Vehicle, qos=qos)
