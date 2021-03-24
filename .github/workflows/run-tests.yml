@@ -67,7 +67,7 @@ jobs:
       uses: actions/cache@v2
       with:
         path: cyclonedds
-        key: ${{ runner.os }}-v4-${{ hashFiles('cyclonedds/.git/refs/heads/master') }}
+        key: ${{ runner.os }}-v5-${{ hashFiles('cyclonedds/.git/refs/heads/master') }}
     
     - name: Install python 🐍
       uses: actions/setup-python@v2
