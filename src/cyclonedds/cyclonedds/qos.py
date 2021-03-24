@@ -1,5 +1,4 @@
 from dataclasses import dataclass, make_dataclass, asdict
-from enum import Enum
 from inspect import isclass
 from typing import Sequence, Union, ClassVar
 import ctypes as ct
@@ -54,7 +53,6 @@ class Policy:
             """
             __scope__: ClassVar[str] = "Reliability"
             max_blocking_time: int
-        
 
         @dataclass(frozen=True)
         class Reliable(BasePolicy):
@@ -69,7 +67,6 @@ class Policy:
             """
             __scope__: ClassVar[str] = "Reliability"
             max_blocking_time: int
-
 
     class Durability:
         """ The Durability Qos Policy
@@ -89,7 +86,6 @@ class Policy:
         Transient: 'Policy.Durability.Transient' = _policy_singleton("Durability", "Transient")
         Persistent: 'Policy.Durability.Persistent' = _policy_singleton("Durability", "Persistent")
 
-    
     class History:
         """ The History Qos Policy
 
@@ -119,7 +115,6 @@ class Policy:
             __scope__: ClassVar[str] = "History"
             depth: int
 
-
     @dataclass(frozen=True)
     class ResourceLimits(BasePolicy):
         """The ResourceLimits Qos Policy
@@ -145,7 +140,6 @@ class Policy:
         max_samples: int = -1
         max_instances: int = -1
         max_samples_per_instance: int = -1
-
 
     class PresentationAccessScope:
         """The Presentation Access Scope Qos Policy
@@ -174,7 +168,6 @@ class Policy:
             coherent_access: bool
             ordered_access: bool
 
-
         @dataclass(frozen=True)
         class Topic(BasePolicy):
             """Use Topic Presentation Access Scope
@@ -190,7 +183,6 @@ class Policy:
             coherent_access: bool
             ordered_access: bool
 
-
         @dataclass(frozen=True)
         class Group(BasePolicy):
             """Use Group Presentation Access Scope
@@ -205,7 +197,6 @@ class Policy:
             __scope__: ClassVar[str] = "PresentationAccessScope"
             coherent_access: bool
             ordered_access: bool
-
 
     @dataclass(frozen=True)
     class Lifespan(BasePolicy):
@@ -223,7 +214,6 @@ class Policy:
         __scope__: ClassVar[str] = "Lifespan"
         lifespan: int
 
-
     @dataclass(frozen=True)
     class Deadline(BasePolicy):
         """The Deadline Qos Policy
@@ -240,7 +230,6 @@ class Policy:
         __scope__: ClassVar[str] = "Deadline"
         deadline: int
 
-
     @dataclass(frozen=True)
     class LatencyBudget(BasePolicy):
         """The Latency Budget Qos Policy
@@ -256,7 +245,6 @@ class Policy:
         """
         __scope__: ClassVar[str] = "LatencyBudget"
         budget: int
-
 
     class Ownership:
         """The Ownership Qos Policy
@@ -277,7 +265,6 @@ class Policy:
         Shared: 'Policy.Ownership.Shared' = _policy_singleton("Ownership", "Shared")
         Exclusive: 'Policy.Ownership.Exclusive' = _policy_singleton("Ownership", "Exclusive")
 
-
     @dataclass(frozen=True)
     class OwnershipStrength(BasePolicy):
         """The Ownership Strength Qos Policy
@@ -293,7 +280,6 @@ class Policy:
         """
         __scope__: ClassVar[str] = "OwnershipStrength"
         strength: int
-
 
     class Liveliness:
         """The Liveliness Qos Policy
@@ -345,7 +331,6 @@ class Policy:
             """
             __scope__: ClassVar[str] = "Liveliness"
             lease_duration: int
-    
 
     @dataclass(frozen=True)
     class TimeBasedFilter(BasePolicy):
@@ -363,7 +348,6 @@ class Policy:
         """
         __scope__: ClassVar[str] = "TimeBasedFilter"
         filter_time: int
-
 
     @dataclass(frozen=True)
     class Partition(BasePolicy):
@@ -385,12 +369,10 @@ class Policy:
             # Tuple-fy partitions to ensure immutability
             super().__setattr__('partitions', tuple(getattr(self, 'partitions')))
     
-
     @dataclass(frozen=True)
     class TransportPriority(BasePolicy):
         __scope__: ClassVar[str] = "TransportPriority"
         priority: int
-
 
     class DestinationOrder:
         __scope__: ClassVar[str] = "DestinationOrder"
@@ -398,20 +380,17 @@ class Policy:
             _policy_singleton("DestinationOrder", "ByReceptionTimestamp")
         BySourceTimestamp: 'Policy.DestinationOrder.BySourceTimestamp' = \
             _policy_singleton("DestinationOrder", "BySourceTimestamp")
-    
 
     @dataclass(frozen=True)
     class WriterDataLifecycle(BasePolicy):
         __scope__: ClassVar[str] = "WriterDataLifecycle"
         autodispose: bool
 
-
     @dataclass(frozen=True)
     class ReaderDataLifecycle(BasePolicy):
         __scope__: ClassVar[str] = "ReaderDataLifecycle"
         autopurge_nowriter_samples_delay: int
         autopurge_disposed_samples_delay: int
-
 
     @dataclass(frozen=True)
     class DurabilityService(BasePolicy):
@@ -422,7 +401,6 @@ class Policy:
         max_instances: int
         max_samples_per_instance: int
 
-
     class IgnoreLocal:
         __init__ = _no_init
         __scope__ = "IgnoreLocal"
@@ -431,18 +409,15 @@ class Policy:
         Participant: 'Policy.IgnoreLocal.Participant' = _policy_singleton("IgnoreLocal", "Participant")
         Process: 'Policy.IgnoreLocal.Process' = _policy_singleton("IgnoreLocal", "Process")
 
-
     @dataclass(frozen=True)
     class Userdata(BasePolicy):
         __scope__: ClassVar[str] = "Userdata"
         data: bytes
 
-
     @dataclass(frozen=True)
     class Topicdata(BasePolicy):
         __scope__: ClassVar[str] = "Topicdata"
         data: bytes
-
 
     @dataclass(frozen=True)
     class Groupdata(BasePolicy):

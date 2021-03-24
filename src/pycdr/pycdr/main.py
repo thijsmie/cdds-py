@@ -33,7 +33,7 @@ def qualified_name(instance, sep="."):
 
 
 def make_keyholder(datatype, keylist):
-    fields = [(k,v) for k,v in get_type_hints(datatype, include_extras=True).items() if k in keylist]
+    fields = [(k, v) for k, v in get_type_hints(datatype, include_extras=True).items() if k in keylist]
     cls = make_dataclass(qualified_name(datatype) + "KeyHolder", fields)
     cls.cdr = CDR(cls)
     cls.serialize = proto_serialize
@@ -46,7 +46,7 @@ class CDR:
     deferred_references = defaultdict(list)
 
     def resolve(self, type_name, instance):
-        if '.' in qualified_name(self.datatype) and not '.' in type_name:
+        if '.' in qualified_name(self.datatype) and '.' not in type_name:
             # We got a local name, but we only deal in full paths
             type_name = module_prefix(self.datatype) + type_name
 

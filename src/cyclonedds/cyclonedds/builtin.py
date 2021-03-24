@@ -28,14 +28,14 @@ if TYPE_CHECKING:
     import cyclonedds
 
 
-class _builtintopic_participant(ct.Structure):
+class _BuiltinTopicParticipantStruct(ct.Structure):
     _fields_ = [
         ('key', dds_c_t.guid),
         ('qos', dds_c_t.qos_p)
     ]
 
 
-class _builtintopic_endpoint(ct.Structure):
+class _BuiltinTopicEndpointStruct(ct.Structure):
     _fields_ = [
         ('key', dds_c_t.guid),
         ('participant_key', dds_c_t.guid),
@@ -56,7 +56,6 @@ class BuiltinTopic(Topic):
         pass
 
 
-
 @dataclass
 class DcpsParticipant:
     """
@@ -70,12 +69,12 @@ class DcpsParticipant:
         Qos policies associated with the participant.
     """
 
-    struct_class: ClassVar[ct.Structure] = _builtintopic_participant
+    struct_class: ClassVar[ct.Structure] = _BuiltinTopicParticipantStruct
     key: uuid.UUID
     qos: Qos
 
     @classmethod
-    def from_struct(cls, struct: _builtintopic_participant):
+    def from_struct(cls, struct: _BuiltinTopicParticipantStruct):
         return cls(key=struct.key.as_python_guid(), qos=_CQos.cqos_to_qos(struct.qos))
 
 
@@ -100,7 +99,7 @@ class DcpsEndpoint:
     qos: Qos
         Qos policies associated with the endpoint.
     """
-    struct_class: ClassVar[ct.Structure] = _builtintopic_endpoint
+    struct_class: ClassVar[ct.Structure] = _BuiltinTopicEndpointStruct
     key: uuid.UUID
     participant_key: uuid.UUID
     participant_instance_handle: int
@@ -109,7 +108,7 @@ class DcpsEndpoint:
     qos: Qos
 
     @classmethod
-    def from_struct(cls, struct: _builtintopic_endpoint):
+    def from_struct(cls, struct: _BuiltinTopicEndpointStruct):
         return cls(
             key=struct.key.as_python_guid(),
             participant_key=struct.participant_key.as_python_guid(),
@@ -264,4 +263,3 @@ BuiltinTopicDcpsPublication = BuiltinTopic(_pseudo_handle + 3, DcpsEndpoint)
 
 BuiltinTopicDcpsSubscription = BuiltinTopic(_pseudo_handle + 4, DcpsEndpoint)
 """Built-in topic, is published to when a subscription happens."""
-

@@ -180,7 +180,7 @@ class SampleInfo:
     absolute_generation_rank: int
 
 
-class dds_c_t:
+class dds_c_t:  # noqa N801
     entity = ct.c_int32
     time = ct.c_int64
     duration = ct.c_int64
@@ -203,72 +203,72 @@ class dds_c_t:
     topic_descriptor_p = ct.c_void_p
     returnv = ct.c_int32
 
-    class inconsistent_topic_status(ct.Structure):
+    class inconsistent_topic_status(ct.Structure):  # noqa N801
         _fields_ = [('total_count', ct.c_uint32),
                     ('total_count_change', ct.c_int32)]
 
-    class liveliness_lost_status(ct.Structure):
+    class liveliness_lost_status(ct.Structure):  # noqa N801
         _fields_ = [('total_count', ct.c_uint32),
                     ('total_count_change', ct.c_int32)]
 
-    class liveliness_changed_status(ct.Structure):
+    class liveliness_changed_status(ct.Structure):  # noqa N801
         _fields_ = [('alive_count', ct.c_uint32),
                     ('not_alive_count', ct.c_uint32),
                     ('alive_count_change', ct.c_int32),
                     ('not_alive_count_change', ct.c_int32),
                     ('last_publication_handle', ct.c_int64)]
 
-    class offered_deadline_missed_status(ct.Structure):
+    class offered_deadline_missed_status(ct.Structure):  # noqa N801
         _fields_ = [('total_count', ct.c_uint32),
                     ('total_count_change', ct.c_int32),
                     ('last_instance_handle', ct.c_int64)]
 
-    class offered_incompatible_qos_status(ct.Structure):
+    class offered_incompatible_qos_status(ct.Structure):  # noqa N801
         _fields_ = [('total_count', ct.c_uint32),
                     ('total_count_change', ct.c_int32),
                     ('last_policy_id', ct.c_uint32)]
 
-    class sample_lost_status(ct.Structure):
+    class sample_lost_status(ct.Structure):  # noqa N801
         _fields_ = [('total_count', ct.c_uint32),
                     ('total_count_change', ct.c_int32)]
 
-    class sample_rejected_status(ct.Structure):
+    class sample_rejected_status(ct.Structure):  # noqa N801
         _fields_ = [('total_count', ct.c_uint32),
                     ('total_count_change', ct.c_int32),
                     ('last_reason', ct.c_int),
                     ('last_instance_handle', ct.c_int64)]
 
-    class requested_deadline_missed_status(ct.Structure):
+    class requested_deadline_missed_status(ct.Structure):  # noqa N801
         _fields_ = [('total_count', ct.c_uint32),
                     ('total_count_change', ct.c_int32),
                     ('last_instance_handle', ct.c_int64)]
 
-    class requested_incompatible_qos_status(ct.Structure):
+    class requested_incompatible_qos_status(ct.Structure):  # noqa N801
         _fields_ = [('total_count', ct.c_uint32),
                     ('total_count_change', ct.c_int32),
                     ('last_policy_id', ct.c_uint32)]
 
-    class publication_matched_status(ct.Structure):
+    class publication_matched_status(ct.Structure):  # noqa N801
         _fields_ = [('total_count', ct.c_uint32),
                     ('total_count_change', ct.c_int32),
                     ('current_count', ct.c_uint32),
                     ('current_count_change', ct.c_int32),
                     ('last_subscription_handle', ct.c_int64)]
 
-    class subscription_matched_status(ct.Structure):
+    class subscription_matched_status(ct.Structure):  # noqa N801
         _fields_ = [('total_count', ct.c_uint32),
                     ('total_count_change', ct.c_int32),
                     ('current_count', ct.c_uint32),
                     ('current_count_change', ct.c_int32),
                     ('last_publication_handle', ct.c_int64)]
 
-    class guid(ct.Structure):
+    class guid(ct.Structure):  # noqa N801
         _fields_ = [('v', ct.c_uint8 * 16)]
 
         def as_python_guid(self) -> uuid.UUID:
             return uuid.UUID(bytes=bytes(self.v))
 
-    class sample_info(ct.Structure):
+    class sample_info(ct.Structure):  # noqa N801
         _fields_ = [
             ('sample_state', ct.c_uint),
             ('view_state', ct.c_uint),

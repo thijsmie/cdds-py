@@ -47,6 +47,7 @@ primitive_types = {
     float: (8, 'd')
 }
 
+
 class ArrayHolder:
     def __init__(self, type, length):
         self.type = type
@@ -119,6 +120,7 @@ class DefaultGenerator:
             return TypeError("A default takes one arguments: the type.")
         return Annotated[Optional[tup], DefaultHolder(tup)]
 
+
 class IdlUnion:
     def __init__(self, **kwargs):
         self.discriminator = None
@@ -128,7 +130,7 @@ class IdlUnion:
             self.discriminator = kwargs['discriminator']
             self.value = kwargs.get('value')
         elif kwargs:
-            for k,v in kwargs.items():
+            for k, v in kwargs.items():
                 self.__setattr__(k, v)
                 break
 
@@ -207,6 +209,7 @@ bound_str = BoundStringGenerator()
 map = Dict
 optional = Optional  # TODO
 
+
 def union(discriminator):
     def wraps(cls):
         type_info = get_type_hints(cls, include_extras=True)
@@ -248,10 +251,9 @@ def union(discriminator):
                         field_set[field] = (d, holder.type)
             else:  # isinstance(ValidUnionHolder) guarantees this is a DefaultHolder
                 if default is not None:
-                    raise TypeError(f"A discriminated union can only have one default.")
+                    raise TypeError("A discriminated union can only have one default.")
                 default = (field, holder.type)
             
-
         class MyUnion(IdlUnion):
             __name__ = cls.__name__
             _discriminator = discriminator

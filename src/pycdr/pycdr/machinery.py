@@ -26,7 +26,7 @@ class Endianness(Enum):
     Big = auto()
 
     @staticmethod
-    def Native():
+    def native():
         return Endianness.Little if sys.byteorder == "little" else Endianness.Big
 
 
@@ -36,7 +36,7 @@ class Buffer:
         self._pos = 0
         self._size = len(self._bytes)
         self._endian = '='
-        self.endianness = Endianness.Native()
+        self.endianness = Endianness.native()
 
     def set_endianness(self, endianness):
         self.endianness = endianness
@@ -71,10 +71,10 @@ class Buffer:
         return self
 
     def write_bytes(self, bytes):
-        l = len(bytes)
-        self.ensure_size(l)
-        self._bytes[self._pos:self._pos+l] = bytes
-        self._pos += l
+        length = len(bytes)
+        self.ensure_size(length)
+        self._bytes[self._pos:self._pos+length] = bytes
+        self._pos += length
         return self
 
     def read_bytes(self, length):
@@ -300,8 +300,8 @@ class UnionMachine(Machine):
             else:
                 self.discriminator.serialize(buffer, union.discriminator)
                 self.labels_submachines[union.discriminator].serialize(buffer, union.value)
-        except:
-            raise Exception(f"Failed to encode union, {self.type}, value is {union.value}")
+        except Exception as e:
+            raise Exception(f"Failed to encode union, {self.type}, value is {union.value}") from e
 
     def deserialize(self, buffer):
         label = self.discriminator.deserialize(buffer)
@@ -381,8 +381,8 @@ class StructMachine(Machine):
         for member, machine in self.members_machines.items():
             try:
                 machine.serialize(buffer, getattr(value, member))
-            except:
-                raise Exception(f"Failed to encode member {member}, value is {getattr(value, member)}")
+            except Exception as e:
+                raise Exception(f"Failed to encode member {member}, value is {getattr(value, member)}") from e
 
     def deserialize(self, buffer):
         valuedict = {}
@@ -507,7 +507,7 @@ def build_machine(cdr, _type, top=False) -> Machine:
         return InstanceMachine(_type)
     elif isclass(_type) and is_dataclass(_type) and top:
         _fields = get_type_hints(_type, include_extras=True)
-        _members = { k: build_machine(cdr, v) for k,v in _fields.items()}
+        _members = {k: build_machine(cdr, v) for k, v in _fields.items()}
         return StructMachine(_type, _members)
 
     raise TypeError(f"{repr(_type)} is not valid in CDR classes because it cannot be encoded.")
