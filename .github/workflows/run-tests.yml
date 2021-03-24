@@ -8,6 +8,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - name: Checkout 🚨
+      uses: actions/checkout@v2
+
     - name: Checkout Cyclone 🚨
       uses: actions/checkout@v2
       with:
@@ -21,15 +24,7 @@ jobs:
       uses: actions/cache@v2
       with:
         path: cyclonedds
-        key: ${{ runner.os }}-v4-${{ hashFiles('cyclonedds/.git/refs/heads/master') }}
-
-    - name: Get Java and Maven ☕
-      if: steps.cyclone-cache.outputs.cache-hit != 'true'
-      uses: actions/setup-java@v1
-      with:
-        java-version: '9'
-        java-package: jdk
-        architecture: x64
+        key: ${{ runner.os }}-v5-${{ hashFiles('cyclonedds/.git/refs/heads/master') }}
 
     - name: Get latest CMake ⚡
       if: steps.cyclone-cache.outputs.cache-hit != 'true'
@@ -40,6 +35,13 @@ jobs:
       run: |
         mkdir cyclonedds/build cyclonedds/install && cd cyclonedds/build
         cmake .. -DCMAKE_INSTALL_PREFIX=../install
+        cmake --build . --target install
+
+    - name: Build idlc-py 🥧
+      if: steps.cyclone-cache.outputs.cache-hit != 'true'
+      run: |
+        mkdir build && cd build
+        cmake .. -DCMAKE_INSTALL_PREFIX=../cyclonedds/install -DCMAKE_PREFIX_PATH=../cyclonedds/install
         cmake --build . --target install
 
   test:
@@ -72,7 +74,7 @@ jobs:
       with:
         python-version: '${{ matrix.python }}'
 
-    - name: Update pip 🐍
+    - name: Packages with pip 🐶
       run: python -m pip install --upgrade pip
            pip install pytest pytest-cov flake8
 
@@ -105,7 +107,7 @@ jobs:
         CYCLONEDDS_HOME: ${{ github.workspace }}/cyclonedds/install
       run: pytest
 
-    - name: Collect test coverage 🧪
+    - name: Collect test coverage ⚗
       run: |
         coverage combine src/cyclonedds/.coverage src/pycdr/.coverage
         coverage xml
