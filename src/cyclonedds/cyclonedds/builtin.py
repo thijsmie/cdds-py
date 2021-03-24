@@ -18,7 +18,7 @@ from typing import Optional, Union, ClassVar, TYPE_CHECKING
 from .core import Entity, DDSException, Qos
 from .topic import Topic
 from .sub import DataReader
-from .internal import c_call, dds_c_t
+from .internal import c_call, dds_c_t, SampleInfo
 from .qos import _CQos
 
 
@@ -160,6 +160,22 @@ class BuiltinDataReader(DataReader):
             self._pt_samples[i] = ct.pointer(self._samples[i])
         self._pt_void_samples = ct.cast(self._pt_samples, ct.POINTER(ct.c_void_p))
 
+    def _convert_sampleinfo(sampleinfo: dds_c_t.sample_info):
+        return SampleInfo(
+            sampleinfo.sample_state,
+            sampleinfo.view_state,
+            sampleinfo.instance_state,
+            sampleinfo.valid_data,
+            sampleinfo.source_timestamp,
+            sampleinfo.instance_handle,
+            sampleinfo.publication_handle,
+            sampleinfo.disposed_generation_count,
+            sampleinfo.no_writer_generation_count,
+            sampleinfo.sample_rank,
+            sampleinfo.generation_rank,
+            sampleinfo.absolute_generation_rank
+        )
+
     def read(self, N: int = 1, condition=None):
         """Read a maximum of N samples, non-blocking. Optionally use a read/query-condition to select which samples
         you are interested in.
@@ -187,6 +203,9 @@ class BuiltinDataReader(DataReader):
             return []
 
         return_samples = [self._topic.data_type.from_struct(self._samples[i]) for i in range(min(ret, N))]
+
+        for i in range(min(ret, N)):
+            return_samples[i].sample_info = self._convert_sampleinfo(self._sampleinfos[i])
 
         return return_samples
 
@@ -216,6 +235,9 @@ class BuiltinDataReader(DataReader):
             return []
 
         return_samples = [self._topic.data_type.from_struct(self._samples[i]) for i in range(min(ret, N))]
+
+        for i in range(min(ret, N)):
+            return_samples[i].sample_info = self._convert_sampleinfo(self._sampleinfos[i])
 
         return return_samples
 

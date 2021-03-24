@@ -16,6 +16,7 @@ import inspect
 import platform
 import ctypes as ct
 from functools import wraps
+from dataclasses import dataclass
 
 
 def load_cyclonedds() -> ct.CDLL:
@@ -163,6 +164,22 @@ class DDS:
         self._ref = reference
 
 
+@dataclass
+class SampleInfo:
+    sample_state: int
+    view_state: int
+    instance_state: int
+    valid_data: bool
+    source_timestamp: int
+    instance_handle: int
+    publication_handle: int
+    disposed_generation_count: int
+    no_writers_generation_count: int
+    sample_rank: int
+    generation_rank: int
+    absolute_generation_rank: int
+
+
 class dds_c_t:
     entity = ct.c_int32
     time = ct.c_int64
@@ -259,9 +276,9 @@ class dds_c_t:
             ('valid_data', ct.c_bool),
             ('source_timestamp', ct.c_int64),
             ('instance_handle', ct.c_uint64),
-            ('pubblication_handle', ct.c_uint64),
+            ('publication_handle', ct.c_uint64),
             ('disposed_generation_count', ct.c_uint32),
-            ('no_writer_generation_count', ct.c_uint32),
+            ('no_writers_generation_count', ct.c_uint32),
             ('sample_rank', ct.c_uint32),
             ('generation_rank', ct.c_uint32),
             ('absolute_generation_rank', ct.c_uint32)

@@ -24,7 +24,10 @@ from .type_helper import Annotated, get_origin, get_args, get_type_hints
 class Endianness(Enum):
     Little = auto()
     Big = auto()
-    Native = Little if sys.byteorder == "little" else Big
+
+    @staticmethod
+    def Native():
+        return Endianness.Little if sys.byteorder == "little" else Endianness.Big
 
 
 class Buffer:
@@ -33,11 +36,11 @@ class Buffer:
         self._pos = 0
         self._size = len(self._bytes)
         self._endian = '='
-        self.endianness = Endianness.Native
+        self.endianness = Endianness.Native()
 
     def set_endianness(self, endianness):
-        endianness = endianness
-        if endianness == Endianness.Little:
+        self.endianness = endianness
+        if self.endianness == Endianness.Little:
             self._endian = "<"
         else:
             self._endian = ">"
@@ -507,5 +510,4 @@ def build_machine(cdr, _type, top=False) -> Machine:
         _members = { k: build_machine(cdr, v) for k,v in _fields.items()}
         return StructMachine(_type, _members)
 
-    print(get_origin(_type), get_args(_type))
-    raise TypeError(f"{_type} is not valid in CDR classes because it cannot be encoded.")
+    raise TypeError(f"{repr(_type)} is not valid in CDR classes because it cannot be encoded.")

@@ -34,4 +34,5 @@ dr = DataReader(sub, tp)
 
 
 dw.write(HelloWorld(data='Hello, World!'))
-print(dr.read()[0].data)
+sample = dr.read()[0]
+print(sample.data)

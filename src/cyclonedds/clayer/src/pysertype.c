@@ -192,12 +192,22 @@ void ddspy_serdata_ensure_sample(ddspy_serdata_t* this)
     PyObject* memory = PyMemoryView_FromMemory((char*) this->data, this->data_size, PyBUF_READ);
     PyObject* arglist = Py_BuildValue("(O)", memory);
 
+    if (arglist == NULL) {
+        Py_DECREF(memory);
+        return;
+    }
+
     PyObject* result = PyObject_CallObject(sertype(this)->deserialize_attr, arglist);
     // We already have a ref to result.
-    // TODO: check for failure
 
     Py_DECREF(arglist);
     Py_DECREF(memory);
+
+    if (PyErr_Occurred()) {
+        PyErr_PrintEx(1);
+        Py_XDECREF(result);
+        return;
+    }
 
     this->sample = result;
 
@@ -217,17 +227,22 @@ void ddspy_serdata_populate_hash(ddspy_serdata_t* this)
 
     ddspy_serdata_ensure_sample(this);
 
+    if (!this->sample) {
+        return;
+    }
+
     /// Make calls into python possible.
     PyGILState_STATE state = PyGILState_Ensure();
 
     PyObject* arglist = Py_BuildValue("(O)", this->sample);
-    // TODO: check for failure
     PyObject* result = PyObject_CallObject(sertype(this)->keyhash_calc_attr, arglist);
     Py_DECREF(arglist);
 
     if (result == NULL) {
         // Error condition: This is when python has set an error code, the keyhash is unfilled.
         // We won't set hash_populated, but we have to start the python interpreter back up
+        if (PyErr_Occurred())
+            PyErr_PrintEx(1);
         PyGILState_Release(state);
         assert(0);
         return;
@@ -376,7 +391,9 @@ ddsi_serdata_t *serdata_from_sample(
         case SDK_DATA:
         {
             PyObject* arglist = Py_BuildValue("(O)", container->sample);
+            // nullcheck
             PyObject* result = PyObject_CallObject(((const ddspy_sertype_t*) type)->serialize_attr, arglist);
+            // nullcheck
             Py_DECREF(arglist);
 
             if (result == NULL) {
@@ -466,7 +483,7 @@ bool serdata_to_sample(
     container->sample = cserdata(dcmn)->sample;
     py_take_ref(container->sample);
 
-    return false;
+    return true;
 }
 
 ddsi_serdata_t *serdata_to_typeless(const ddsi_serdata_t* dcmn)
@@ -847,6 +864,29 @@ ddspy_dispose(PyObject *self, PyObject *args)
     return PyLong_FromLong((long) sts);
 }
 
+static PyObject * sampleinfo_descriptor;
+
+static void set_sampleinfo_attribute(PyObject *sample, dds_sample_info_t *sampleinfo)
+{
+    PyObject* arguments = Py_BuildValue("IIIOLKKkkkkk",
+        sampleinfo->sample_state,
+        sampleinfo->view_state,
+        sampleinfo->instance_state,
+        sampleinfo->valid_data ? Py_True : Py_False,
+        sampleinfo->source_timestamp,
+        sampleinfo->instance_handle,
+        sampleinfo->publication_handle,
+        sampleinfo->disposed_generation_count, 
+        sampleinfo->no_writers_generation_count,
+        sampleinfo->sample_rank,
+        sampleinfo->generation_rank,
+        sampleinfo->absolute_generation_rank
+    );
+    PyObject *pysampleinfo = PyObject_CallObject(sampleinfo_descriptor, arguments);
+    Py_DECREF(arguments);
+    PyObject_SetAttrString(sample, "sample_info", pysampleinfo);
+    Py_DECREF(pysampleinfo);
+}
 
 static PyObject *
 ddspy_read(PyObject *self, PyObject *args)
@@ -879,6 +919,7 @@ ddspy_read(PyObject *self, PyObject *args)
     PyObject* list = PyList_New(sts);
 
     for(int i = 0; i < sts; ++i) {
+        set_sampleinfo_attribute(container[i].sample, &info[i]);
         PyList_SetItem(list, i, container[i].sample);
         py_return_ref(container[i].sample);
     }
@@ -921,6 +962,7 @@ ddspy_take(PyObject *self, PyObject *args)
     PyObject* list = PyList_New(sts);
 
     for(int i = 0; i < sts; ++i) {
+        set_sampleinfo_attribute(container[i].sample, &info[i]);
         PyList_SetItem(list, i, container[i].sample);
         py_return_ref(container[i].sample);
     }
@@ -976,5 +1018,7 @@ PyModuleDef ddspy_mod = {
 };
 
 PyMODINIT_FUNC PyInit_ddspy(void) {
+    PyObject* import = PyImport_ImportModule("cyclonedds.internal"); 
+    sampleinfo_descriptor = PyObject_GetAttrString(import, "SampleInfo");
 	return PyModule_Create(&ddspy_mod);
 }
