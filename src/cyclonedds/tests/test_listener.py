@@ -206,9 +206,9 @@ def test_on_sample_lost(manual_setup, hitpoint):
     t1 = timestamp.now()
     t2 = t1 + duration(seconds=1)
 
-    datawriter.write_ts(manual_setup.msg, t2)
+    datawriter.write(manual_setup.msg, timestamp=t2)
     datareader.take()
-    datawriter.write_ts(manual_setup.msg, t1)
+    datawriter.write(manual_setup.msg, timestamp=t1)
 
     assert hitpoint.was_hit()
 

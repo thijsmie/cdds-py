@@ -547,6 +547,28 @@ class Entity(DDS):
 
     domainid = property(get_domainid)
 
+    def begin_coherent(self) -> None:
+        """Begin coherent publishing or begin accessing a coherent set in a Subscriber.
+
+        This can only be invoked on Publishers, Subscribers, DataWriters and DataReaders.
+        Invoking on a DataWriter or DataReader behaves as if it was invoked on its parent
+        Publisher or Subscriber respectively.
+        """
+        ret = self._begin_coherent(self._ref)
+        if ret < 0:
+            raise DDSException(ret, f"Occurred when beginning coherent on {repr(self)}")
+
+    def end_coherent(self) -> None:
+        """End coherent publishing or end accessing a coherent set in a Subscriber.
+
+        This can only be invoked on Publishers, Subscribers, DataWriters and DataReaders.
+        Invoking on a DataWriter or DataReader behaves as if it was invoked on its parent
+        Publisher or Subscriber respectively.
+        """
+        ret = self._end_coherent(self._ref)
+        if ret < 0:
+            raise DDSException(ret, f"Occurred when ending coherent on {repr(self)}")
+
     @classmethod
     def get_entity(cls, entity_id) -> Optional['Entity']:
         return cls._entities.get(entity_id)
@@ -637,6 +659,14 @@ class Entity(DDS):
 
     @c_call("dds_get_domainid")
     def _get_domainid(self, entity: dds_c_t.entity, domainid: ct.POINTER(dds_c_t.domainid)) -> dds_c_t.returnv:
+        pass
+
+    @c_call("dds_begin_coherent")
+    def _begin_coherent(self, entity: dds_c_t.entity) -> dds_c_t.returnv:
+        pass
+
+    @c_call("dds_end_coherent")
+    def _end_coherent(self, entity: dds_c_t.entity) -> dds_c_t.returnv:
         pass
 
     def __repr__(self) -> str:

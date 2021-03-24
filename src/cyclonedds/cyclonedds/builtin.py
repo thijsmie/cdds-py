@@ -160,7 +160,7 @@ class BuiltinDataReader(DataReader):
             self._pt_samples[i] = ct.pointer(self._samples[i])
         self._pt_void_samples = ct.cast(self._pt_samples, ct.POINTER(ct.c_void_p))
 
-    def _convert_sampleinfo(sampleinfo: dds_c_t.sample_info):
+    def _convert_sampleinfo(self, sampleinfo: dds_c_t.sample_info):
         return SampleInfo(
             sampleinfo.sample_state,
             sampleinfo.view_state,
@@ -170,7 +170,7 @@ class BuiltinDataReader(DataReader):
             sampleinfo.instance_handle,
             sampleinfo.publication_handle,
             sampleinfo.disposed_generation_count,
-            sampleinfo.no_writer_generation_count,
+            sampleinfo.no_writers_generation_count,
             sampleinfo.sample_rank,
             sampleinfo.generation_rank,
             sampleinfo.absolute_generation_rank

@@ -23,8 +23,11 @@ if TYPE_CHECKING:
     import cyclonedds
     ddspy_read = lambda e, n: None
     ddspy_take = lambda e, n: None
+    ddspy_read_handle = lambda e, n, h: None
+    ddspy_take_handle = lambda e, n, h: None
+    ddspy_lookup_instance = lambda e, s: None
 else:
-    from ddspy import ddspy_read, ddspy_take
+    from ddspy import ddspy_read, ddspy_take, ddspy_read_handle, ddspy_take_handle, ddspy_lookup_instance
 
 
 class Subscriber(Entity):
@@ -45,9 +48,18 @@ class Subscriber(Entity):
         if cqos:
             _CQos.cqos_destroy(cqos)
 
+    def notify_readers(self):
+        ret = self._notify_readers(self._ref)
+        if ret < 0:
+            raise DDSException(ret, f"Occurred while reading data in {repr(self)}")
+
     @c_call("dds_create_subscriber")
     def _create_subscriber(self, domain_participant: dds_c_t.entity, qos: dds_c_t.qos_p,
                            listener: dds_c_t.listener_p) -> dds_c_t.entity:
+        pass
+
+    @c_call("dds_notify_readers")
+    def _notify_readers(self, subsriber: dds_c_t.entity) -> dds_c_t.returnv:
         pass
 
 
@@ -74,14 +86,22 @@ class DataReader(Entity):
         if cqos:
             _CQos.cqos_destroy(cqos)
 
-    def read(self, N=1, condition=None):
-        ret = ddspy_read(condition._ref if condition else self._ref, N)
+    def read(self, N=1, condition=None, instance_handle=None):
+        if instance_handle is not None:
+            ret = ddspy_read_handle(condition._ref if condition else self._ref, N, instance_handle)
+        else:
+            ret = ddspy_read(condition._ref if condition else self._ref, N)
+
         if type(ret) == int:
             raise DDSException(ret, f"Occurred while reading data in {repr(self)}")
         return ret
 
-    def take(self, N=1, condition=None):
-        ret = ddspy_take(condition._ref if condition else self._ref, N)
+    def take(self, N=1, condition=None, instance_handle=None):
+        if instance_handle is not None:
+            ret = ddspy_take_handle(condition._ref if condition else self._ref, N, instance_handle)
+        else:
+            ret = ddspy_take(condition._ref if condition else self._ref, N)
+
         if type(ret) == int:
             raise DDSException(ret, f"Occurred while taking data in {repr(self)}")
         return ret
@@ -94,6 +114,14 @@ class DataReader(Entity):
         elif ret == DDSException.DDS_RETCODE_TIMEOUT:
             return False
         raise DDSException(ret, f"Occured while waiting for historical data in {repr(self)}")
+
+    def lookup_instance(self, sample):
+        ret = ddspy_lookup_instance(self._ref, sample)
+        if ret < 0:
+            raise DDSException(ret, f"Occurred while lookup up instance from {repr(self)}")
+        if ret == 0:
+            return None
+        return ret
 
     @c_call("dds_create_reader")
     def _create_reader(self, subscriber: dds_c_t.entity, topic: dds_c_t.entity, qos: dds_c_t.qos_p,

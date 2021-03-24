@@ -24,8 +24,22 @@ if TYPE_CHECKING:
     ddspy_write = lambda e, s: None
     ddspy_write_ts = lambda e, s, t: None
     ddspy_dispose = lambda e, s: None
+    ddspy_dispose_ts = lambda e, s, t: None
+    ddspy_dispose_handle = lambda e, s: None
+    ddspy_dispose_handle_ts = lambda e, s, t: None
+    ddspy_writedispose = lambda e, s: None
+    ddspy_writedispose_ts = lambda e, s, t: None
+    ddspy_register_instance = lambda e, s: None
+    ddspy_unregister_instance = lambda e, s: None
+    ddspy_unregister_instance_handle = lambda e, s: None
+    ddspy_unregister_instance_ts = lambda e, s, t: None
+    ddspy_unregister_instance_handle_ts = lambda e, h, t: None
+    ddspy_lookup_instance = lambda e, s: None
 else:
-    from ddspy import ddspy_write, ddspy_write_ts, ddspy_dispose
+    from ddspy import ddspy_write, ddspy_write_ts, ddspy_dispose, ddspy_writedispose, ddspy_writedispose_ts, \
+        ddspy_dispose_handle, ddspy_dispose_handle_ts, ddspy_register_instance, ddspy_unregister_instance, \
+        ddspy_unregister_instance_handle, ddspy_unregister_instance_ts, ddspy_unregister_instance_handle_ts, \
+        ddspy_lookup_instance
 
 
 class Publisher(Entity):
@@ -99,15 +113,65 @@ class DataWriter(Entity):
         if cqos:
             _CQos.cqos_destroy(cqos)
 
-    def write(self, sample):
-        ret = ddspy_write(self._ref, sample)
+    def write(self, sample, timestamp=None):
+        if timestamp is not None:
+            ret = ddspy_write_ts(self._ref, sample, timestamp)
+        else:
+            ret = ddspy_write(self._ref, sample)
+
         if ret < 0:
             raise DDSException(ret, f"Occurred while writing sample in {repr(self)}")
 
-    def write_ts(self, sample, timestamp):
-        ret = ddspy_write_ts(self._ref, sample, timestamp)
+    def write_dispose(self, sample, timestamp=None):
+        if timestamp is not None:
+            ret = ddspy_writedispose_ts(self._ref, sample, timestamp)
+        else:
+            ret = ddspy_writedispose(self._ref, sample)
+
         if ret < 0:
-            raise DDSException(ret, f"Occurred while writing sample in {repr(self)}")
+            raise DDSException(ret, f"Occurred while writedisposing sample in {repr(self)}")
+
+    def dispose(self, sample, timestamp=None):
+        if timestamp is not None:
+            ret = ddspy_dispose_ts(self._ref, sample, timestamp)
+        else:
+            ret = ddspy_dispose(self._ref, sample)
+
+        if ret < 0:
+            raise DDSException(ret, f"Occurred while disposing in {repr(self)}")
+
+    def dispose_instance_handle(self, handle, timestamp=None):
+        if timestamp is not None:
+            ret = ddspy_dispose_handle_ts(self._ref, handle, timestamp)
+        else:
+            ret = ddspy_dispose_handle(self._ref, handle)
+
+        if ret < 0:
+            raise DDSException(ret, f"Occurred while disposing in {repr(self)}")
+
+    def register_instance(self, sample):
+        ret = ddspy_register_instance(self._ref, sample)
+        if ret < 0:
+            raise DDSException(ret, f"Occurred while registering instance in {repr(self)}")
+        return ret
+
+    def unregister_instance(self, sample, timestamp: int = None):
+        if timestamp is not None:
+            ret = ddspy_unregister_instance_ts(self._ref, sample, timestamp)
+        else:
+            ret = ddspy_unregister_instance(self._ref, sample)
+
+        if ret < 0:
+            raise DDSException(ret, f"Occurred while unregistering instance in {repr(self)}")
+
+    def unregister_instance_handle(self, handle, timestamp: int = None):
+        if timestamp is not None:
+            ret = ddspy_unregister_instance_handle_ts(self._ref, handle, timestamp)
+        else:
+            ret = ddspy_unregister_instance_handle(self._ref, handle)
+
+        if ret < 0:
+            raise DDSException(ret, f"Occurred while unregistering instance handle n {repr(self)}")
 
     def wait_for_acks(self, timeout: int):
         ret = self._wait_for_acks(self._ref, timeout)
@@ -117,12 +181,13 @@ class DataWriter(Entity):
             return False
         raise DDSException(ret, f"Occurred while waiting for acks from {repr(self)}")
 
-    def dispose(self, sample):
-        ret = ddspy_dispose(self._ref, sample)
+    def lookup_instance(self, sample):
+        ret = ddspy_lookup_instance(self._ref, sample)
         if ret < 0:
-            raise DDSException(ret, f"Occurred while disposing in {repr(self)}")
-
-    # TODO: register_instance, unregister_instance
+            raise DDSException(ret, f"Occurred while lookup up instance from {repr(self)}")
+        if ret == 0:
+            return None
+        return ret
 
     @c_call("dds_create_writer")
     def _create_writer(self, publisher: dds_c_t.entity, topic: dds_c_t.entity, qos: dds_c_t.qos_p,

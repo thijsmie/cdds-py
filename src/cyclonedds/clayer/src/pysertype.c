@@ -511,8 +511,6 @@ bool serdata_typeless_to_sample(
     (void)sample;
     (void)dcmn;
 
-    printf("Passing through typeless\n");
-
     return true;
 }
 
@@ -864,6 +862,84 @@ ddspy_dispose(PyObject *self, PyObject *args)
     return PyLong_FromLong((long) sts);
 }
 
+static PyObject *
+ddspy_dispose_ts(PyObject *self, PyObject *args)
+{
+    ddspy_sample_container_t container;
+    dds_entity_t writer;
+    dds_return_t sts;
+    dds_time_t time;
+
+    if (!PyArg_ParseTuple(args, "iOL", &writer, &container.sample, &time))
+        return NULL;
+
+    sts = dds_dispose_ts(writer, &container, time);
+
+    return PyLong_FromLong((long) sts);
+}
+
+static PyObject *
+ddspy_writedispose(PyObject *self, PyObject *args)
+{
+    ddspy_sample_container_t container;
+    dds_entity_t writer;
+    dds_return_t sts;
+
+    if (!PyArg_ParseTuple(args, "iO", &writer, &container.sample))
+        return NULL;
+
+    sts = dds_writedispose(writer, &container);
+
+    return PyLong_FromLong((long) sts);
+}
+
+static PyObject *
+ddspy_writedispose_ts(PyObject *self, PyObject *args)
+{
+    ddspy_sample_container_t container;
+    dds_entity_t writer;
+    dds_return_t sts;
+    dds_time_t time;
+
+    if (!PyArg_ParseTuple(args, "iOL", &writer, &container.sample, &time))
+        return NULL;
+
+    sts = dds_writedispose_ts(writer, &container, time);
+
+    return PyLong_FromLong((long) sts);
+}
+
+static PyObject *
+ddspy_dispose_handle(PyObject *self, PyObject *args)
+{
+    dds_entity_t writer;
+    dds_return_t sts;
+    dds_instance_handle_t handle;
+
+    if (!PyArg_ParseTuple(args, "iK", &writer, &handle))
+        return NULL;
+
+    sts = dds_dispose_ih(writer, handle);
+
+    return PyLong_FromLong((long) sts);
+}
+
+static PyObject *
+ddspy_dispose_handle_ts(PyObject *self, PyObject *args)
+{
+    dds_entity_t writer;
+    dds_return_t sts;
+    dds_instance_handle_t handle;
+    dds_time_t time;
+
+    if (!PyArg_ParseTuple(args, "iKL", &writer, &handle, &time))
+        return NULL;
+
+    sts = dds_dispose_ih_ts(writer, handle, time);
+
+    return PyLong_FromLong((long) sts);
+}
+
 static PyObject * sampleinfo_descriptor;
 
 static void set_sampleinfo_attribute(PyObject *sample, dds_sample_info_t *sampleinfo)
@@ -973,6 +1049,197 @@ ddspy_take(PyObject *self, PyObject *args)
     return list;
 }
 
+
+static PyObject *
+ddspy_read_handle(PyObject *self, PyObject *args)
+{
+    long long N;
+    dds_entity_t reader;
+    dds_return_t sts;
+    dds_instance_handle_t handle;
+
+    if (!PyArg_ParseTuple(args, "iLK", &reader, &N, &handle))
+        return NULL;
+
+    if (N <= 0) {
+        PyErr_SetString(PyExc_TypeError, "N should be a positive integer");
+        return NULL;
+    }
+
+    dds_sample_info_t* info = malloc(sizeof(dds_sample_info_t) * N);
+    ddspy_sample_container_t* container = malloc(sizeof(ddspy_sample_container_t) * N);
+    ddspy_sample_container_t** rcontainer = malloc(sizeof(ddspy_sample_container_t*) * N);
+
+    for(int i = 0; i < N; ++i) {
+        rcontainer[i] = &container[i];
+    }
+
+    sts = dds_read_instance(reader, rcontainer, info, N, N, handle);
+    if (sts < 0) {
+        return PyLong_FromLong((long) sts);
+    }
+
+    PyObject* list = PyList_New(sts);
+
+    for(int i = 0; i < sts; ++i) {
+        set_sampleinfo_attribute(container[i].sample, &info[i]);
+        PyList_SetItem(list, i, container[i].sample);
+        py_return_ref(container[i].sample);
+    }
+    free(info);
+    free(container);
+    free(rcontainer);
+
+    return list;
+}
+
+
+static PyObject *
+ddspy_take_handle(PyObject *self, PyObject *args)
+{
+    long long N;
+    dds_entity_t reader;
+    dds_return_t sts;
+    dds_instance_handle_t handle;
+
+    if (!PyArg_ParseTuple(args, "iLK", &reader, &N, &handle))
+        return NULL;
+
+    if (N <= 0) {
+        PyErr_SetString(PyExc_TypeError, "N should be a positive integer");
+        return NULL;
+    }
+
+    dds_sample_info_t* info = malloc(sizeof(dds_sample_info_t) * N);
+    ddspy_sample_container_t* container = malloc(sizeof(ddspy_sample_container_t) * N);
+    ddspy_sample_container_t** rcontainer = malloc(sizeof(ddspy_sample_container_t*) * N);
+
+    for(int i = 0; i < N; ++i) {
+        rcontainer[i] = &container[i];
+    }
+
+    sts = dds_take_instance(reader, rcontainer, info, N, N, handle);
+    if (sts < 0) {
+        return PyLong_FromLong((long) sts);
+    }
+
+    PyObject* list = PyList_New(sts);
+
+    for(int i = 0; i < sts; ++i) {
+        set_sampleinfo_attribute(container[i].sample, &info[i]);
+        PyList_SetItem(list, i, container[i].sample);
+        py_return_ref(container[i].sample);
+    }
+    free(info);
+    free(container);
+    free(rcontainer);
+
+    return list;
+}
+
+static PyObject *
+ddspy_register_instance(PyObject *self, PyObject *args)
+{
+    dds_entity_t writer;
+    dds_instance_handle_t handle;
+    dds_return_t sts;
+    ddspy_sample_container_t container;
+
+    if (!PyArg_ParseTuple(args, "iO", &writer, &container.sample))
+        return NULL;
+
+    sts = dds_register_instance(writer, &handle, &container);
+
+    if (sts < 0) {
+        return PyLong_FromLong((long) sts);
+    }
+    return PyLong_FromUnsignedLongLong((unsigned long long) handle);
+}
+
+
+static PyObject *
+ddspy_unregister_instance(PyObject *self, PyObject *args)
+{
+    dds_entity_t writer;
+    dds_return_t sts;
+    ddspy_sample_container_t container;
+
+    if (!PyArg_ParseTuple(args, "iO", &writer, &container.sample))
+        return NULL;
+
+    sts = dds_unregister_instance(writer, &container);
+
+    return PyLong_FromLong((long) sts);
+}
+
+
+static PyObject *
+ddspy_unregister_instance_handle(PyObject *self, PyObject *args)
+{
+    dds_entity_t writer;
+    dds_return_t sts;
+    dds_instance_handle_t handle;
+
+    if (!PyArg_ParseTuple(args, "iK", &writer, &handle))
+        return NULL;
+
+    sts = dds_unregister_instance_ih(writer, handle);
+
+    return PyLong_FromLong((long) sts);
+}
+
+
+static PyObject *
+ddspy_unregister_instance_ts(PyObject *self, PyObject *args)
+{
+    dds_entity_t writer;
+    dds_return_t sts;
+    ddspy_sample_container_t container;
+    dds_time_t time;
+
+    if (!PyArg_ParseTuple(args, "iOL", &writer, &container.sample, &time))
+        return NULL;
+
+    sts = dds_unregister_instance_ts(writer, &container, time);
+
+    return PyLong_FromLong((long) sts);
+}
+
+
+static PyObject *
+ddspy_unregister_instance_handle_ts(PyObject *self, PyObject *args)
+{
+    dds_entity_t writer;
+    dds_return_t sts;
+    dds_instance_handle_t handle;
+    dds_time_t time;
+
+    if (!PyArg_ParseTuple(args, "iKL", &writer, &handle, &time))
+        return NULL;
+
+    sts = dds_unregister_instance_ih_ts(writer, handle, time);
+
+    return PyLong_FromLong((long) sts);
+}
+
+
+static PyObject *
+ddspy_lookup_instance(PyObject *self, PyObject *args)
+{
+    dds_entity_t entity;
+    dds_return_t sts;
+    ddspy_sample_container_t container;
+
+    if (!PyArg_ParseTuple(args, "iO", &entity, &container.sample))
+        return NULL;
+
+    sts = dds_lookup_instance(entity, &container);
+
+    return PyLong_FromLong((long) sts);
+}
+
+
+
 char ddspy_docs[] = "DDSPY module";
 
 PyMethodDef ddspy_funcs[] = {
@@ -988,6 +1255,14 @@ PyMethodDef ddspy_funcs[] = {
 		(PyCFunction)ddspy_take,
 		METH_VARARGS,
 		ddspy_docs},
+    {	"ddspy_read_handle",
+		(PyCFunction)ddspy_read_handle,
+		METH_VARARGS,
+		ddspy_docs},
+    {	"ddspy_take_handle",
+		(PyCFunction)ddspy_take_handle,
+		METH_VARARGS,
+		ddspy_docs},
     {	"ddspy_write",
 		(PyCFunction)ddspy_write,
 		METH_VARARGS,
@@ -996,10 +1271,50 @@ PyMethodDef ddspy_funcs[] = {
 		(PyCFunction)ddspy_write_ts,
 		METH_VARARGS,
 		ddspy_docs},
+    {	"ddspy_writedispose",
+		(PyCFunction)ddspy_writedispose,
+		METH_VARARGS,
+		ddspy_docs},
+    {	"ddspy_writedispose_ts",
+		(PyCFunction)ddspy_writedispose_ts,
+		METH_VARARGS,
+		ddspy_docs},
     {	"ddspy_dispose",
 		(PyCFunction)ddspy_dispose,
 		METH_VARARGS,
 		ddspy_docs},
+    {	"ddspy_dispose_handle",
+		(PyCFunction)ddspy_dispose_handle,
+		METH_VARARGS,
+		ddspy_docs},
+    {	"ddspy_dispose_handle_ts",
+		(PyCFunction)ddspy_dispose_handle_ts,
+		METH_VARARGS,
+		ddspy_docs},
+    {	"ddspy_register_instance",
+		(PyCFunction)ddspy_register_instance,
+		METH_VARARGS,
+		ddspy_docs},
+    {	"ddspy_unregister_instance",
+		(PyCFunction)ddspy_unregister_instance,
+		METH_VARARGS,
+		ddspy_docs},
+    {	"ddspy_unregister_instance_handle",
+		(PyCFunction)ddspy_unregister_instance_handle,
+		METH_VARARGS,
+		ddspy_docs},
+    {	"ddspy_unregister_instance_ts",
+		(PyCFunction)ddspy_unregister_instance_ts,
+		METH_VARARGS,
+		ddspy_docs},
+    {	"ddspy_unregister_instance_handle_ts",
+		(PyCFunction)ddspy_unregister_instance_handle_ts,
+		METH_VARARGS,
+		ddspy_docs},
+    {   "ddspy_lookup_instance",
+        (PyCFunction)ddspy_lookup_instance,
+        METH_VARARGS,
+        ddspy_docs},
 	{	NULL}
 };
 
