@@ -23,6 +23,7 @@ jobs:
     - name: Sphinx build 📖
       uses: ammaraskar/sphinx-action@master
       with:
+        pre-build-command: "pip install --user sphinx_markdown_builder"
         build-command: "sphinx-build -b html source build"
         docs-folder: "docs/"
 
