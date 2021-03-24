@@ -41,7 +41,7 @@ jobs:
       if: steps.cyclone-cache.outputs.cache-hit != 'true'
       run: |
         mkdir build && cd build
-        cmake .. -DCMAKE_INSTALL_PREFIX=../cyclonedds/install -DCMAKE_PREFIX_PATH=../cyclonedds/install
+        cmake ../src/idlpy -DCMAKE_INSTALL_PREFIX=../cyclonedds/install -DCMAKE_PREFIX_PATH=../cyclonedds/install
         cmake --build . --target install
 
   test:
