@@ -22,6 +22,8 @@ jobs:
 
     - name: Sphinx build 📖
       uses: ammaraskar/sphinx-action@master
+      env: 
+        PYTHONPATH: "${{ github.workspace }}/src/cyclonedds:${{ github.workspace }}/src/pycdr"
       with:
         pre-build-command: "pip install --user sphinx_markdown_builder"
         build-command: "sphinx-build -b html source build"
