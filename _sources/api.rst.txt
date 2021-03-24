@@ -4,10 +4,11 @@ API
 .. toctree::
    :maxdepth: 4
 
-   cdds.core
-   cdds.domain
-   cdds.internal
-   cdds.pub
-   cdds.sub
-   cdds.topic
-   cdds.util
+   cyclonedds.core
+   cyclonedds.domain
+   cyclonedds.topic
+   cyclonedds.pub
+   cyclonedds.sub
+   cyclonedds.util
+   cyclonedds.builtin
+   cyclonedds.internal

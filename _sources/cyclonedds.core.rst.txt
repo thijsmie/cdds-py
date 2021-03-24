@@ -1,43 +1,47 @@
-cdds.core
-=========
+cyclonedds.core
+===============
 
-.. autoclass:: cdds.core.policy.Qos
+.. autoclass:: cyclonedds.core.Qos
    :members:
    :show-inheritance:
 
-.. autoclass:: cdds.core.policy.Policy
+.. autoclass:: cyclonedds.core.Policy
    :members:
 
-.. autoclass:: cdds.core.listener.Listener
+.. autoclass:: cyclonedds.core.Listener
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. autoclass:: cdds.core.guard_condition.GuardCondition
+.. autoclass:: cyclonedds.core.GuardCondition
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: cdds.core.status_conditions
+.. autoclass:: cyclonedds.core.ReadCondition
    :members:
    :show-inheritance:
 
-.. automodule:: cdds.core.waitset
+.. autoclass:: cyclonedds.core.QueryCondition
+   :members:
+   :show-inheritance:
+
+.. autoclass:: cyclonedds.core.WaitSet
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. autoclass:: cdds.core.entity.Entity
+.. autoclass:: cyclonedds.core.Entity
    :members:
    :show-inheritance:
    :exclude-members: subscriber, publisher, datareader, guid, status_mask, qos, listener, parent, participant, children, domainid
 
-.. autoclass:: cdds.core.exception.DDSException
+.. autoclass:: cyclonedds.core.DDSException
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. autoclass:: cdds.core.exception.DDSAPIException
+.. autoclass:: cyclonedds.core.DDSAPIException
    :members:
    :undoc-members:
    :show-inheritance:

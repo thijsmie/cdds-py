@@ -1,11 +1,11 @@
-Welcome to cdds's documentation!
-================================
+Welcome to cyclonedds's documentation!
+======================================
 
 .. toctree::
    :maxdepth: 4
    :caption: Contents:
 
-   cdds
+   cyclonedds
    pycdr
    dds
 
