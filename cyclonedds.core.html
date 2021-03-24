@@ -171,6 +171,1694 @@
             
   <div class="section" id="cyclonedds-core">
 <h1>cyclonedds.core<a class="headerlink" href="#cyclonedds-core" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="cyclonedds.core.Qos">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">cyclonedds.core.</span></code><code class="sig-name descname"><span class="pre">Qos</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">policies</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/qos.html#Qos"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Qos" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="cyclonedds.core.Policy">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">cyclonedds.core.</span></code><code class="sig-name descname"><span class="pre">Policy</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/qos.html#Policy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Policy" title="Permalink to this definition">¶</a></dt>
+<dd><p>The Policy class is fully static and should never need to be instantiated.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">qoshowto</span></code></dt><dd><p>How to work with Qos and Policy, TODO.</p>
+</dd>
+</dl>
+</div>
+<dl class="py class">
+<dt id="cyclonedds.core.Policy.Reliability">
+<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">Reliability</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/qos.html#Policy.Reliability"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Policy.Reliability" title="Permalink to this definition">¶</a></dt>
+<dd><p>The Reliability Qos Policy</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Policy</span><span class="o">.</span><span class="n">Reliability</span><span class="o">.</span><span class="n">BestEffort</span><span class="p">(</span><span class="n">max_blocking_time</span><span class="o">=</span><span class="n">duration</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Policy</span><span class="o">.</span><span class="n">Reliability</span><span class="o">.</span><span class="n">Reliable</span><span class="p">(</span><span class="n">max_blocking_time</span><span class="o">=</span><span class="n">duration</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+</pre></div>
+</div>
+<dl class="py class">
+<dt id="cyclonedds.core.Policy.Reliability.BestEffort">
+<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">BestEffort</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">max_blocking_time</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/qos.html#Policy.Reliability.BestEffort"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Policy.Reliability.BestEffort" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use BestEffort reliability</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>max_blocking_time</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – The number of nanoseconds the writer will bock when its history is full.
+Use the <code class="xref py py-func docutils literal notranslate"><span class="pre">duration</span></code> function to avoid time calculation headaches.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt id="cyclonedds.core.Policy.Reliability.Reliable">
+<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">Reliable</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">max_blocking_time</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/qos.html#Policy.Reliability.Reliable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Policy.Reliability.Reliable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use Reliable reliability</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>max_blocking_time</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – The number of nanoseconds the writer will bock when its history is full.
+Use the <code class="xref py py-func docutils literal notranslate"><span class="pre">duration</span></code> function to avoid time calculation headaches.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="cyclonedds.core.Policy.Durability">
+<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">Durability</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/qos.html#Policy.Durability"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Policy.Durability" title="Permalink to this definition">¶</a></dt>
+<dd><p>The Durability Qos Policy</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Policy</span><span class="o">.</span><span class="n">Durability</span><span class="o">.</span><span class="n">Volatile</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Policy</span><span class="o">.</span><span class="n">Durability</span><span class="o">.</span><span class="n">TransientLocal</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Policy</span><span class="o">.</span><span class="n">Durability</span><span class="o">.</span><span class="n">Transient</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Policy</span><span class="o">.</span><span class="n">Durability</span><span class="o">.</span><span class="n">Persistent</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py class">
+<dt id="cyclonedds.core.Policy.History">
+<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">History</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/qos.html#Policy.History"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Policy.History" title="Permalink to this definition">¶</a></dt>
+<dd><p>The History Qos Policy</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Policy</span><span class="o">.</span><span class="n">History</span><span class="o">.</span><span class="n">KeepAll</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Policy</span><span class="o">.</span><span class="n">History</span><span class="o">.</span><span class="n">KeepLast</span><span class="p">(</span><span class="n">amount</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py attribute">
+<dt id="cyclonedds.core.Policy.History.KeepAll">
+<code class="sig-name descname"><span class="pre">KeepAll</span></code><a class="headerlink" href="#cyclonedds.core.Policy.History.KeepAll" title="Permalink to this definition">¶</a></dt>
+<dd><p>The type of this entity is not publicly specified.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>Tuple[PolicyType, Any]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt id="cyclonedds.core.Policy.History.KeepLast">
+<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">KeepLast</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">depth</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/qos.html#Policy.History.KeepLast"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Policy.History.KeepLast" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>depth</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – The depth of samples to keep in the history.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="cyclonedds.core.Policy.ResourceLimits">
+<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">ResourceLimits</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">max_samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_instances</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_samples_per_instance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/qos.html#Policy.ResourceLimits"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Policy.ResourceLimits" title="Permalink to this definition">¶</a></dt>
+<dd><p>The ResourceLimits Qos Policy</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Policy</span><span class="o">.</span><span class="n">ResourceLimits</span><span class="p">(</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="n">max_samples</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="n">max_instances</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="n">max_samples_per_instance</span><span class="o">=</span><span class="mi">2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py attribute">
+<dt id="cyclonedds.core.Policy.ResourceLimits.max_samples">
+<code class="sig-name descname"><span class="pre">max_samples</span></code><a class="headerlink" href="#cyclonedds.core.Policy.ResourceLimits.max_samples" title="Permalink to this definition">¶</a></dt>
+<dd><p>Max number of samples total.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="cyclonedds.core.Policy.ResourceLimits.max_instances">
+<code class="sig-name descname"><span class="pre">max_instances</span></code><a class="headerlink" href="#cyclonedds.core.Policy.ResourceLimits.max_instances" title="Permalink to this definition">¶</a></dt>
+<dd><p>Max number of instances total.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="cyclonedds.core.Policy.ResourceLimits.max_samples_per_instance">
+<code class="sig-name descname"><span class="pre">max_samples_per_instance</span></code><a class="headerlink" href="#cyclonedds.core.Policy.ResourceLimits.max_samples_per_instance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Max number of samples per instance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="cyclonedds.core.Policy.PresentationAccessScope">
+<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">PresentationAccessScope</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/qos.html#Policy.PresentationAccessScope"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Policy.PresentationAccessScope" title="Permalink to this definition">¶</a></dt>
+<dd><p>The Presentation Access Scope Qos Policy</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Policy</span><span class="o">.</span><span class="n">PresentationAccessScope</span><span class="o">.</span><span class="n">Instance</span><span class="p">(</span><span class="n">coherent_access</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ordered_access</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Policy</span><span class="o">.</span><span class="n">PresentationAccessScope</span><span class="o">.</span><span class="n">Topic</span><span class="p">(</span><span class="n">coherent_access</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ordered_access</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Policy</span><span class="o">.</span><span class="n">PresentationAccessScope</span><span class="o">.</span><span class="n">Group</span><span class="p">(</span><span class="n">coherent_access</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ordered_access</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py class">
+<dt id="cyclonedds.core.Policy.PresentationAccessScope.Instance">
+<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">Instance</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">coherent_access</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ordered_access</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/qos.html#Policy.PresentationAccessScope.Instance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Policy.PresentationAccessScope.Instance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use Instance Presentation Access Scope</p>
+<dl class="py attribute">
+<dt id="cyclonedds.core.Policy.PresentationAccessScope.Instance.coherent_access">
+<code class="sig-name descname"><span class="pre">coherent_access</span></code><a class="headerlink" href="#cyclonedds.core.Policy.PresentationAccessScope.Instance.coherent_access" title="Permalink to this definition">¶</a></dt>
+<dd><p>Enable coherent access</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="cyclonedds.core.Policy.PresentationAccessScope.Instance.ordered_access">
+<code class="sig-name descname"><span class="pre">ordered_access</span></code><a class="headerlink" href="#cyclonedds.core.Policy.PresentationAccessScope.Instance.ordered_access" title="Permalink to this definition">¶</a></dt>
+<dd><p>Enable ordered access</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="cyclonedds.core.Policy.PresentationAccessScope.Topic">
+<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">Topic</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">coherent_access</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ordered_access</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/qos.html#Policy.PresentationAccessScope.Topic"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Policy.PresentationAccessScope.Topic" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use Topic Presentation Access Scope</p>
+<dl class="py attribute">
+<dt id="cyclonedds.core.Policy.PresentationAccessScope.Topic.coherent_access">
+<code class="sig-name descname"><span class="pre">coherent_access</span></code><a class="headerlink" href="#cyclonedds.core.Policy.PresentationAccessScope.Topic.coherent_access" title="Permalink to this definition">¶</a></dt>
+<dd><p>Enable coherent access</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="cyclonedds.core.Policy.PresentationAccessScope.Topic.ordered_access">
+<code class="sig-name descname"><span class="pre">ordered_access</span></code><a class="headerlink" href="#cyclonedds.core.Policy.PresentationAccessScope.Topic.ordered_access" title="Permalink to this definition">¶</a></dt>
+<dd><p>Enable ordered access</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="cyclonedds.core.Policy.PresentationAccessScope.Group">
+<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">Group</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">coherent_access</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ordered_access</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/qos.html#Policy.PresentationAccessScope.Group"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Policy.PresentationAccessScope.Group" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use Group Presentation Access Scope</p>
+<dl class="py attribute">
+<dt id="cyclonedds.core.Policy.PresentationAccessScope.Group.coherent_access">
+<code class="sig-name descname"><span class="pre">coherent_access</span></code><a class="headerlink" href="#cyclonedds.core.Policy.PresentationAccessScope.Group.coherent_access" title="Permalink to this definition">¶</a></dt>
+<dd><p>Enable coherent access</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="cyclonedds.core.Policy.PresentationAccessScope.Group.ordered_access">
+<code class="sig-name descname"><span class="pre">ordered_access</span></code><a class="headerlink" href="#cyclonedds.core.Policy.PresentationAccessScope.Group.ordered_access" title="Permalink to this definition">¶</a></dt>
+<dd><p>Enable ordered access</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="cyclonedds.core.Policy.Lifespan">
+<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">Lifespan</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lifespan</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/qos.html#Policy.Lifespan"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Policy.Lifespan" title="Permalink to this definition">¶</a></dt>
+<dd><p>The Lifespan Qos Policy</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Policy</span><span class="o">.</span><span class="n">Lifespan</span><span class="p">(</span><span class="n">duration</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
+</pre></div>
+</div>
+<dl class="py attribute">
+<dt id="cyclonedds.core.Policy.Lifespan.lifespan">
+<code class="sig-name descname"><span class="pre">lifespan</span></code><a class="headerlink" href="#cyclonedds.core.Policy.Lifespan.lifespan" title="Permalink to this definition">¶</a></dt>
+<dd><p>Expiration time relative to the source timestamp of a sample in nanoseconds.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="cyclonedds.core.Policy.Deadline">
+<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">Deadline</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">deadline</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/qos.html#Policy.Deadline"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Policy.Deadline" title="Permalink to this definition">¶</a></dt>
+<dd><p>The Deadline Qos Policy</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Policy</span><span class="o">.</span><span class="n">Deadline</span><span class="p">(</span><span class="n">deadline</span><span class="o">=</span><span class="n">duration</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
+</pre></div>
+</div>
+<dl class="py attribute">
+<dt id="cyclonedds.core.Policy.Deadline.deadline">
+<code class="sig-name descname"><span class="pre">deadline</span></code><a class="headerlink" href="#cyclonedds.core.Policy.Deadline.deadline" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deadline of a sample in nanoseconds.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="cyclonedds.core.Policy.LatencyBudget">
+<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">LatencyBudget</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">budget</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/qos.html#Policy.LatencyBudget"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Policy.LatencyBudget" title="Permalink to this definition">¶</a></dt>
+<dd><p>The Latency Budget Qos Policy</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Policy</span><span class="o">.</span><span class="n">LatencyBudget</span><span class="p">(</span><span class="n">duration</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>budget</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – Latency budget in nanoseconds.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt id="cyclonedds.core.Policy.Ownership">
+<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">Ownership</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/qos.html#Policy.Ownership"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Policy.Ownership" title="Permalink to this definition">¶</a></dt>
+<dd><p>The Ownership Qos Policy</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Policy</span><span class="o">.</span><span class="n">Ownership</span><span class="o">.</span><span class="n">Shared</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Policy</span><span class="o">.</span><span class="n">Ownership</span><span class="o">.</span><span class="n">Exclusive</span>
+</pre></div>
+</div>
+<dl class="py attribute">
+<dt id="cyclonedds.core.Policy.Ownership.Shared">
+<code class="sig-name descname"><span class="pre">Shared</span></code><a class="headerlink" href="#cyclonedds.core.Policy.Ownership.Shared" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>Policy.Ownership.Shared</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="cyclonedds.core.Policy.Ownership.Exclusive">
+<code class="sig-name descname"><span class="pre">Exclusive</span></code><a class="headerlink" href="#cyclonedds.core.Policy.Ownership.Exclusive" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>Policy.Ownership.Exclusive</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="cyclonedds.core.Policy.OwnershipStrength">
+<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">OwnershipStrength</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">strength</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/qos.html#Policy.OwnershipStrength"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Policy.OwnershipStrength" title="Permalink to this definition">¶</a></dt>
+<dd><p>The Ownership Strength Qos Policy</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Policy</span><span class="o">.</span><span class="n">OwnershipStrength</span><span class="p">(</span><span class="n">strength</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>strength</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – Ownership strength as integer.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt id="cyclonedds.core.Policy.Liveliness">
+<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">Liveliness</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/qos.html#Policy.Liveliness"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Policy.Liveliness" title="Permalink to this definition">¶</a></dt>
+<dd><p>The Liveliness Qos Policy</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Policy</span><span class="o">.</span><span class="n">Liveliness</span><span class="o">.</span><span class="n">Automatic</span><span class="p">(</span><span class="n">lease_duration</span><span class="o">=</span><span class="n">duration</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="mi">10</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Policy</span><span class="o">.</span><span class="n">Liveliness</span><span class="o">.</span><span class="n">ManualByParticipant</span><span class="p">(</span><span class="n">lease_duration</span><span class="o">=</span><span class="n">duration</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="mi">10</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Policy</span><span class="o">.</span><span class="n">Liveliness</span><span class="o">.</span><span class="n">ManualByTopic</span><span class="p">(</span><span class="n">lease_duration</span><span class="o">=</span><span class="n">duration</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="mi">10</span><span class="p">))</span>
+</pre></div>
+</div>
+<dl class="py class">
+<dt id="cyclonedds.core.Policy.Liveliness.Automatic">
+<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">Automatic</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lease_duration</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/qos.html#Policy.Liveliness.Automatic"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Policy.Liveliness.Automatic" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use Automatic Liveliness</p>
+<dl class="py attribute">
+<dt id="cyclonedds.core.Policy.Liveliness.Automatic.lease_duration">
+<code class="sig-name descname"><span class="pre">lease_duration</span></code><a class="headerlink" href="#cyclonedds.core.Policy.Liveliness.Automatic.lease_duration" title="Permalink to this definition">¶</a></dt>
+<dd><p>The lease duration in nanoseconds. Use the helper function <code class="xref py py-func docutils literal notranslate"><span class="pre">duration</span></code> to write
+the duration in a human readable format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="cyclonedds.core.Policy.Liveliness.ManualByParticipant">
+<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">ManualByParticipant</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lease_duration</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/qos.html#Policy.Liveliness.ManualByParticipant"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Policy.Liveliness.ManualByParticipant" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use ManualByParticipant Liveliness</p>
+<dl class="py attribute">
+<dt id="cyclonedds.core.Policy.Liveliness.ManualByParticipant.lease_duration">
+<code class="sig-name descname"><span class="pre">lease_duration</span></code><a class="headerlink" href="#cyclonedds.core.Policy.Liveliness.ManualByParticipant.lease_duration" title="Permalink to this definition">¶</a></dt>
+<dd><p>The lease duration in nanoseconds. Use the helper function <code class="xref py py-func docutils literal notranslate"><span class="pre">duration</span></code> to write
+the duration in a human readable format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="cyclonedds.core.Policy.Liveliness.ManualByTopic">
+<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">ManualByTopic</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lease_duration</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/qos.html#Policy.Liveliness.ManualByTopic"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Policy.Liveliness.ManualByTopic" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use ManualByTopic Liveliness</p>
+<dl class="py attribute">
+<dt id="cyclonedds.core.Policy.Liveliness.ManualByTopic.lease_duration">
+<code class="sig-name descname"><span class="pre">lease_duration</span></code><a class="headerlink" href="#cyclonedds.core.Policy.Liveliness.ManualByTopic.lease_duration" title="Permalink to this definition">¶</a></dt>
+<dd><p>The lease duration in nanoseconds. Use the helper function <code class="xref py py-func docutils literal notranslate"><span class="pre">duration</span></code> to write
+the duration in a human readable format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="cyclonedds.core.Policy.TimeBasedFilter">
+<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">TimeBasedFilter</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filter_time</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/qos.html#Policy.TimeBasedFilter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Policy.TimeBasedFilter" title="Permalink to this definition">¶</a></dt>
+<dd><p>The TimeBasedFilter Qos Policy</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Policy</span><span class="o">.</span><span class="n">TimeBasedFilter</span><span class="p">(</span><span class="n">filter_fn</span><span class="o">=</span><span class="n">duration</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
+</pre></div>
+</div>
+<dl class="py attribute">
+<dt id="cyclonedds.core.Policy.TimeBasedFilter.filter_time">
+<code class="sig-name descname"><span class="pre">filter_time</span></code><a class="headerlink" href="#cyclonedds.core.Policy.TimeBasedFilter.filter_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>Minimum time between samples in nanoseconds.  Use the helper function <code class="xref py py-func docutils literal notranslate"><span class="pre">duration</span></code>
+to write the duration in a human readable format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="cyclonedds.core.Policy.Partition">
+<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">Partition</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">partitions</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/qos.html#Policy.Partition"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Policy.Partition" title="Permalink to this definition">¶</a></dt>
+<dd><p>The Partition Qos Policy</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Policy</span><span class="o">.</span><span class="n">Partition</span><span class="p">(</span><span class="n">partitions</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;partition_a&quot;</span><span class="p">,</span> <span class="s2">&quot;partition_b&quot;</span><span class="p">,</span> <span class="s2">&quot;partition_c&quot;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Policy</span><span class="o">.</span><span class="n">Partition</span><span class="p">(</span><span class="n">partitions</span><span class="o">=</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;partition_</span><span class="si">{i}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">)])</span>
+</pre></div>
+</div>
+<dl class="py attribute">
+<dt id="cyclonedds.core.Policy.Partition.partitions">
+<code class="sig-name descname"><span class="pre">partitions</span></code><a class="headerlink" href="#cyclonedds.core.Policy.Partition.partitions" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>Sequence[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="cyclonedds.core.Policy.TransportPriority">
+<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">TransportPriority</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">priority</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/qos.html#Policy.TransportPriority"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Policy.TransportPriority" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt id="cyclonedds.core.Policy.WriterDataLifecycle">
+<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">WriterDataLifecycle</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">autodispose</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><span class="pre">bool</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/qos.html#Policy.WriterDataLifecycle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Policy.WriterDataLifecycle" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt id="cyclonedds.core.Policy.ReaderDataLifecycle">
+<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">ReaderDataLifecycle</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">autopurge_nowriter_samples_delay</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">autopurge_disposed_samples_delay</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/qos.html#Policy.ReaderDataLifecycle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Policy.ReaderDataLifecycle" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt id="cyclonedds.core.Policy.DurabilityService">
+<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">DurabilityService</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cleanup_delay</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">history</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union[ForwardRef(‘Policy.History.KeepAll’),</span> <span class="pre">ForwardRef(‘Policy.History.KeepLast’)]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_samples</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_instances</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_samples_per_instance</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/qos.html#Policy.DurabilityService"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Policy.DurabilityService" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt id="cyclonedds.core.Policy.Userdata">
+<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">Userdata</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.9)"><span class="pre">bytes</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/qos.html#Policy.Userdata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Policy.Userdata" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt id="cyclonedds.core.Policy.Topicdata">
+<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">Topicdata</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.9)"><span class="pre">bytes</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/qos.html#Policy.Topicdata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Policy.Topicdata" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt id="cyclonedds.core.Policy.Groupdata">
+<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">Groupdata</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.9)"><span class="pre">bytes</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/qos.html#Policy.Groupdata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Policy.Groupdata" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="cyclonedds.core.Listener">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">cyclonedds.core.</span></code><code class="sig-name descname"><span class="pre">Listener</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/core.html#Listener"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Listener" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="cyclonedds.internal.html#cyclonedds.internal.DDS" title="cyclonedds.internal.DDS"><code class="xref py py-class docutils literal notranslate"><span class="pre">cyclonedds.internal.DDS</span></code></a></p>
+<dl class="py method">
+<dt id="cyclonedds.core.Listener.reset">
+<code class="sig-name descname"><span class="pre">reset</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/core.html#Listener.reset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Listener.reset" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="cyclonedds.core.Listener.copy">
+<code class="sig-name descname"><span class="pre">copy</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/core.html#Listener.copy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Listener.copy" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#cyclonedds.core.Listener" title="cyclonedds.core.Listener">cyclonedds.core.Listener</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="cyclonedds.core.Listener.copy_to">
+<code class="sig-name descname"><span class="pre">copy_to</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">listener</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/core.html#Listener.copy_to"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Listener.copy_to" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>listener</strong> (<a class="reference internal" href="#cyclonedds.core.Listener" title="cyclonedds.core.Listener"><em>cyclonedds.core.Listener</em></a>) – </p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="cyclonedds.core.Listener.merge">
+<code class="sig-name descname"><span class="pre">merge</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">listener</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/core.html#Listener.merge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Listener.merge" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>listener</strong> (<a class="reference internal" href="#cyclonedds.core.Listener" title="cyclonedds.core.Listener"><em>cyclonedds.core.Listener</em></a>) – </p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="cyclonedds.core.Listener.on_inconsistent_topic">
+<code class="sig-name descname"><span class="pre">on_inconsistent_topic</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reader</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/core.html#Listener.on_inconsistent_topic"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Listener.on_inconsistent_topic" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>reader</strong> (<a class="reference internal" href="cyclonedds.sub.html#cyclonedds.sub.DataReader" title="cyclonedds.sub.DataReader"><em>cyclonedds.sub.DataReader</em></a>) – </p></li>
+<li><p><strong>status</strong> (<a class="reference internal" href="cyclonedds.internal.html#cyclonedds.internal.dds_c_t.inconsistent_topic_status" title="cyclonedds.internal.dds_c_t.inconsistent_topic_status"><em>cyclonedds.internal.dds_c_t.inconsistent_topic_status</em></a>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="cyclonedds.core.Listener.set_on_inconsistent_topic">
+<code class="sig-name descname"><span class="pre">set_on_inconsistent_topic</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">callable</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/core.html#Listener.set_on_inconsistent_topic"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Listener.set_on_inconsistent_topic" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>callable</strong> (<em>Callable</em><em>[</em><em>[</em><a class="reference internal" href="cyclonedds.sub.html#cyclonedds.sub.DataReader" title="cyclonedds.sub.DataReader"><em>cyclonedds.sub.DataReader</em></a><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><em>None</em></a><em>]</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="cyclonedds.core.Listener.on_data_available">
+<code class="sig-name descname"><span class="pre">on_data_available</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reader</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/core.html#Listener.on_data_available"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Listener.on_data_available" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>reader</strong> (<a class="reference internal" href="cyclonedds.sub.html#cyclonedds.sub.DataReader" title="cyclonedds.sub.DataReader"><em>cyclonedds.sub.DataReader</em></a>) – </p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="cyclonedds.core.Listener.set_on_data_available">
+<code class="sig-name descname"><span class="pre">set_on_data_available</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">callable</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/core.html#Listener.set_on_data_available"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Listener.set_on_data_available" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>callable</strong> (<em>Callable</em><em>[</em><em>[</em><a class="reference internal" href="cyclonedds.sub.html#cyclonedds.sub.DataReader" title="cyclonedds.sub.DataReader"><em>cyclonedds.sub.DataReader</em></a><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><em>None</em></a><em>]</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="cyclonedds.core.Listener.on_liveliness_lost">
+<code class="sig-name descname"><span class="pre">on_liveliness_lost</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">writer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/core.html#Listener.on_liveliness_lost"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Listener.on_liveliness_lost" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>writer</strong> (<a class="reference internal" href="cyclonedds.pub.html#cyclonedds.pub.DataWriter" title="cyclonedds.pub.DataWriter"><em>cyclonedds.pub.DataWriter</em></a>) – </p></li>
+<li><p><strong>status</strong> (<a class="reference internal" href="cyclonedds.internal.html#cyclonedds.internal.dds_c_t.liveliness_lost_status" title="cyclonedds.internal.dds_c_t.liveliness_lost_status"><em>cyclonedds.internal.dds_c_t.liveliness_lost_status</em></a>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="cyclonedds.core.Listener.set_on_liveliness_lost">
+<code class="sig-name descname"><span class="pre">set_on_liveliness_lost</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">callable</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/core.html#Listener.set_on_liveliness_lost"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Listener.set_on_liveliness_lost" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>callable</strong> (<em>Callable</em><em>[</em><em>[</em><a class="reference internal" href="cyclonedds.pub.html#cyclonedds.pub.DataWriter" title="cyclonedds.pub.DataWriter"><em>cyclonedds.pub.DataWriter</em></a><em>, </em><a class="reference internal" href="cyclonedds.internal.html#cyclonedds.internal.dds_c_t.liveliness_lost_status" title="cyclonedds.internal.dds_c_t.liveliness_lost_status"><em>cyclonedds.internal.dds_c_t.liveliness_lost_status</em></a><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><em>None</em></a><em>]</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="cyclonedds.core.Listener.on_liveliness_changed">
+<code class="sig-name descname"><span class="pre">on_liveliness_changed</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reader</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/core.html#Listener.on_liveliness_changed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Listener.on_liveliness_changed" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>reader</strong> (<em>cyclonedds.pub.DataReader</em>) – </p></li>
+<li><p><strong>status</strong> (<a class="reference internal" href="cyclonedds.internal.html#cyclonedds.internal.dds_c_t.liveliness_changed_status" title="cyclonedds.internal.dds_c_t.liveliness_changed_status"><em>cyclonedds.internal.dds_c_t.liveliness_changed_status</em></a>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="cyclonedds.core.Listener.set_on_liveliness_changed">
+<code class="sig-name descname"><span class="pre">set_on_liveliness_changed</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">callable</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/core.html#Listener.set_on_liveliness_changed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Listener.set_on_liveliness_changed" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>callable</strong> (<em>Callable</em><em>[</em><em>[</em><em>cyclonedds.pub.DataReader</em><em>, </em><a class="reference internal" href="cyclonedds.internal.html#cyclonedds.internal.dds_c_t.liveliness_changed_status" title="cyclonedds.internal.dds_c_t.liveliness_changed_status"><em>cyclonedds.internal.dds_c_t.liveliness_changed_status</em></a><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><em>None</em></a><em>]</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="cyclonedds.core.Listener.on_offered_deadline_missed">
+<code class="sig-name descname"><span class="pre">on_offered_deadline_missed</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">writer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/core.html#Listener.on_offered_deadline_missed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Listener.on_offered_deadline_missed" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>writer</strong> (<a class="reference internal" href="cyclonedds.pub.html#cyclonedds.pub.DataWriter" title="cyclonedds.pub.DataWriter"><em>cyclonedds.pub.DataWriter</em></a>) – </p></li>
+<li><p><strong>status</strong> (<a class="reference internal" href="cyclonedds.internal.html#cyclonedds.internal.dds_c_t.offered_deadline_missed_status" title="cyclonedds.internal.dds_c_t.offered_deadline_missed_status"><em>cyclonedds.internal.dds_c_t.offered_deadline_missed_status</em></a>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="cyclonedds.core.Listener.set_on_offered_deadline_missed">
+<code class="sig-name descname"><span class="pre">set_on_offered_deadline_missed</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">callable</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/core.html#Listener.set_on_offered_deadline_missed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Listener.set_on_offered_deadline_missed" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>callable</strong> (<em>Callable</em><em>[</em><em>[</em><a class="reference internal" href="cyclonedds.pub.html#cyclonedds.pub.DataWriter" title="cyclonedds.pub.DataWriter"><em>cyclonedds.pub.DataWriter</em></a><em>, </em><a class="reference internal" href="cyclonedds.internal.html#cyclonedds.internal.dds_c_t.offered_deadline_missed_status" title="cyclonedds.internal.dds_c_t.offered_deadline_missed_status"><em>cyclonedds.internal.dds_c_t.offered_deadline_missed_status</em></a><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><em>None</em></a><em>]</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="cyclonedds.core.Listener.on_offered_incompatible_qos">
+<code class="sig-name descname"><span class="pre">on_offered_incompatible_qos</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">writer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/core.html#Listener.on_offered_incompatible_qos"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Listener.on_offered_incompatible_qos" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>writer</strong> (<a class="reference internal" href="cyclonedds.pub.html#cyclonedds.pub.DataWriter" title="cyclonedds.pub.DataWriter"><em>cyclonedds.pub.DataWriter</em></a>) – </p></li>
+<li><p><strong>status</strong> (<a class="reference internal" href="cyclonedds.internal.html#cyclonedds.internal.dds_c_t.offered_incompatible_qos_status" title="cyclonedds.internal.dds_c_t.offered_incompatible_qos_status"><em>cyclonedds.internal.dds_c_t.offered_incompatible_qos_status</em></a>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="cyclonedds.core.Listener.set_on_offered_incompatible_qos">
+<code class="sig-name descname"><span class="pre">set_on_offered_incompatible_qos</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">callable</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/core.html#Listener.set_on_offered_incompatible_qos"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Listener.set_on_offered_incompatible_qos" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>callable</strong> (<em>Callable</em><em>[</em><em>[</em><a class="reference internal" href="cyclonedds.pub.html#cyclonedds.pub.DataWriter" title="cyclonedds.pub.DataWriter"><em>cyclonedds.pub.DataWriter</em></a><em>, </em><a class="reference internal" href="cyclonedds.internal.html#cyclonedds.internal.dds_c_t.offered_incompatible_qos_status" title="cyclonedds.internal.dds_c_t.offered_incompatible_qos_status"><em>cyclonedds.internal.dds_c_t.offered_incompatible_qos_status</em></a><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><em>None</em></a><em>]</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="cyclonedds.core.Listener.on_data_on_readers">
+<code class="sig-name descname"><span class="pre">on_data_on_readers</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subscriber</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/core.html#Listener.on_data_on_readers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Listener.on_data_on_readers" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>subscriber</strong> (<a class="reference internal" href="cyclonedds.sub.html#cyclonedds.sub.Subscriber" title="cyclonedds.sub.Subscriber"><em>cyclonedds.sub.Subscriber</em></a>) – </p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="cyclonedds.core.Listener.set_on_data_on_readers">
+<code class="sig-name descname"><span class="pre">set_on_data_on_readers</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">callable</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/core.html#Listener.set_on_data_on_readers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Listener.set_on_data_on_readers" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>callable</strong> (<em>Callable</em><em>[</em><em>[</em><a class="reference internal" href="cyclonedds.sub.html#cyclonedds.sub.Subscriber" title="cyclonedds.sub.Subscriber"><em>cyclonedds.sub.Subscriber</em></a><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><em>None</em></a><em>]</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="cyclonedds.core.Listener.on_sample_lost">
+<code class="sig-name descname"><span class="pre">on_sample_lost</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">writer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/core.html#Listener.on_sample_lost"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Listener.on_sample_lost" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>writer</strong> (<a class="reference internal" href="cyclonedds.pub.html#cyclonedds.pub.DataWriter" title="cyclonedds.pub.DataWriter"><em>cyclonedds.pub.DataWriter</em></a>) – </p></li>
+<li><p><strong>status</strong> (<a class="reference internal" href="cyclonedds.internal.html#cyclonedds.internal.dds_c_t.sample_lost_status" title="cyclonedds.internal.dds_c_t.sample_lost_status"><em>cyclonedds.internal.dds_c_t.sample_lost_status</em></a>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="cyclonedds.core.Listener.set_on_sample_lost">
+<code class="sig-name descname"><span class="pre">set_on_sample_lost</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">callable</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/core.html#Listener.set_on_sample_lost"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Listener.set_on_sample_lost" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>callable</strong> (<em>Callable</em><em>[</em><em>[</em><a class="reference internal" href="cyclonedds.pub.html#cyclonedds.pub.DataWriter" title="cyclonedds.pub.DataWriter"><em>cyclonedds.pub.DataWriter</em></a><em>, </em><a class="reference internal" href="cyclonedds.internal.html#cyclonedds.internal.dds_c_t.sample_lost_status" title="cyclonedds.internal.dds_c_t.sample_lost_status"><em>cyclonedds.internal.dds_c_t.sample_lost_status</em></a><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><em>None</em></a><em>]</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="cyclonedds.core.Listener.on_sample_rejected">
+<code class="sig-name descname"><span class="pre">on_sample_rejected</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reader</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/core.html#Listener.on_sample_rejected"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Listener.on_sample_rejected" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>reader</strong> (<a class="reference internal" href="cyclonedds.sub.html#cyclonedds.sub.DataReader" title="cyclonedds.sub.DataReader"><em>cyclonedds.sub.DataReader</em></a>) – </p></li>
+<li><p><strong>status</strong> (<a class="reference internal" href="cyclonedds.internal.html#cyclonedds.internal.dds_c_t.sample_rejected_status" title="cyclonedds.internal.dds_c_t.sample_rejected_status"><em>cyclonedds.internal.dds_c_t.sample_rejected_status</em></a>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="cyclonedds.core.Listener.set_on_sample_rejected">
+<code class="sig-name descname"><span class="pre">set_on_sample_rejected</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">callable</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/core.html#Listener.set_on_sample_rejected"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Listener.set_on_sample_rejected" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>callable</strong> (<em>Callable</em><em>[</em><em>[</em><a class="reference internal" href="cyclonedds.sub.html#cyclonedds.sub.DataReader" title="cyclonedds.sub.DataReader"><em>cyclonedds.sub.DataReader</em></a><em>, </em><a class="reference internal" href="cyclonedds.internal.html#cyclonedds.internal.dds_c_t.sample_rejected_status" title="cyclonedds.internal.dds_c_t.sample_rejected_status"><em>cyclonedds.internal.dds_c_t.sample_rejected_status</em></a><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><em>None</em></a><em>]</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="cyclonedds.core.Listener.on_requested_deadline_missed">
+<code class="sig-name descname"><span class="pre">on_requested_deadline_missed</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reader</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/core.html#Listener.on_requested_deadline_missed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Listener.on_requested_deadline_missed" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>reader</strong> (<a class="reference internal" href="cyclonedds.sub.html#cyclonedds.sub.DataReader" title="cyclonedds.sub.DataReader"><em>cyclonedds.sub.DataReader</em></a>) – </p></li>
+<li><p><strong>status</strong> (<a class="reference internal" href="cyclonedds.internal.html#cyclonedds.internal.dds_c_t.requested_deadline_missed_status" title="cyclonedds.internal.dds_c_t.requested_deadline_missed_status"><em>cyclonedds.internal.dds_c_t.requested_deadline_missed_status</em></a>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="cyclonedds.core.Listener.set_on_requested_deadline_missed">
+<code class="sig-name descname"><span class="pre">set_on_requested_deadline_missed</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">callable</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/core.html#Listener.set_on_requested_deadline_missed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Listener.set_on_requested_deadline_missed" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>callable</strong> (<em>Callable</em><em>[</em><em>[</em><a class="reference internal" href="cyclonedds.sub.html#cyclonedds.sub.DataReader" title="cyclonedds.sub.DataReader"><em>cyclonedds.sub.DataReader</em></a><em>, </em><a class="reference internal" href="cyclonedds.internal.html#cyclonedds.internal.dds_c_t.requested_deadline_missed_status" title="cyclonedds.internal.dds_c_t.requested_deadline_missed_status"><em>cyclonedds.internal.dds_c_t.requested_deadline_missed_status</em></a><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><em>None</em></a><em>]</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="cyclonedds.core.Listener.on_requested_incompatible_qos">
+<code class="sig-name descname"><span class="pre">on_requested_incompatible_qos</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reader</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/core.html#Listener.on_requested_incompatible_qos"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Listener.on_requested_incompatible_qos" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>reader</strong> (<a class="reference internal" href="cyclonedds.sub.html#cyclonedds.sub.DataReader" title="cyclonedds.sub.DataReader"><em>cyclonedds.sub.DataReader</em></a>) – </p></li>
+<li><p><strong>status</strong> (<a class="reference internal" href="cyclonedds.internal.html#cyclonedds.internal.dds_c_t.requested_incompatible_qos_status" title="cyclonedds.internal.dds_c_t.requested_incompatible_qos_status"><em>cyclonedds.internal.dds_c_t.requested_incompatible_qos_status</em></a>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="cyclonedds.core.Listener.set_on_requested_incompatible_qos">
+<code class="sig-name descname"><span class="pre">set_on_requested_incompatible_qos</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">callable</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/core.html#Listener.set_on_requested_incompatible_qos"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Listener.set_on_requested_incompatible_qos" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>callable</strong> (<em>Callable</em><em>[</em><em>[</em><a class="reference internal" href="cyclonedds.sub.html#cyclonedds.sub.DataReader" title="cyclonedds.sub.DataReader"><em>cyclonedds.sub.DataReader</em></a><em>, </em><a class="reference internal" href="cyclonedds.internal.html#cyclonedds.internal.dds_c_t.requested_incompatible_qos_status" title="cyclonedds.internal.dds_c_t.requested_incompatible_qos_status"><em>cyclonedds.internal.dds_c_t.requested_incompatible_qos_status</em></a><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><em>None</em></a><em>]</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="cyclonedds.core.Listener.on_publication_matched">
+<code class="sig-name descname"><span class="pre">on_publication_matched</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">writer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/core.html#Listener.on_publication_matched"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Listener.on_publication_matched" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>writer</strong> (<a class="reference internal" href="cyclonedds.pub.html#cyclonedds.pub.DataWriter" title="cyclonedds.pub.DataWriter"><em>cyclonedds.pub.DataWriter</em></a>) – </p></li>
+<li><p><strong>status</strong> (<a class="reference internal" href="cyclonedds.internal.html#cyclonedds.internal.dds_c_t.publication_matched_status" title="cyclonedds.internal.dds_c_t.publication_matched_status"><em>cyclonedds.internal.dds_c_t.publication_matched_status</em></a>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="cyclonedds.core.Listener.set_on_publication_matched">
+<code class="sig-name descname"><span class="pre">set_on_publication_matched</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">callable</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/core.html#Listener.set_on_publication_matched"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Listener.set_on_publication_matched" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>callable</strong> (<em>Callable</em><em>[</em><em>[</em><a class="reference internal" href="cyclonedds.pub.html#cyclonedds.pub.DataWriter" title="cyclonedds.pub.DataWriter"><em>cyclonedds.pub.DataWriter</em></a><em>, </em><a class="reference internal" href="cyclonedds.internal.html#cyclonedds.internal.dds_c_t.publication_matched_status" title="cyclonedds.internal.dds_c_t.publication_matched_status"><em>cyclonedds.internal.dds_c_t.publication_matched_status</em></a><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><em>None</em></a><em>]</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="cyclonedds.core.Listener.on_subscription_matched">
+<code class="sig-name descname"><span class="pre">on_subscription_matched</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reader</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/core.html#Listener.on_subscription_matched"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Listener.on_subscription_matched" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>reader</strong> (<a class="reference internal" href="cyclonedds.sub.html#cyclonedds.sub.DataReader" title="cyclonedds.sub.DataReader"><em>cyclonedds.sub.DataReader</em></a>) – </p></li>
+<li><p><strong>status</strong> (<a class="reference internal" href="cyclonedds.internal.html#cyclonedds.internal.dds_c_t.subscription_matched_status" title="cyclonedds.internal.dds_c_t.subscription_matched_status"><em>cyclonedds.internal.dds_c_t.subscription_matched_status</em></a>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="cyclonedds.core.Listener.set_on_subscription_matched">
+<code class="sig-name descname"><span class="pre">set_on_subscription_matched</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">callable</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/core.html#Listener.set_on_subscription_matched"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Listener.set_on_subscription_matched" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>callable</strong> (<em>Callable</em><em>[</em><em>[</em><a class="reference internal" href="cyclonedds.sub.html#cyclonedds.sub.DataReader" title="cyclonedds.sub.DataReader"><em>cyclonedds.sub.DataReader</em></a><em>, </em><a class="reference internal" href="cyclonedds.internal.html#cyclonedds.internal.dds_c_t.subscription_matched_status" title="cyclonedds.internal.dds_c_t.subscription_matched_status"><em>cyclonedds.internal.dds_c_t.subscription_matched_status</em></a><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><em>None</em></a><em>]</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="cyclonedds.core.GuardCondition">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">cyclonedds.core.</span></code><code class="sig-name descname"><span class="pre">GuardCondition</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">domain_participant</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/core.html#GuardCondition"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.GuardCondition" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#cyclonedds.core.Entity" title="cyclonedds.core.Entity"><code class="xref py py-class docutils literal notranslate"><span class="pre">cyclonedds.core.Entity</span></code></a></p>
+<p>A GuardCondition is a manually triggered condition that can be added to a <a class="reference internal" href="#cyclonedds.core.WaitSet" title="cyclonedds.core.WaitSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">WaitSet</span></code></a>.</p>
+<dl class="py method">
+<dt id="cyclonedds.core.GuardCondition.set">
+<code class="sig-name descname"><span class="pre">set</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">triggered</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/core.html#GuardCondition.set"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.GuardCondition.set" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the status of the GuardCondition to triggered or untriggered.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>triggered</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – Wether to trigger this condition.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><a class="reference internal" href="#cyclonedds.core.DDSException" title="cyclonedds.core.DDSException"><strong>DDSException</strong></a> – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="cyclonedds.core.GuardCondition.read">
+<code class="sig-name descname"><span class="pre">read</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/core.html#GuardCondition.read"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.GuardCondition.read" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read the status of the GuardCondition.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Wether this condition is triggered.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a></p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#cyclonedds.core.DDSException" title="cyclonedds.core.DDSException"><strong>DDSException</strong></a> – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="cyclonedds.core.GuardCondition.take">
+<code class="sig-name descname"><span class="pre">take</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/core.html#GuardCondition.take"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.GuardCondition.take" title="Permalink to this definition">¶</a></dt>
+<dd><p>Take the status of the GuardCondition. If it is True it will be False on the next call.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Whether this condition is triggered.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a></p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#cyclonedds.core.DDSException" title="cyclonedds.core.DDSException"><strong>DDSException</strong></a> – </p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="cyclonedds.core.ReadCondition">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">cyclonedds.core.</span></code><code class="sig-name descname"><span class="pre">ReadCondition</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reader</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/core.html#ReadCondition"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.ReadCondition" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">cyclonedds.core._Condition</span></code></p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="cyclonedds.core.QueryCondition">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">cyclonedds.core.</span></code><code class="sig-name descname"><span class="pre">QueryCondition</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reader</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/core.html#QueryCondition"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.QueryCondition" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">cyclonedds.core._Condition</span></code></p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="cyclonedds.core.WaitSet">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">cyclonedds.core.</span></code><code class="sig-name descname"><span class="pre">WaitSet</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">domain_participant</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/core.html#WaitSet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.WaitSet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#cyclonedds.core.Entity" title="cyclonedds.core.Entity"><code class="xref py py-class docutils literal notranslate"><span class="pre">cyclonedds.core.Entity</span></code></a></p>
+<p>A WaitSet is a way to provide synchronous access to events happening in the DDS system. You can attach almost any kind
+of entity to a WaitSet and then perform a blocking wait on the waitset. When one or more of the entities in the waitset
+trigger the wait is unblocked. What a ‘trigger’ is depends on the type of entity, you can find out more in
+<code class="docutils literal notranslate"><span class="pre">todo(DDS)</span> <span class="pre">triggers</span></code>.</p>
+<dl class="py method">
+<dt id="cyclonedds.core.WaitSet.attach">
+<code class="sig-name descname"><span class="pre">attach</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">entity</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/core.html#WaitSet.attach"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.WaitSet.attach" title="Permalink to this definition">¶</a></dt>
+<dd><p>Attach an entity to this WaitSet. This is a no-op if the entity was already attached.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>entity</strong> (<a class="reference internal" href="#cyclonedds.core.Entity" title="cyclonedds.core.Entity"><em>Entity</em></a>) – The entity you wish to attach.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><a class="reference internal" href="#cyclonedds.core.DDSException" title="cyclonedds.core.DDSException"><strong>DDSException</strong></a> – When you try to attach a non-triggerable entity.:</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="cyclonedds.core.WaitSet.detach">
+<code class="sig-name descname"><span class="pre">detach</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">entity</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/core.html#WaitSet.detach"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.WaitSet.detach" title="Permalink to this definition">¶</a></dt>
+<dd><p>Detach an entity from this WaitSet. If it was not attach this is a no-op.
+Note that this operation is not atomic, a trigger for the detached entity could still occurr right
+after detaching it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>entity</strong> (<a class="reference internal" href="#cyclonedds.core.Entity" title="cyclonedds.core.Entity"><em>Entity</em></a>) – The entity you wish to attach</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="cyclonedds.core.WaitSet.is_attached">
+<code class="sig-name descname"><span class="pre">is_attached</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">entity</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/core.html#WaitSet.is_attached"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.WaitSet.is_attached" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check whether an entity is attached.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>entity</strong> (<a class="reference internal" href="#cyclonedds.core.Entity" title="cyclonedds.core.Entity"><em>Entity</em></a>) – Check the attachment of this entity.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Whether this entity is attached</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="cyclonedds.core.WaitSet.get_entities">
+<code class="sig-name descname"><span class="pre">get_entities</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/core.html#WaitSet.get_entities"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.WaitSet.get_entities" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get all the attached entities</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The attached entities</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>List[<a class="reference internal" href="#cyclonedds.core.Entity" title="cyclonedds.core.Entity">Entity</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="cyclonedds.core.WaitSet.wait">
+<code class="sig-name descname"><span class="pre">wait</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timeout</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/core.html#WaitSet.wait"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.WaitSet.wait" title="Permalink to this definition">¶</a></dt>
+<dd><p>Block execution and wait for one of the entities in this waitset to trigger.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>timeout</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – The maximum number of nanoseconds to block. Use the function <code class="xref py py-func docutils literal notranslate"><span class="pre">duration</span></code>
+to write that in a human readable format.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The number of triggered entities. This will be 0 when a timeout occurred.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="cyclonedds.core.WaitSet.wait_until">
+<code class="sig-name descname"><span class="pre">wait_until</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">abstime</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/core.html#WaitSet.wait_until"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.WaitSet.wait_until" title="Permalink to this definition">¶</a></dt>
+<dd><p>Block execution and wait for one of the entities in this waitset to trigger.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>abstime</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – The absolute time in nanoseconds since the start of the program (TODO CONFIRM THIS)
+to block. Use the function <code class="xref py py-func docutils literal notranslate"><span class="pre">duration</span></code> to write that in
+a human readable format.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The number of triggered entities. This will be 0 when a timeout occurred.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="cyclonedds.core.WaitSet.set_trigger">
+<code class="sig-name descname"><span class="pre">set_trigger</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/core.html#WaitSet.set_trigger"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.WaitSet.set_trigger" title="Permalink to this definition">¶</a></dt>
+<dd><p>Manually trigger a WaitSet. It is unlikely you would need this.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>value</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – The trigger value.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="cyclonedds.core.Entity">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">cyclonedds.core.</span></code><code class="sig-name descname"><span class="pre">Entity</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ref</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">listener</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/core.html#Entity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Entity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="cyclonedds.internal.html#cyclonedds.internal.DDS" title="cyclonedds.internal.DDS"><code class="xref py py-class docutils literal notranslate"><span class="pre">cyclonedds.internal.DDS</span></code></a></p>
+<p>Base class for all entities in the DDS API. The lifetime of the underlying
+DDS API object is linked to the lifetime of the Python entity object.</p>
+<dl class="py attribute">
+<dt id="cyclonedds.core.Entity.subscriber">
+<code class="sig-name descname"><span class="pre">subscriber</span></code><a class="headerlink" href="#cyclonedds.core.Entity.subscriber" title="Permalink to this definition">¶</a></dt>
+<dd><p>If this entity is associated with a DataReader retrieve it.
+It is read-only. This is a proxy for get_subscriber().</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="cyclonedds.sub.html#cyclonedds.sub.Subscriber" title="cyclonedds.sub.Subscriber">Subscriber</a>, optional</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="cyclonedds.core.Entity.publisher">
+<code class="sig-name descname"><span class="pre">publisher</span></code><a class="headerlink" href="#cyclonedds.core.Entity.publisher" title="Permalink to this definition">¶</a></dt>
+<dd><p>If this entity is associated with a Publisher retrieve it.
+It is read-only. This is a proxy for get_publisher().</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="cyclonedds.pub.html#cyclonedds.pub.Publisher" title="cyclonedds.pub.Publisher">Publisher</a>, optional</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="cyclonedds.core.Entity.datareader">
+<code class="sig-name descname"><span class="pre">datareader</span></code><a class="headerlink" href="#cyclonedds.core.Entity.datareader" title="Permalink to this definition">¶</a></dt>
+<dd><p>If this entity is associated with a DataReader retrieve it.
+It is read-only. This is a proxy for get_datareader().</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="cyclonedds.sub.html#cyclonedds.sub.DataReader" title="cyclonedds.sub.DataReader">DataReader</a>, optional</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="cyclonedds.core.Entity.guid">
+<code class="sig-name descname"><span class="pre">guid</span></code><a class="headerlink" href="#cyclonedds.core.Entity.guid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the globally unique identifier for this entity.
+It is read-only. This is a proxy for get_guid().</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID" title="(in Python v3.9)">uuid.UUID</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="cyclonedds.core.Entity.status_mask">
+<code class="sig-name descname"><span class="pre">status_mask</span></code><a class="headerlink" href="#cyclonedds.core.Entity.status_mask" title="Permalink to this definition">¶</a></dt>
+<dd><p>The status mask for this entity. It is a set of bits formed
+from <code class="docutils literal notranslate"><span class="pre">DDSStatus</span></code>. This is a proxy for get/set_status_mask().</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="cyclonedds.core.Entity.parent">
+<code class="sig-name descname"><span class="pre">parent</span></code><a class="headerlink" href="#cyclonedds.core.Entity.parent" title="Permalink to this definition">¶</a></dt>
+<dd><p>The entity that is this entities parent. For example: the subscriber for a
+datareader, the participant for a topic.
+It is read-only. This is a proxy for get_parent().</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#cyclonedds.core.Entity" title="cyclonedds.core.Entity">Entity</a>, optional</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="cyclonedds.core.Entity.participant">
+<code class="sig-name descname"><span class="pre">participant</span></code><a class="headerlink" href="#cyclonedds.core.Entity.participant" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the participant for any entity, will only fail for a <code class="docutils literal notranslate"><span class="pre">Domain</span></code>.
+It is read-only. This is a proxy for get_participant().</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="cyclonedds.domain.html#cyclonedds.domain.DomainParticipant" title="cyclonedds.domain.DomainParticipant">DomainParticipant</a>, optional</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="cyclonedds.core.Entity.children">
+<code class="sig-name descname"><span class="pre">children</span></code><a class="headerlink" href="#cyclonedds.core.Entity.children" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a list of children belonging to this entity. It is the opposite as <code class="docutils literal notranslate"><span class="pre">parent</span></code>.
+It is read-only. This is a proxy for get_children().</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>List[<a class="reference internal" href="#cyclonedds.core.Entity" title="cyclonedds.core.Entity">Entity</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="cyclonedds.core.Entity.domainid">
+<code class="sig-name descname"><span class="pre">domainid</span></code><a class="headerlink" href="#cyclonedds.core.Entity.domainid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the id of the domain this entity belongs to.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="cyclonedds.core.Entity.get_subscriber">
+<code class="sig-name descname"><span class="pre">get_subscriber</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/core.html#Entity.get_subscriber"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Entity.get_subscriber" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve the subscriber associated with this entity.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Not all entities are associated with a subscriber, so this method may return None.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="cyclonedds.sub.html#cyclonedds.sub.Subscriber" title="cyclonedds.sub.Subscriber">Subscriber</a>, optional</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#cyclonedds.core.DDSException" title="cyclonedds.core.DDSException"><strong>DDSException</strong></a> – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="cyclonedds.core.Entity.get_publisher">
+<code class="sig-name descname"><span class="pre">get_publisher</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/core.html#Entity.get_publisher"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Entity.get_publisher" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve the publisher associated with this entity.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Not all entities are associated with a publisher, so this method may return None.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="cyclonedds.pub.html#cyclonedds.pub.Publisher" title="cyclonedds.pub.Publisher">Publisher</a>, optional</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#cyclonedds.core.DDSException" title="cyclonedds.core.DDSException"><strong>DDSException</strong></a> – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="cyclonedds.core.Entity.get_datareader">
+<code class="sig-name descname"><span class="pre">get_datareader</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/core.html#Entity.get_datareader"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Entity.get_datareader" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve the datareader associated with this entity.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Not all entities are associated with a datareader, so this method may return None.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="cyclonedds.sub.html#cyclonedds.sub.DataReader" title="cyclonedds.sub.DataReader">DataReader</a>, optional</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#cyclonedds.core.DDSException" title="cyclonedds.core.DDSException"><strong>DDSException</strong></a> – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="cyclonedds.core.Entity.get_instance_handle">
+<code class="sig-name descname"><span class="pre">get_instance_handle</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/core.html#Entity.get_instance_handle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Entity.get_instance_handle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve the instance associated with this entity.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>TODO: replace this with some mechanism for an Instance class</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#cyclonedds.core.DDSException" title="cyclonedds.core.DDSException"><strong>DDSException</strong></a> – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="cyclonedds.core.Entity.instance_handle">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">instance_handle</span></code><a class="headerlink" href="#cyclonedds.core.Entity.instance_handle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve the instance associated with this entity.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>TODO: replace this with some mechanism for an Instance class</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#cyclonedds.core.DDSException" title="cyclonedds.core.DDSException"><strong>DDSException</strong></a> – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="cyclonedds.core.Entity.get_guid">
+<code class="sig-name descname"><span class="pre">get_guid</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/core.html#Entity.get_guid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Entity.get_guid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a globally unique identifier for this entity.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>View the python documentation for this class for detailed usage.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID" title="(in Python v3.9)">uuid.UUID</a></p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#cyclonedds.core.DDSException" title="cyclonedds.core.DDSException"><strong>DDSException</strong></a> – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="cyclonedds.core.Entity.read_status">
+<code class="sig-name descname"><span class="pre">read_status</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mask</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/core.html#Entity.read_status"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Entity.read_status" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read the status bits set on this Entity. You can build a mask by using <code class="docutils literal notranslate"><span class="pre">cdds.core.DDSStatus</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>mask</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>optional</em>) – The <code class="docutils literal notranslate"><span class="pre">DDSStatus</span></code> mask. If not supplied the mask is used that was set on this Entity using set_status_mask.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The <cite>DDSStatus`</cite> bits that were set.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><a class="reference internal" href="#cyclonedds.core.DDSException" title="cyclonedds.core.DDSException"><strong>DDSException</strong></a> – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="cyclonedds.core.Entity.take_status">
+<code class="sig-name descname"><span class="pre">take_status</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mask</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/core.html#Entity.take_status"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Entity.take_status" title="Permalink to this definition">¶</a></dt>
+<dd><p>Take the status bits set on this Entity, after which they will be set to 0 again.
+You can build a mask by using <code class="docutils literal notranslate"><span class="pre">cdds.core.DDSStatus</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>mask</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>optional</em>) – The <code class="docutils literal notranslate"><span class="pre">DDSStatus</span></code> mask. If not supplied the mask is used that was set on this Entity using set_status_mask.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The <cite>DDSStatus`</cite> bits that were set.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><a class="reference internal" href="#cyclonedds.core.DDSException" title="cyclonedds.core.DDSException"><strong>DDSException</strong></a> – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="cyclonedds.core.Entity.get_status_changes">
+<code class="sig-name descname"><span class="pre">get_status_changes</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/core.html#Entity.get_status_changes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Entity.get_status_changes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get all status changes since the last read_status() or take_status().</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The <cite>DDSStatus`</cite> bits that were set.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#cyclonedds.core.DDSException" title="cyclonedds.core.DDSException"><strong>DDSException</strong></a> – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="cyclonedds.core.Entity.get_status_mask">
+<code class="sig-name descname"><span class="pre">get_status_mask</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/core.html#Entity.get_status_mask"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Entity.get_status_mask" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the status mask for this Entity.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The <cite>DDSStatus`</cite> bits that are enabled.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#cyclonedds.core.DDSException" title="cyclonedds.core.DDSException"><strong>DDSException</strong></a> – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="cyclonedds.core.Entity.set_status_mask">
+<code class="sig-name descname"><span class="pre">set_status_mask</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mask</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/core.html#Entity.set_status_mask"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Entity.set_status_mask" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Set the status mask for this Entity. By default the mask is 0. Only the status changes</dt><dd><p>for the bits in this mask are tracked on this entity.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>mask</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – The <code class="docutils literal notranslate"><span class="pre">DDSStatus</span></code> bits to track.</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><a class="reference internal" href="#cyclonedds.core.DDSException" title="cyclonedds.core.DDSException"><strong>DDSException</strong></a> – </p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="cyclonedds.core.Entity.get_qos">
+<code class="sig-name descname"><span class="pre">get_qos</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/core.html#Entity.get_qos"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Entity.get_qos" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the set of <code class="docutils literal notranslate"><span class="pre">Qos</span></code> policies associated with this entity. Note that the object returned is not
+the same python object that you used to set the <code class="docutils literal notranslate"><span class="pre">Qos</span></code> on this object. Modifications to the <code class="docutils literal notranslate"><span class="pre">Qos</span></code> object
+that is returned does _not_ modify the Qos of the Entity.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The Qos policies associated with this entity.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="#cyclonedds.core.Qos" title="cyclonedds.core.Qos">Qos</a></p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#cyclonedds.core.DDSException" title="cyclonedds.core.DDSException"><strong>DDSException</strong></a> – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="cyclonedds.core.Entity.set_qos">
+<code class="sig-name descname"><span class="pre">set_qos</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">qos</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/core.html#Entity.set_qos"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Entity.set_qos" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set <code class="docutils literal notranslate"><span class="pre">Qos</span></code> policies on this entity. Note, only a limited number of <code class="docutils literal notranslate"><span class="pre">Qos</span></code> policies can be set after
+the object is created (<code class="docutils literal notranslate"><span class="pre">Policy.LatencyBudget</span></code> and <code class="docutils literal notranslate"><span class="pre">Policy.OwnershipStrength</span></code>). Any policies not set
+explicitly in the supplied <code class="docutils literal notranslate"><span class="pre">Qos</span></code> remain.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>qos</strong> (<a class="reference internal" href="#cyclonedds.core.Qos" title="cyclonedds.core.Qos"><em>Qos</em></a>) – The <code class="docutils literal notranslate"><span class="pre">Qos</span></code> to apply to this entity.</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><a class="reference internal" href="#cyclonedds.core.DDSException" title="cyclonedds.core.DDSException"><strong>DDSException</strong></a> – If you pass an immutable policy or cause the total collection of qos policies to become inconsistent
+    an exception will be raised.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="cyclonedds.core.Entity.get_listener">
+<code class="sig-name descname"><span class="pre">get_listener</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/core.html#Entity.get_listener"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Entity.get_listener" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a listener with the right methods set. Modifying the returned listener object does not modify
+this entity, you will have to call set_listener() with the changed object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A listener with which you can add additional callbacks.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="#cyclonedds.core.Listener" title="cyclonedds.core.Listener">Listener</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="cyclonedds.core.Entity.set_listener">
+<code class="sig-name descname"><span class="pre">set_listener</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">listener</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/core.html#Entity.set_listener"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Entity.set_listener" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update the listener for this object. If a listener already exist for this object only the fields you explicitly
+have set on your new listener are overwritten.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>listener</strong> (<a class="reference internal" href="#cyclonedds.core.Listener" title="cyclonedds.core.Listener"><em>Listener</em></a>) – The listener object to use.</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><a class="reference internal" href="#cyclonedds.core.DDSException" title="cyclonedds.core.DDSException"><strong>DDSException</strong></a> – </p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="cyclonedds.core.Entity.get_parent">
+<code class="sig-name descname"><span class="pre">get_parent</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/core.html#Entity.get_parent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Entity.get_parent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the parent entity associated with this entity. A <code class="docutils literal notranslate"><span class="pre">Domain</span></code> object is the only object without parent,
+but if the domain is not created through the Python API this call won’t find it
+and return None from the DomainParticipant.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The parent of this entity. This would be the Subscriber for a DataReader, DomainParticipant for a Topic etc.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="#cyclonedds.core.Entity" title="cyclonedds.core.Entity">Entity</a>, optional</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#cyclonedds.core.DDSException" title="cyclonedds.core.DDSException"><strong>DDSException</strong></a> – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="cyclonedds.core.Entity.get_participant">
+<code class="sig-name descname"><span class="pre">get_participant</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/core.html#Entity.get_participant"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Entity.get_participant" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the domain participant for this entity. This should work on all valid Entity objects except a Domain.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Only fails for a Domain object.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="cyclonedds.domain.html#cyclonedds.domain.DomainParticipant" title="cyclonedds.domain.DomainParticipant">DomainParticipant</a>, optional</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#cyclonedds.core.DDSException" title="cyclonedds.core.DDSException"><strong>DDSException</strong></a> – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="cyclonedds.core.Entity.get_children">
+<code class="sig-name descname"><span class="pre">get_children</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/core.html#Entity.get_children"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Entity.get_children" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the list of children of this entity. For example, the list of datareaders belonging to a subscriber.
+Opposite of parent.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>All the entities considered children of this entity.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>List[<a class="reference internal" href="#cyclonedds.core.Entity" title="cyclonedds.core.Entity">Entity</a>]</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#cyclonedds.core.DDSException" title="cyclonedds.core.DDSException"><strong>DDSException</strong></a> – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="cyclonedds.core.Entity.get_domainid">
+<code class="sig-name descname"><span class="pre">get_domainid</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/core.html#Entity.get_domainid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Entity.get_domainid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the id of the domain this entity resides in.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The domain id.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#cyclonedds.core.DDSException" title="cyclonedds.core.DDSException"><strong>DDSException</strong></a> – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="cyclonedds.core.Entity.begin_coherent">
+<code class="sig-name descname"><span class="pre">begin_coherent</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/core.html#Entity.begin_coherent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Entity.begin_coherent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Begin coherent publishing or begin accessing a coherent set in a Subscriber.</p>
+<p>This can only be invoked on Publishers, Subscribers, DataWriters and DataReaders.
+Invoking on a DataWriter or DataReader behaves as if it was invoked on its parent
+Publisher or Subscriber respectively.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="cyclonedds.core.Entity.end_coherent">
+<code class="sig-name descname"><span class="pre">end_coherent</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/core.html#Entity.end_coherent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Entity.end_coherent" title="Permalink to this definition">¶</a></dt>
+<dd><p>End coherent publishing or end accessing a coherent set in a Subscriber.</p>
+<p>This can only be invoked on Publishers, Subscribers, DataWriters and DataReaders.
+Invoking on a DataWriter or DataReader behaves as if it was invoked on its parent
+Publisher or Subscriber respectively.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="cyclonedds.core.DDSException">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">cyclonedds.core.</span></code><code class="sig-name descname"><span class="pre">DDSException</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">code</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">msg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/core.html#DDSException"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.DDSException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></a></p>
+<p>This exception is thrown when a return code from the underlying C api indicates non-valid use of the API.
+Print the exception directly or convert it to string for a detailed description.</p>
+<dl class="py attribute">
+<dt id="cyclonedds.core.DDSException.code">
+<code class="sig-name descname"><span class="pre">code</span></code><a class="headerlink" href="#cyclonedds.core.DDSException.code" title="Permalink to this definition">¶</a></dt>
+<dd><p>One of the <code class="docutils literal notranslate"><span class="pre">DDS_RETCODE_</span></code> constants that indicates the type of error.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="cyclonedds.core.DDSException.msg">
+<code class="sig-name descname"><span class="pre">msg</span></code><a class="headerlink" href="#cyclonedds.core.DDSException.msg" title="Permalink to this definition">¶</a></dt>
+<dd><p>A human readable description of where the error occurred</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="cyclonedds.core.DDSException.DDS_RETCODE_OK">
+<code class="sig-name descname"><span class="pre">DDS_RETCODE_OK</span></code><em class="property"> <span class="pre">=</span> <span class="pre">0</span></em><a class="headerlink" href="#cyclonedds.core.DDSException.DDS_RETCODE_OK" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="cyclonedds.core.DDSException.DDS_RETCODE_ERROR">
+<code class="sig-name descname"><span class="pre">DDS_RETCODE_ERROR</span></code><em class="property"> <span class="pre">=</span> <span class="pre">-1</span></em><a class="headerlink" href="#cyclonedds.core.DDSException.DDS_RETCODE_ERROR" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="cyclonedds.core.DDSException.DDS_RETCODE_UNSUPPORTED">
+<code class="sig-name descname"><span class="pre">DDS_RETCODE_UNSUPPORTED</span></code><em class="property"> <span class="pre">=</span> <span class="pre">-2</span></em><a class="headerlink" href="#cyclonedds.core.DDSException.DDS_RETCODE_UNSUPPORTED" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="cyclonedds.core.DDSException.DDS_RETCODE_BAD_PARAMETER">
+<code class="sig-name descname"><span class="pre">DDS_RETCODE_BAD_PARAMETER</span></code><em class="property"> <span class="pre">=</span> <span class="pre">-3</span></em><a class="headerlink" href="#cyclonedds.core.DDSException.DDS_RETCODE_BAD_PARAMETER" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="cyclonedds.core.DDSException.DDS_RETCODE_PRECONDITION_NOT_MET">
+<code class="sig-name descname"><span class="pre">DDS_RETCODE_PRECONDITION_NOT_MET</span></code><em class="property"> <span class="pre">=</span> <span class="pre">-4</span></em><a class="headerlink" href="#cyclonedds.core.DDSException.DDS_RETCODE_PRECONDITION_NOT_MET" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="cyclonedds.core.DDSException.DDS_RETCODE_OUT_OF_RESOURCES">
+<code class="sig-name descname"><span class="pre">DDS_RETCODE_OUT_OF_RESOURCES</span></code><em class="property"> <span class="pre">=</span> <span class="pre">-5</span></em><a class="headerlink" href="#cyclonedds.core.DDSException.DDS_RETCODE_OUT_OF_RESOURCES" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="cyclonedds.core.DDSException.DDS_RETCODE_NOT_ENABLED">
+<code class="sig-name descname"><span class="pre">DDS_RETCODE_NOT_ENABLED</span></code><em class="property"> <span class="pre">=</span> <span class="pre">-6</span></em><a class="headerlink" href="#cyclonedds.core.DDSException.DDS_RETCODE_NOT_ENABLED" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="cyclonedds.core.DDSException.DDS_RETCODE_IMMUTABLE_POLICY">
+<code class="sig-name descname"><span class="pre">DDS_RETCODE_IMMUTABLE_POLICY</span></code><em class="property"> <span class="pre">=</span> <span class="pre">-7</span></em><a class="headerlink" href="#cyclonedds.core.DDSException.DDS_RETCODE_IMMUTABLE_POLICY" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="cyclonedds.core.DDSException.DDS_RETCODE_INCONSISTENT_POLICY">
+<code class="sig-name descname"><span class="pre">DDS_RETCODE_INCONSISTENT_POLICY</span></code><em class="property"> <span class="pre">=</span> <span class="pre">-8</span></em><a class="headerlink" href="#cyclonedds.core.DDSException.DDS_RETCODE_INCONSISTENT_POLICY" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="cyclonedds.core.DDSException.DDS_RETCODE_ALREADY_DELETED">
+<code class="sig-name descname"><span class="pre">DDS_RETCODE_ALREADY_DELETED</span></code><em class="property"> <span class="pre">=</span> <span class="pre">-9</span></em><a class="headerlink" href="#cyclonedds.core.DDSException.DDS_RETCODE_ALREADY_DELETED" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="cyclonedds.core.DDSException.DDS_RETCODE_TIMEOUT">
+<code class="sig-name descname"><span class="pre">DDS_RETCODE_TIMEOUT</span></code><em class="property"> <span class="pre">=</span> <span class="pre">-10</span></em><a class="headerlink" href="#cyclonedds.core.DDSException.DDS_RETCODE_TIMEOUT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="cyclonedds.core.DDSException.DDS_RETCODE_NO_DATA">
+<code class="sig-name descname"><span class="pre">DDS_RETCODE_NO_DATA</span></code><em class="property"> <span class="pre">=</span> <span class="pre">-11</span></em><a class="headerlink" href="#cyclonedds.core.DDSException.DDS_RETCODE_NO_DATA" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="cyclonedds.core.DDSException.DDS_RETCODE_ILLEGAL_OPERATION">
+<code class="sig-name descname"><span class="pre">DDS_RETCODE_ILLEGAL_OPERATION</span></code><em class="property"> <span class="pre">=</span> <span class="pre">-12</span></em><a class="headerlink" href="#cyclonedds.core.DDSException.DDS_RETCODE_ILLEGAL_OPERATION" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="cyclonedds.core.DDSException.DDS_RETCODE_NOT_ALLOWED_BY_SECURITY">
+<code class="sig-name descname"><span class="pre">DDS_RETCODE_NOT_ALLOWED_BY_SECURITY</span></code><em class="property"> <span class="pre">=</span> <span class="pre">-13</span></em><a class="headerlink" href="#cyclonedds.core.DDSException.DDS_RETCODE_NOT_ALLOWED_BY_SECURITY" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="cyclonedds.core.DDSException.error_message_mapping">
+<code class="sig-name descname"><span class="pre">error_message_mapping</span></code><em class="property"> <span class="pre">=</span> <span class="pre">{-13:</span> <span class="pre">('DDS_RETCODE_NOT_ALLOWED_BY_SECURITY',</span> <span class="pre">'Insufficient</span> <span class="pre">credentials</span> <span class="pre">supplied</span> <span class="pre">to</span> <span class="pre">use</span> <span class="pre">the</span> <span class="pre">function'),</span> <span class="pre">-12:</span> <span class="pre">('DDS_RETCODE_ILLEGAL_OPERATION',</span> <span class="pre">'A</span> <span class="pre">function</span> <span class="pre">was</span> <span class="pre">called</span> <span class="pre">when</span> <span class="pre">it</span> <span class="pre">should</span> <span class="pre">not</span> <span class="pre">be'),</span> <span class="pre">-11:</span> <span class="pre">('DDS_RETCODE_NO_DATA',</span> <span class="pre">'Expected</span> <span class="pre">data</span> <span class="pre">is</span> <span class="pre">not</span> <span class="pre">provided'),</span> <span class="pre">-10:</span> <span class="pre">('DDS_RETCODE_TIMEOUT',</span> <span class="pre">'A</span> <span class="pre">timeout</span> <span class="pre">has</span> <span class="pre">occurred'),</span> <span class="pre">-9:</span> <span class="pre">('DDS_RETCODE_ALREADY_DELETED',</span> <span class="pre">'An</span> <span class="pre">attempt</span> <span class="pre">was</span> <span class="pre">made</span> <span class="pre">to</span> <span class="pre">delete</span> <span class="pre">something</span> <span class="pre">more</span> <span class="pre">than</span> <span class="pre">once'),</span> <span class="pre">-8:</span> <span class="pre">('DDS_RETCODE_INCONSISTENT_POLICY',</span> <span class="pre">'A</span> <span class="pre">policy</span> <span class="pre">with</span> <span class="pre">inconsistent</span> <span class="pre">values</span> <span class="pre">was</span> <span class="pre">used'),</span> <span class="pre">-7:</span> <span class="pre">('DDS_RETCODE_IMMUTABLE_POLICY',</span> <span class="pre">'An</span> <span class="pre">attempt</span> <span class="pre">was</span> <span class="pre">made</span> <span class="pre">to</span> <span class="pre">modify</span> <span class="pre">an</span> <span class="pre">immutable</span> <span class="pre">policy'),</span> <span class="pre">-6:</span> <span class="pre">('DDS_RETCODE_NOT_ENABLED',</span> <span class="pre">'A</span> <span class="pre">configurable</span> <span class="pre">feature</span> <span class="pre">is</span> <span class="pre">not</span> <span class="pre">enabled'),</span> <span class="pre">-5:</span> <span class="pre">('DDS_RETCODE_OUT_OF_RESOURCES',</span> <span class="pre">'Operation</span> <span class="pre">failed</span> <span class="pre">because</span> <span class="pre">of</span> <span class="pre">a</span> <span class="pre">lack</span> <span class="pre">of</span> <span class="pre">resources'),</span> <span class="pre">-4:</span> <span class="pre">('DDS_RETCODE_PRECONDITION_NOT_MET',</span> <span class="pre">'Precondition</span> <span class="pre">for</span> <span class="pre">operation</span> <span class="pre">not</span> <span class="pre">met'),</span> <span class="pre">-3:</span> <span class="pre">('DDS_RETCODE_BAD_PARAMETER',</span> <span class="pre">'Bad</span> <span class="pre">parameter</span> <span class="pre">value'),</span> <span class="pre">-2:</span> <span class="pre">('DDS_RETCODE_UNSUPPORTED',</span> <span class="pre">'Feature</span> <span class="pre">unsupported'),</span> <span class="pre">-1:</span> <span class="pre">('DDS_RETCODE_ERROR',</span> <span class="pre">'Non</span> <span class="pre">specific</span> <span class="pre">error'),</span> <span class="pre">0:</span> <span class="pre">('DDS_RETCODE_OK',</span> <span class="pre">'Success')}</span></em><a class="headerlink" href="#cyclonedds.core.DDSException.error_message_mapping" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="cyclonedds.core.DDSAPIException">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">cyclonedds.core.</span></code><code class="sig-name descname"><span class="pre">DDSAPIException</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/core.html#DDSAPIException"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.DDSAPIException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></a></p>
+<p>This exception is thrown when misuse of the Python API is detected that are not explicitly bound to
+any C API functions.</p>
+<dl class="py attribute">
+<dt id="cyclonedds.core.DDSAPIException.msg">
+<code class="sig-name descname"><span class="pre">msg</span></code><a class="headerlink" href="#cyclonedds.core.DDSAPIException.msg" title="Permalink to this definition">¶</a></dt>
+<dd><p>A human readable description of what went wrong.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 
 

@@ -171,6 +171,178 @@
             
   <div class="section" id="cyclonedds-builtin">
 <h1>cyclonedds.builtin<a class="headerlink" href="#cyclonedds-builtin" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="cyclonedds.builtin.BuiltinDataReader">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">cyclonedds.builtin.</span></code><code class="sig-name descname"><span class="pre">BuiltinDataReader</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subscriber_or_participant</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">builtin_topic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qos</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">listener</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/builtin.html#BuiltinDataReader"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.builtin.BuiltinDataReader" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="cyclonedds.sub.html#cyclonedds.sub.DataReader" title="cyclonedds.sub.DataReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">cyclonedds.sub.DataReader</span></code></a></p>
+<p>Builtin topics have sligtly different behaviour than normal topics, so you should use this BuiltinDataReader
+instead of the normal DataReader. They are identical in the rest of their functionality.</p>
+<dl class="py method">
+<dt id="cyclonedds.builtin.BuiltinDataReader.read">
+<code class="sig-name descname"><span class="pre">read</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">N</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">condition</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/builtin.html#BuiltinDataReader.read"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.builtin.BuiltinDataReader.read" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read a maximum of N samples, non-blocking. Optionally use a read/query-condition to select which samples
+you are interested in.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>N</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – The maximum number of samples to read.</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><a class="reference internal" href="cyclonedds.core.html#cyclonedds.core.DDSException" title="cyclonedds.core.DDSException"><strong>DDSException</strong></a> – If any error code is returned by the DDS API it is converted into an exception.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="cyclonedds.builtin.BuiltinDataReader.take">
+<code class="sig-name descname"><span class="pre">take</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">N</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">condition</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/builtin.html#BuiltinDataReader.take"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.builtin.BuiltinDataReader.take" title="Permalink to this definition">¶</a></dt>
+<dd><p>Take a maximum of N samples, non-blocking. Optionally use a read/query-condition to select which samples
+you are interested in.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>N</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – The maximum number of samples to read.</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><a class="reference internal" href="cyclonedds.core.html#cyclonedds.core.DDSException" title="cyclonedds.core.DDSException"><strong>DDSException</strong></a> – If any error code is returned by the DDS API it is converted into an exception.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="cyclonedds.builtin.DcpsParticipant">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">cyclonedds.builtin.</span></code><code class="sig-name descname"><span class="pre">DcpsParticipant</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qos</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/builtin.html#DcpsParticipant"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.builtin.DcpsParticipant" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Data sample as returned when you subscribe to the BuiltinTopicDcpsParticipant topic.</p>
+<dl class="py attribute">
+<dt id="cyclonedds.builtin.DcpsParticipant.key">
+<code class="sig-name descname"><span class="pre">key</span></code><a class="headerlink" href="#cyclonedds.builtin.DcpsParticipant.key" title="Permalink to this definition">¶</a></dt>
+<dd><p>Unique participant identifier</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID" title="(in Python v3.9)">uuid.UUID</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="cyclonedds.builtin.DcpsParticipant.qos">
+<code class="sig-name descname"><span class="pre">qos</span></code><a class="headerlink" href="#cyclonedds.builtin.DcpsParticipant.qos" title="Permalink to this definition">¶</a></dt>
+<dd><p>Qos policies associated with the participant.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="cyclonedds.core.html#cyclonedds.core.Qos" title="cyclonedds.core.Qos">Qos</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="cyclonedds.builtin.DcpsEndpoint">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">cyclonedds.builtin.</span></code><code class="sig-name descname"><span class="pre">DcpsEndpoint</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">participant_key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">participant_instance_handle</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">topic_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qos</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/builtin.html#DcpsEndpoint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.builtin.DcpsEndpoint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Data sample as returned when you subscribe to the BuiltinTopicDcpsTopic,
+BuiltinTopicDcpsPublication or BuiltinTopicDcpsSubscription topic.</p>
+<dl class="py attribute">
+<dt id="cyclonedds.builtin.DcpsEndpoint.key">
+<code class="sig-name descname"><span class="pre">key</span></code><a class="headerlink" href="#cyclonedds.builtin.DcpsEndpoint.key" title="Permalink to this definition">¶</a></dt>
+<dd><p>Unique identifier for the topic, publication or subscription endpoint.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID" title="(in Python v3.9)">uuid.UUID</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="cyclonedds.builtin.DcpsEndpoint.participant_key">
+<code class="sig-name descname"><span class="pre">participant_key</span></code><a class="headerlink" href="#cyclonedds.builtin.DcpsEndpoint.participant_key" title="Permalink to this definition">¶</a></dt>
+<dd><p>Unique identifier of the participant the endpoint belongs to.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID" title="(in Python v3.9)">uuid.UUID</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="cyclonedds.builtin.DcpsEndpoint.participant_instance_handle">
+<code class="sig-name descname"><span class="pre">participant_instance_handle</span></code><a class="headerlink" href="#cyclonedds.builtin.DcpsEndpoint.participant_instance_handle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Instance handle</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="cyclonedds.builtin.DcpsEndpoint.topic_name">
+<code class="sig-name descname"><span class="pre">topic_name</span></code><a class="headerlink" href="#cyclonedds.builtin.DcpsEndpoint.topic_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Name of the associated topic.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="cyclonedds.builtin.DcpsEndpoint.type_name">
+<code class="sig-name descname"><span class="pre">type_name</span></code><a class="headerlink" href="#cyclonedds.builtin.DcpsEndpoint.type_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Name of the type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="cyclonedds.builtin.DcpsEndpoint.qos">
+<code class="sig-name descname"><span class="pre">qos</span></code><a class="headerlink" href="#cyclonedds.builtin.DcpsEndpoint.qos" title="Permalink to this definition">¶</a></dt>
+<dd><p>Qos policies associated with the endpoint.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="cyclonedds.core.html#cyclonedds.core.Qos" title="cyclonedds.core.Qos">Qos</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="cyclonedds.builtin.BuiltinTopic">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">cyclonedds.builtin.</span></code><code class="sig-name descname"><span class="pre">BuiltinTopic</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_ref</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_type</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/builtin.html#BuiltinTopic"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.builtin.BuiltinTopic" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="cyclonedds.topic.html#cyclonedds.topic.Topic" title="cyclonedds.topic.Topic"><code class="xref py py-class docutils literal notranslate"><span class="pre">cyclonedds.topic.Topic</span></code></a></p>
+<p>Represent a built-in CycloneDDS Topic by magic reference number.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt id="cyclonedds.builtin.BuiltinTopicDcpsParticipant">
+<code class="sig-prename descclassname"><span class="pre">cyclonedds.builtin.</span></code><code class="sig-name descname"><span class="pre">BuiltinTopicDcpsParticipant</span></code><a class="headerlink" href="#cyclonedds.builtin.BuiltinTopicDcpsParticipant" title="Permalink to this definition">¶</a></dt>
+<dd><p>Built-in topic, is published to when a new participants appear on the network.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt id="cyclonedds.builtin.BuiltinTopicDcpsTopic">
+<code class="sig-prename descclassname"><span class="pre">cyclonedds.builtin.</span></code><code class="sig-name descname"><span class="pre">BuiltinTopicDcpsTopic</span></code><a class="headerlink" href="#cyclonedds.builtin.BuiltinTopicDcpsTopic" title="Permalink to this definition">¶</a></dt>
+<dd><p>Built-in topic, is published to when a new topic appear on the network.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt id="cyclonedds.builtin.BuiltinTopicDcpsPublication">
+<code class="sig-prename descclassname"><span class="pre">cyclonedds.builtin.</span></code><code class="sig-name descname"><span class="pre">BuiltinTopicDcpsPublication</span></code><a class="headerlink" href="#cyclonedds.builtin.BuiltinTopicDcpsPublication" title="Permalink to this definition">¶</a></dt>
+<dd><p>Built-in topic, is published to when a publication happens.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt id="cyclonedds.builtin.BuiltinTopicDcpsSubscription">
+<code class="sig-prename descclassname"><span class="pre">cyclonedds.builtin.</span></code><code class="sig-name descname"><span class="pre">BuiltinTopicDcpsSubscription</span></code><a class="headerlink" href="#cyclonedds.builtin.BuiltinTopicDcpsSubscription" title="Permalink to this definition">¶</a></dt>
+<dd><p>Built-in topic, is published to when a subscription happens.</p>
+</dd></dl>
+
 </div>
 
 
