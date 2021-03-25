@@ -160,11 +160,12 @@
 <span class="sd"> * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span>
 
-<span class="kn">from</span> <span class="nn">.core</span> <span class="kn">import</span> <span class="n">Entity</span><span class="p">,</span> <span class="n">DDSException</span>
+<span class="kn">from</span> <span class="nn">.core</span> <span class="kn">import</span> <span class="n">Entity</span><span class="p">,</span> <span class="n">DDSException</span><span class="p">,</span> <span class="n">WaitSet</span><span class="p">,</span> <span class="n">ReadCondition</span><span class="p">,</span> <span class="n">SampleState</span><span class="p">,</span> <span class="n">InstanceState</span><span class="p">,</span> <span class="n">ViewState</span>
 <span class="kn">from</span> <span class="nn">.internal</span> <span class="kn">import</span> <span class="n">c_call</span><span class="p">,</span> <span class="n">dds_c_t</span>
 <span class="kn">from</span> <span class="nn">.qos</span> <span class="kn">import</span> <span class="n">_CQos</span>
+<span class="kn">from</span> <span class="nn">.util</span> <span class="kn">import</span> <span class="n">duration</span>
 
 
 <span class="c1"># The TYPE_CHECKING variable will always evaluate to False, incurring no runtime costs</span>
@@ -176,8 +177,11 @@
     <span class="n">ddspy_read_handle</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">e</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">h</span><span class="p">:</span> <span class="kc">None</span>
     <span class="n">ddspy_take_handle</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">e</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">h</span><span class="p">:</span> <span class="kc">None</span>
     <span class="n">ddspy_lookup_instance</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">e</span><span class="p">,</span> <span class="n">s</span><span class="p">:</span> <span class="kc">None</span>
+    <span class="n">ddspy_read_next</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">e</span><span class="p">:</span> <span class="kc">None</span>
+    <span class="n">ddspy_take_next</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">e</span><span class="p">:</span> <span class="kc">None</span>
 <span class="k">else</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">ddspy</span> <span class="kn">import</span> <span class="n">ddspy_read</span><span class="p">,</span> <span class="n">ddspy_take</span><span class="p">,</span> <span class="n">ddspy_read_handle</span><span class="p">,</span> <span class="n">ddspy_take_handle</span><span class="p">,</span> <span class="n">ddspy_lookup_instance</span>
+    <span class="kn">from</span> <span class="nn">ddspy</span> <span class="kn">import</span> <span class="n">ddspy_read</span><span class="p">,</span> <span class="n">ddspy_take</span><span class="p">,</span> <span class="n">ddspy_read_handle</span><span class="p">,</span> <span class="n">ddspy_take_handle</span><span class="p">,</span> <span class="n">ddspy_lookup_instance</span><span class="p">,</span> \
+        <span class="n">ddspy_read_next</span><span class="p">,</span> <span class="n">ddspy_take_next</span>
 
 
 <div class="viewcode-block" id="Subscriber"><a class="viewcode-back" href="../../cyclonedds.sub.html#cyclonedds.sub.Subscriber">[docs]</a><span class="k">class</span> <span class="nc">Subscriber</span><span class="p">(</span><span class="n">Entity</span><span class="p">):</span>
@@ -236,7 +240,7 @@
         <span class="k">if</span> <span class="n">cqos</span><span class="p">:</span>
             <span class="n">_CQos</span><span class="o">.</span><span class="n">cqos_destroy</span><span class="p">(</span><span class="n">cqos</span><span class="p">)</span>
 
-<div class="viewcode-block" id="DataReader.read"><a class="viewcode-back" href="../../cyclonedds.sub.html#cyclonedds.sub.DataReader.read">[docs]</a>    <span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">condition</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">instance_handle</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="DataReader.read"><a class="viewcode-back" href="../../cyclonedds.sub.html#cyclonedds.sub.DataReader.read">[docs]</a>    <span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">N</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">condition</span><span class="p">:</span> <span class="n">Entity</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">instance_handle</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">object</span><span class="p">]:</span>
         <span class="k">if</span> <span class="n">instance_handle</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">ret</span> <span class="o">=</span> <span class="n">ddspy_read_handle</span><span class="p">(</span><span class="n">condition</span><span class="o">.</span><span class="n">_ref</span> <span class="k">if</span> <span class="n">condition</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ref</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">instance_handle</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
@@ -246,7 +250,7 @@
             <span class="k">raise</span> <span class="n">DDSException</span><span class="p">(</span><span class="n">ret</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Occurred while reading data in {repr(self)}&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">ret</span></div>
 
-<div class="viewcode-block" id="DataReader.take"><a class="viewcode-back" href="../../cyclonedds.sub.html#cyclonedds.sub.DataReader.take">[docs]</a>    <span class="k">def</span> <span class="nf">take</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">condition</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">instance_handle</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="DataReader.take"><a class="viewcode-back" href="../../cyclonedds.sub.html#cyclonedds.sub.DataReader.take">[docs]</a>    <span class="k">def</span> <span class="nf">take</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">N</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">condition</span><span class="p">:</span> <span class="n">Entity</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">instance_handle</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">object</span><span class="p">]:</span>
         <span class="k">if</span> <span class="n">instance_handle</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">ret</span> <span class="o">=</span> <span class="n">ddspy_take_handle</span><span class="p">(</span><span class="n">condition</span><span class="o">.</span><span class="n">_ref</span> <span class="k">if</span> <span class="n">condition</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ref</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">instance_handle</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
@@ -255,6 +259,52 @@
         <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span> <span class="o">==</span> <span class="nb">int</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">DDSException</span><span class="p">(</span><span class="n">ret</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Occurred while taking data in {repr(self)}&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">ret</span></div>
+
+<div class="viewcode-block" id="DataReader.read_next"><a class="viewcode-back" href="../../cyclonedds.sub.html#cyclonedds.sub.DataReader.read_next">[docs]</a>    <span class="k">def</span> <span class="nf">read_next</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">object</span><span class="p">]:</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="n">ddspy_read_next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ref</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span> <span class="o">==</span> <span class="nb">int</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">DDSException</span><span class="p">(</span><span class="n">ret</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Occurred while reading next in {repr(self)}&quot;</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="n">ret</span></div>
+
+<div class="viewcode-block" id="DataReader.take_next"><a class="viewcode-back" href="../../cyclonedds.sub.html#cyclonedds.sub.DataReader.take_next">[docs]</a>    <span class="k">def</span> <span class="nf">take_next</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">object</span><span class="p">]:</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="n">ddspy_take_next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ref</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span> <span class="o">==</span> <span class="nb">int</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">DDSException</span><span class="p">(</span><span class="n">ret</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Occurred while taking next in {repr(self)}&quot;</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="n">ret</span></div>
+
+<div class="viewcode-block" id="DataReader.read_iter"><a class="viewcode-back" href="../../cyclonedds.sub.html#cyclonedds.sub.DataReader.read_iter">[docs]</a>    <span class="k">def</span> <span class="nf">read_iter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="nb">object</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+        <span class="n">waitset</span> <span class="o">=</span> <span class="n">WaitSet</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">participant</span><span class="p">)</span>
+        <span class="n">condition</span> <span class="o">=</span> <span class="n">ReadCondition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ViewState</span><span class="o">.</span><span class="n">Any</span> <span class="o">|</span> <span class="n">InstanceState</span><span class="o">.</span><span class="n">Any</span> <span class="o">|</span> <span class="n">SampleState</span><span class="o">.</span><span class="n">NotRead</span><span class="p">)</span>
+        <span class="n">waitset</span><span class="o">.</span><span class="n">attach</span><span class="p">(</span><span class="n">condition</span><span class="p">)</span>
+        <span class="n">timeout</span> <span class="o">=</span> <span class="n">timeout</span> <span class="ow">or</span> <span class="n">duration</span><span class="p">(</span><span class="n">weeks</span><span class="o">=</span><span class="mi">99999</span><span class="p">)</span>
+
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="n">a</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_next</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">a</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">break</span>
+                <span class="k">yield</span> <span class="n">a</span>
+            <span class="k">if</span> <span class="n">waitset</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="n">timeout</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">break</span></div>
+
+<div class="viewcode-block" id="DataReader.take_iter"><a class="viewcode-back" href="../../cyclonedds.sub.html#cyclonedds.sub.DataReader.take_iter">[docs]</a>    <span class="k">def</span> <span class="nf">take_iter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="nb">object</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+        <span class="n">waitset</span> <span class="o">=</span> <span class="n">WaitSet</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">participant</span><span class="p">)</span>
+        <span class="n">condition</span> <span class="o">=</span> <span class="n">ReadCondition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ViewState</span><span class="o">.</span><span class="n">Any</span> <span class="o">|</span> <span class="n">InstanceState</span><span class="o">.</span><span class="n">Any</span> <span class="o">|</span> <span class="n">SampleState</span><span class="o">.</span><span class="n">NotRead</span><span class="p">)</span>
+        <span class="n">waitset</span><span class="o">.</span><span class="n">attach</span><span class="p">(</span><span class="n">condition</span><span class="p">)</span>
+        <span class="n">timeout</span> <span class="o">=</span> <span class="n">timeout</span> <span class="ow">or</span> <span class="n">duration</span><span class="p">(</span><span class="n">weeks</span><span class="o">=</span><span class="mi">99999</span><span class="p">)</span>
+
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="n">a</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">take_next</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">a</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">break</span>
+                <span class="k">yield</span> <span class="n">a</span>
+            <span class="k">if</span> <span class="n">waitset</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="n">timeout</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">break</span></div>
 
 <div class="viewcode-block" id="DataReader.wait_for_historical_data"><a class="viewcode-back" href="../../cyclonedds.sub.html#cyclonedds.sub.DataReader.wait_for_historical_data">[docs]</a>    <span class="k">def</span> <span class="nf">wait_for_historical_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wait_for_historical_data</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ref</span><span class="p">,</span> <span class="n">timeout</span><span class="p">)</span>
@@ -281,6 +331,9 @@
     <span class="nd">@c_call</span><span class="p">(</span><span class="s2">&quot;dds_reader_wait_for_historical_data&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">_wait_for_historical_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reader</span><span class="p">:</span> <span class="n">dds_c_t</span><span class="o">.</span><span class="n">entity</span><span class="p">,</span> <span class="n">max_wait</span><span class="p">:</span> <span class="n">dds_c_t</span><span class="o">.</span><span class="n">duration</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dds_c_t</span><span class="o">.</span><span class="n">returnv</span><span class="p">:</span>
         <span class="k">pass</span></div>
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Subscriber&quot;</span><span class="p">,</span> <span class="s2">&quot;DataReader&quot;</span><span class="p">]</span>
 </pre></div>
 
            </div>
