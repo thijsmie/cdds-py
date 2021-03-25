@@ -3,6 +3,7 @@ import pytest
 from cyclonedds.domain import DomainParticipant
 from cyclonedds.topic import Topic
 from cyclonedds.sub import Subscriber, DataReader
+from cyclonedds.pub import Publisher, DataWriter
 from cyclonedds.util import duration, isgoodentity
 
 
@@ -73,4 +74,21 @@ def test_reader_invalid():
     
     with pytest.raises(TypeError):
         dr.take(-1)
-    
+
+
+def test_reader_readnext_takenext():
+    dp = DomainParticipant(0)
+    tp = Topic(dp, "Message__DONOTPUBLISH", Message)
+    sub = Subscriber(dp)
+    pub = Publisher(dp)
+    dr = DataReader(sub, tp)
+    dw = DataWriter(pub, tp)
+
+    msg = Message("Hello")
+    dw.write(msg)
+
+    assert dr.read_next() == msg
+    assert dr.read_next() is None
+    dw.write(msg)
+    assert dr.take_next() == msg
+    assert dr.take_next() is None

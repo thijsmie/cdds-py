@@ -1238,6 +1238,64 @@ ddspy_lookup_instance(PyObject *self, PyObject *args)
     return PyLong_FromLong((long) sts);
 }
 
+static PyObject *
+ddspy_read_next(PyObject *self, PyObject *args)
+{
+    dds_entity_t reader;
+    dds_return_t sts;
+    dds_sample_info_t info;
+    ddspy_sample_container_t container;
+    ddspy_sample_container_t* pt_container;
+
+    if (!PyArg_ParseTuple(args, "i", &reader))
+        return NULL;
+
+    pt_container = &container;
+
+    sts = dds_read_next(reader, &pt_container, &info);
+    if (sts < 0) {
+        return PyLong_FromLong((long) sts);
+    }
+
+    if (sts == 0 || container.sample == NULL) {
+        Py_INCREF(Py_None);
+        return Py_None;
+    }
+   
+    set_sampleinfo_attribute(container.sample, &info);
+    py_return_ref(container.sample);
+    return container.sample;
+}
+
+static PyObject *
+ddspy_take_next(PyObject *self, PyObject *args)
+{
+    dds_entity_t reader;
+    dds_return_t sts;
+    dds_sample_info_t info;
+    ddspy_sample_container_t container;
+    ddspy_sample_container_t* pt_container;
+
+    if (!PyArg_ParseTuple(args, "i", &reader))
+        return NULL;
+
+    pt_container = &container;
+
+    sts = dds_take_next(reader, &pt_container, &info);
+    if (sts < 0) {
+        return PyLong_FromLong((long) sts);
+    }
+
+    if (sts == 0 || container.sample == NULL) {
+        Py_INCREF(Py_None);
+        return Py_None;
+    }
+   
+    set_sampleinfo_attribute(container.sample, &info);
+    py_return_ref(container.sample);
+    return container.sample;
+}
+
 
 
 char ddspy_docs[] = "DDSPY module";
@@ -1283,6 +1341,10 @@ PyMethodDef ddspy_funcs[] = {
 		(PyCFunction)ddspy_dispose,
 		METH_VARARGS,
 		ddspy_docs},
+    {	"ddspy_dispose_ts",
+		(PyCFunction)ddspy_dispose_ts,
+		METH_VARARGS,
+		ddspy_docs},
     {	"ddspy_dispose_handle",
 		(PyCFunction)ddspy_dispose_handle,
 		METH_VARARGS,
@@ -1313,6 +1375,14 @@ PyMethodDef ddspy_funcs[] = {
 		ddspy_docs},
     {   "ddspy_lookup_instance",
         (PyCFunction)ddspy_lookup_instance,
+        METH_VARARGS,
+        ddspy_docs},
+    {   "ddspy_read_next",
+        (PyCFunction)ddspy_read_next,
+        METH_VARARGS,
+        ddspy_docs},
+    {   "ddspy_take_next",
+        (PyCFunction)ddspy_take_next,
         METH_VARARGS,
         ddspy_docs},
 	{	NULL}

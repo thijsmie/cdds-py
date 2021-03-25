@@ -10,11 +10,12 @@
  * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
 """
 
-from typing import Optional, Union, TYPE_CHECKING
+from typing import List, Optional, Union, Generator, TYPE_CHECKING
 
-from .core import Entity, DDSException
+from .core import Entity, DDSException, WaitSet, ReadCondition, SampleState, InstanceState, ViewState
 from .internal import c_call, dds_c_t
 from .qos import _CQos
+from .util import duration
 
 
 # The TYPE_CHECKING variable will always evaluate to False, incurring no runtime costs
@@ -26,8 +27,11 @@ if TYPE_CHECKING:
     ddspy_read_handle = lambda e, n, h: None
     ddspy_take_handle = lambda e, n, h: None
     ddspy_lookup_instance = lambda e, s: None
+    ddspy_read_next = lambda e: None
+    ddspy_take_next = lambda e: None
 else:
-    from ddspy import ddspy_read, ddspy_take, ddspy_read_handle, ddspy_take_handle, ddspy_lookup_instance
+    from ddspy import ddspy_read, ddspy_take, ddspy_read_handle, ddspy_take_handle, ddspy_lookup_instance, \
+        ddspy_read_next, ddspy_take_next
 
 
 class Subscriber(Entity):
@@ -86,7 +90,7 @@ class DataReader(Entity):
         if cqos:
             _CQos.cqos_destroy(cqos)
 
-    def read(self, N=1, condition=None, instance_handle=None):
+    def read(self, N: int = 1, condition: Entity = None, instance_handle: int = None) -> List[object]:
         if instance_handle is not None:
             ret = ddspy_read_handle(condition._ref if condition else self._ref, N, instance_handle)
         else:
@@ -96,7 +100,7 @@ class DataReader(Entity):
             raise DDSException(ret, f"Occurred while reading data in {repr(self)}")
         return ret
 
-    def take(self, N=1, condition=None, instance_handle=None):
+    def take(self, N: int = 1, condition: Entity = None, instance_handle: int = None) -> List[object]:
         if instance_handle is not None:
             ret = ddspy_take_handle(condition._ref if condition else self._ref, N, instance_handle)
         else:
@@ -105,6 +109,52 @@ class DataReader(Entity):
         if type(ret) == int:
             raise DDSException(ret, f"Occurred while taking data in {repr(self)}")
         return ret
+
+    def read_next(self) -> Optional[object]:
+        ret = ddspy_read_next(self._ref)
+        
+        if type(ret) == int:
+            raise DDSException(ret, f"Occurred while reading next in {repr(self)}")
+        
+        return ret
+
+    def take_next(self) -> Optional[object]:
+        ret = ddspy_take_next(self._ref)
+        
+        if type(ret) == int:
+            raise DDSException(ret, f"Occurred while taking next in {repr(self)}")
+        
+        return ret
+
+    def read_iter(self, timeout: int = None) -> Generator[object, None, None]:
+        waitset = WaitSet(self.participant)
+        condition = ReadCondition(self, ViewState.Any | InstanceState.Any | SampleState.NotRead)
+        waitset.attach(condition)
+        timeout = timeout or duration(weeks=99999)
+
+        while True:
+            while True:
+                a = self.read_next()
+                if a is None:
+                    break
+                yield a
+            if waitset.wait(timeout) == 0:
+                break
+
+    def take_iter(self, timeout: int = None) -> Generator[object, None, None]:
+        waitset = WaitSet(self.participant)
+        condition = ReadCondition(self, ViewState.Any | InstanceState.Any | SampleState.NotRead)
+        waitset.attach(condition)
+        timeout = timeout or duration(weeks=99999)
+
+        while True:
+            while True:
+                a = self.take_next()
+                if a is None:
+                    break
+                yield a
+            if waitset.wait(timeout) == 0:
+                break
 
     def wait_for_historical_data(self, timeout: int) -> bool:
         ret = self._wait_for_historical_data(self._ref, timeout)
@@ -131,3 +181,6 @@ class DataReader(Entity):
     @c_call("dds_reader_wait_for_historical_data")
     def _wait_for_historical_data(self, reader: dds_c_t.entity, max_wait: dds_c_t.duration) -> dds_c_t.returnv:
         pass
+
+
+__all__ = ["Subscriber", "DataReader"]

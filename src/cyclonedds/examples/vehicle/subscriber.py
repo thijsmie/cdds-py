@@ -37,16 +37,6 @@ topic = Topic(domain_participant, 'Vehicle', Vehicle, qos=qos)
 subscriber = Subscriber(domain_participant)
 reader = DataReader(domain_participant, topic, listener=listener)
 
-condition = ReadCondition(reader, SampleState.NotRead | ViewState.Any | InstanceState.Alive)
 
-waitset = WaitSet(domain_participant)
-waitset.attach(condition)
-
-while True:
-    waitset.wait(duration(seconds=2.2))
-    samples = reader.take(N=100)
-    if samples:
-        for sample in samples:
-            print(f"Read sample: {sample}")
-    else:
-        print("Timeout waitset")
+for sample in reader.take_iter(timeout=duration(seconds=2)):
+    print(sample)

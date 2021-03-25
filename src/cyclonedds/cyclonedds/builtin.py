@@ -13,13 +13,14 @@
 import uuid
 import ctypes as ct
 from dataclasses import dataclass
-from typing import Optional, Union, ClassVar, TYPE_CHECKING
+from typing import Optional, Union, ClassVar, Generator, TYPE_CHECKING
 
-from .core import Entity, DDSException, Qos
+from .core import Entity, DDSException, Qos, ReadCondition, ViewState, InstanceState, SampleState, WaitSet
 from .topic import Topic
 from .sub import DataReader
 from .internal import c_call, dds_c_t, SampleInfo
 from .qos import _CQos
+from .util import duration
 
 
 # The TYPE_CHECKING variable will always evaluate to False, incurring no runtime costs
@@ -145,6 +146,7 @@ class BuiltinDataReader(DataReader):
                 listener._ref if listener else None
             )
         )
+        self._next_condition = ReadCondition(self, ViewState.Any | SampleState.NotRead | InstanceState.Any)
         if cqos:
             _CQos.cqos_destroy(cqos)
 
@@ -239,6 +241,48 @@ class BuiltinDataReader(DataReader):
             return_samples[i].sample_info = self._convert_sampleinfo(self._sampleinfos[i])
 
         return return_samples
+
+    def read_next(self) -> Optional[object]:
+        samples = self.read(condition=self._next_condition)
+        if samples:
+            return samples[0]
+        return None
+
+    def take_next(self) -> Optional[object]:
+        samples = self.take(condition=self._next_condition)
+        if samples:
+            return samples[0]
+        return None
+
+    def read_iter(self, timeout: int = None) -> Generator[object, None, None]:
+        waitset = WaitSet(self.participant)
+        condition = ReadCondition(self, ViewState.Any | InstanceState.Any | SampleState.NotRead)
+        waitset.attach(condition)
+        timeout = timeout or duration(weeks=99999)
+
+        while True:
+            while True:
+                a = self.read_next()
+                if a is None:
+                    break
+                yield a
+            if waitset.wait(timeout) == 0:
+                break
+
+    def take_iter(self, timeout: int = None) -> Generator[object, None, None]:
+        waitset = WaitSet(self.participant)
+        condition = ReadCondition(self, ViewState.Any | InstanceState.Any | SampleState.NotRead)
+        waitset.attach(condition)
+        timeout = timeout or duration(weeks=99999)
+
+        while True:
+            while True:
+                a = self.take_next()
+                if a is None:
+                    break
+                yield a
+            if waitset.wait(timeout) == 0:
+                break
 
     @c_call("dds_read")
     def _read(self, reader: dds_c_t.entity, buffer: ct.POINTER(ct.c_void_p), sample_info: ct.POINTER(dds_c_t.sample_info),
