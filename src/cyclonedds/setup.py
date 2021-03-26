@@ -57,5 +57,6 @@ setup(
     ],
     packages=find_packages(exclude=("tests", "examples")),
 	ext_modules = [ddspy],
+    scripts=['tools/ddsls.py'],
     python_requires='>=3.6'
 )
