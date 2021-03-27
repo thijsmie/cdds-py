@@ -10,8 +10,8 @@
  * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
 """
 
-from dataclasses import is_dataclass
-from enum import Enum, auto
+from dataclasses import dataclass, is_dataclass
+from enum import Enum, IntEnum, auto
 from typing import Union
 import struct
 import sys
@@ -19,6 +19,32 @@ from inspect import isclass
 
 from .types import ArrayHolder, BoundStringHolder, SequenceHolder, default, primitive_types, IdlUnion, NoneType
 from .type_helper import Annotated, get_origin, get_args, get_type_hints
+
+
+class CdrKeyVMOpType(IntEnum):
+    Done = 0
+    StreamStatic = 1
+    Stream2ByteSize = 2
+    Stream4ByteSize = 3
+    ByteSwap = 4
+    RepeatStatic = 5
+    Repeat2ByteSize = 6
+    Repeat4ByteSize = 7
+    EndRepeat = 8
+    Union1Byte = 9
+    Union2Byte = 10
+    Union4Byte = 11
+    Union8Byte = 12
+    Jump = 13
+
+
+@dataclass
+class CdrKeyVmOp:
+    type: CdrKeyVMOpType
+    skip: bool
+    size: int = 0
+    value: int = 0
+    align: int = 0
 
 
 class Endianness(Enum):
@@ -31,11 +57,12 @@ class Endianness(Enum):
 
 
 class Buffer:
-    def __init__(self, bytes=None):
+    def __init__(self, bytes=None, align_offset=0):
         self._bytes = bytearray(bytes) if bytes else bytearray(512)
         self._pos = 0
         self._size = len(self._bytes)
         self._endian = '='
+        self._align_offset = align_offset
         self.endianness = Endianness.native()
 
     def set_endianness(self, endianness):
@@ -44,6 +71,14 @@ class Buffer:
             self._endian = "<"
         else:
             self._endian = ">"
+
+    def zero_out(self):
+        # As per testing (https://stackoverflow.com/questions/19671145)
+        # Quickest way to zero is to re-alloc..
+        self._bytes = bytearray(self._size)
+
+    def set_align_offset(self, offset):
+        self._align_offset = offset
 
     def seek(self, pos):
         self._pos = pos
@@ -61,7 +96,7 @@ class Buffer:
             self._bytes[0:old_size] = old_bytes
 
     def align(self, alignment):
-        self._pos = ((self._pos - 4 + alignment - 1) & ~(alignment - 1)) + 4
+        self._pos = ((self._pos - self._align_offset + alignment - 1) & ~(alignment - 1)) + self._align_offset
         return self
 
     def write(self, pack, size, value):
@@ -117,6 +152,9 @@ class Machine:
     def max_size(self, finder):
         pass
 
+    def cdr_key_machine_op(self, skip):
+        pass
+
 
 class NoneMachine(Machine):
     def __init__(self):
@@ -130,6 +168,9 @@ class NoneMachine(Machine):
 
     def max_size(self, finder):
         pass
+
+    def cdr_key_machine_op(self, skip):
+        return []
 
 
 class PrimitiveMachine(Machine):
@@ -147,6 +188,12 @@ class PrimitiveMachine(Machine):
 
     def max_size(self, finder: MaxSizeFinder):
         finder.increase(self.alignment, self.alignment)
+
+    def cdr_key_machine_op(self, skip):
+        stream = [CdrKeyVmOp(CdrKeyVMOpType.StreamStatic, skip, self.alignment, align=self.alignment)]
+        if not skip and not self.alignment == 1:
+            stream += [CdrKeyVmOp(CdrKeyVMOpType.ByteSwap, skip, align=self.alignment)]
+        return stream
 
 
 class StringMachine(Machine):
@@ -175,6 +222,9 @@ class StringMachine(Machine):
             finder.increase(self.bound + 5, 2)  # string size + length serialized (4) + null byte (1)
         else:
             finder.increase(2**64 - 1 + 5, 2)
+    
+    def cdr_key_machine_op(self, skip):
+        return [CdrKeyVmOp(CdrKeyVMOpType.Stream4ByteSize, skip, 1, align=1)]
 
 
 class BytesMachine(Machine):
@@ -199,6 +249,9 @@ class BytesMachine(Machine):
             finder.increase(self.bound + 3, 2)  # string size + length serialized (2)
         else:
             finder.increase(65535 + 3, 2)
+    
+    def cdr_key_machine_op(self, skip):
+        return [CdrKeyVmOp(CdrKeyVMOpType.Stream4ByteSize, skip, 1, align=1)]
 
 
 class ByteArrayMachine(Machine):
@@ -217,6 +270,10 @@ class ByteArrayMachine(Machine):
 
     def max_size(self, finder: MaxSizeFinder):
         finder.increase(self.size, 1)
+
+    def cdr_key_machine_op(self, skip):
+        return [CdrKeyVmOp(CdrKeyVMOpType.StreamStatic, skip, self.size, align=1)]
+        
 
 
 class ArrayMachine(Machine):
@@ -246,6 +303,17 @@ class ArrayMachine(Machine):
         size = post_size - pre_size
         size = (size + self.alignment - 1) & ~(self.alignment - 1)
         finder.size = pre_size + self.size * size
+
+    def cdr_key_machine_op(self, skip):
+        if isinstance(self.submachine, PrimitiveMachine):
+            stream = [CdrKeyVmOp(CdrKeyVMOpType.StreamStatic, skip, self.submachine.alignment * self.size, align=self.submachine.alignment)]
+            if not skip and self.submachine.alignment != 1:
+                stream += [CdrKeyVmOp(CdrKeyVMOpType.ByteSwap, skip, align=self.submachine.alignment)]
+            return stream
+
+        subops = self.submachine.cdr_key_machine_op(skip)
+        return [CdrKeyVmOp(CdrKeyVMOpType.RepeatStatic, skip, self.size, value=len(subops)+2)] + \
+                subops + [CdrKeyVmOp(CdrKeyVMOpType.EndRepeat, skip, len(subops))]
 
 
 class SequenceMachine(Machine):
@@ -281,6 +349,17 @@ class SequenceMachine(Machine):
         size = post_size - pre_size
         size = (size + self.alignment - 1) & ~(self.alignment - 1)
         finder.size = pre_size + (self.maxlen if self.maxlen else 65535) * size + 2
+
+    def cdr_key_machine_op(self, skip):
+        if isinstance(self.submachine, PrimitiveMachine):
+            stream = [CdrKeyVmOp(CdrKeyVMOpType.Stream2ByteSize, skip, self.submachine.alignment, align=self.submachine.alignment)]
+            if not skip and self.submachine.alignment != 1:
+                stream += [CdrKeyVmOp(CdrKeyVMOpType.ByteSwap, skip, align=self.submachine.alignment)]
+            return stream
+
+        subops = self.submachine.cdr_key_machine_op(skip)
+        return [CdrKeyVmOp(CdrKeyVMOpType.Repeat2ByteSize, skip, value=len(subops)+2)] + \
+                subops + [CdrKeyVmOp(CdrKeyVMOpType.EndRepeat, skip, len(subops))]
 
 
 class UnionMachine(Machine):
@@ -330,6 +409,45 @@ class UnionMachine(Machine):
 
         finder.size = pre_size + max(sizes)
 
+    def cdr_key_machine_op(self, skip):
+        headers = []
+        opsets = []
+        union_type = {
+            1: CdrKeyVMOpType.Union1Byte,
+            2: CdrKeyVMOpType.Union2Byte,
+            4: CdrKeyVMOpType.Union4Byte,
+            8: CdrKeyVMOpType.Union8Byte
+        }[self.discriminator.alignment]
+
+        buffer = Buffer(bytes=self.discriminator.alignment)
+
+        for label, submachine in self.labels_submachines.items():
+            buffer.seek(0)
+            self.discriminator.serialize(buffer, label)
+            buffer.seek(0)
+            value = buffer.read({1: 'B', 2: 'H', 4: 'I', 8: 'Q'}[self.discriminator.alignment], self.discriminator.alignment)
+            headers.append(CdrKeyVmOp(union_type, skip, value=value))
+            opsets.append(submachine.cdr_key_machine_op(skip))
+
+        lens = [len(o) + 2 for o in opsets]
+
+        if self.default is not None:
+            opsets.append(self.discriminator.cdr_key_machine_op(skip) + self.default.cdr_key_machine_op(skip))
+            lens.append(len(opsets[-1]))
+        else:
+            lens[-1] -= 1
+
+        jumps = [sum(lens[i:]) for i in range(len(lens))]
+
+        for i in range(len(headers)):
+            if i != len(opsets)-1:
+                opsets[i].append(CdrKeyVmOp(CdrKeyVMOpType.Jump, skip, size=jumps[i+1]+1))
+            headers[i].size = lens[i]
+            opsets[i] = [headers[i]] + opsets[i]
+
+        return sum(opsets, [])
+
+
 
 class MappingMachine(Machine):
     def __init__(self, key_machine, value_machine):
@@ -367,6 +485,9 @@ class MappingMachine(Machine):
 
         finder.size = pre_size + (post_size - pre_size) * 65535
 
+    def cdr_key_machine_op(self, skip):
+        raise NotImplementedError()
+
 
 class StructMachine(Machine):
     def __init__(self, object, members_machines):
@@ -394,6 +515,13 @@ class StructMachine(Machine):
         for k, m in self.members_machines.items():
             m.max_size(finder)
 
+    def cdr_key_machine_op(self, skip):
+        return sum((m.cdr_key_machine_op(skip) for m in self.members_machines.values()), [])
+
+    def cdr_key_machine_with_keylist(self, keylist):
+        return sum((m.cdr_key_machine_op(name not in keylist) for name, m in self.members_machines.items()), [])
+
+
 
 class InstanceMachine(Machine):
     def __init__(self, object):
@@ -411,6 +539,9 @@ class InstanceMachine(Machine):
 
     def max_size(self, finder):
         self.type.cdr.machine.max_size(finder)
+
+    def cdr_key_machine_op(self, skip):
+        return self.type.cdr.machine.cdr_key_machine_op(skip)
 
 
 class DeferredInstanceMachine(Machine):
@@ -435,6 +566,9 @@ class DeferredInstanceMachine(Machine):
             raise TypeError(f"Deferred type {self.object_type_name} was never defined.")
         self.type.cdr.machine.max_size(finder)
 
+    def cdr_key_machine_op(self, skip):
+        return self.type.cdr.machine.cdr_key_machine_op(skip)
+
 
 class EnumMachine(Machine):
     def __init__(self, enum):
@@ -448,6 +582,12 @@ class EnumMachine(Machine):
 
     def max_size(self, finder: MaxSizeFinder):
         finder.increase(4, 4)
+    
+    def cdr_key_machine_op(self, skip):
+        stream = [CdrKeyVmOp(CdrKeyVMOpType.StreamStatic, skip, 4, align=4)]
+        if not skip:
+            stream += [CdrKeyVmOp(CdrKeyVMOpType.ByteSwap, skip, align=4)]
+        return stream
 
 
 def build_machine(cdr, _type, top=False) -> Machine:
@@ -503,11 +643,11 @@ def build_machine(cdr, _type, top=False) -> Machine:
         )
     elif isclass(_type) and issubclass(_type, Enum):
         return EnumMachine(_type)
-    elif isclass(_type) and is_dataclass(_type) and hasattr(_type, 'cdr'):
-        return InstanceMachine(_type)
     elif isclass(_type) and is_dataclass(_type) and top:
         _fields = get_type_hints(_type, include_extras=True)
         _members = {k: build_machine(cdr, v) for k, v in _fields.items()}
         return StructMachine(_type, _members)
+    elif isclass(_type) and is_dataclass(_type) and hasattr(_type, 'cdr'):
+        return InstanceMachine(_type)
 
     raise TypeError(f"{repr(_type)} is not valid in CDR classes because it cannot be encoded.")

@@ -102,12 +102,13 @@ class CDR:
                 buffer.write('b', 1, 1)
                 buffer.write('b', 1, 0)
                 buffer.write('b', 1, 0)
+            buffer.set_align_offset(4)
 
         self.machine.serialize(buffer, object)
         return buffer.asbytes()
 
     def deserialize(self, data) -> object:
-        buffer = Buffer(data) if not isinstance(data, Buffer) else data
+        buffer = Buffer(data, align_offset=4) if not isinstance(data, Buffer) else data
 
         if buffer.tell() == 0:
             buffer.read('b', 1)
@@ -123,11 +124,9 @@ class CDR:
 
     def key(self, object) -> bytes:
         self.buffer.seek(0)
+        self.buffer.zero_out()
+        self.buffer.set_align_offset(0)
         self.buffer.set_endianness(Endianness.Big)
-        self.buffer.write('b', 1, 0)
-        self.buffer.write('b', 1, 0)
-        self.buffer.write('b', 1, 0)
-        self.buffer.write('b', 1, 0)
 
         self.key_machine.serialize(self.buffer, object)
         return self.buffer.asbytes()
@@ -142,6 +141,12 @@ class CDR:
         m = md5()
         m.update(self.key(object))
         return m.digest()
+
+    def cdr_key_machine(self):
+        if self.keyless:
+            return self.machine.cdr_key_machine_op(False)
+        else:
+            return self.machine.cdr_key_machine_with_keylist(self.keylist)
 
 
 def proto_serialize(self, buffer=None, endianness=None):

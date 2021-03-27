@@ -10,11 +10,13 @@
  * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
  */
 
+#define PY_SSIZE_T_CLEAN 
 #include <Python.h>
 
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include "cdrkeyvm.h"
 
 #include "dds/dds.h"
 
@@ -114,6 +116,73 @@ void py_return_ref(PyObject* object)
 
 #define trace 
 #endif
+
+
+cdr_key_vm_op* make_vm_ops_from_py_op_list(PyObject* list)
+{
+    size_t len = PyList_Size(list);
+    if (!len || PyErr_Occurred())
+        return NULL;
+
+    cdr_key_vm_op* ops = (cdr_key_vm_op*) malloc(sizeof(struct cdr_key_vm_op_s) * (len + 1));
+    if (ops == NULL)
+        return NULL;
+    ops[len].type = CdrKeyVMOpDone;
+
+    for (size_t i = 0; i < len; ++i) {
+        PyObject* borrow_i = PyList_GetItem(list, i);
+        PyObject* attr_type = PyObject_GetAttrString(borrow_i, "type");
+        PyObject* int_attr_type = PyNumber_Long(attr_type);
+        PyObject* attr_skip = PyObject_GetAttrString(borrow_i, "skip");
+        PyObject* attr_size = PyObject_GetAttrString(borrow_i, "size");
+        PyObject* attr_align = PyObject_GetAttrString(borrow_i, "align");
+        PyObject* attr_value = PyObject_GetAttrString(borrow_i, "value");
+
+        ops[i].type = (cdr_key_vm_op_type) PyLong_AsUnsignedLong(int_attr_type);
+        ops[i].skip = attr_skip == Py_True;
+        ops[i].size = (uint32_t) PyLong_AsUnsignedLong(attr_size);
+        ops[i].align = (uint8_t) PyLong_AsUnsignedLong(attr_align);
+        ops[i].value = (uint64_t) PyLong_AsUnsignedLongLong(attr_value);
+
+        //printf("op: %d %d %" PRIu32 " %d %" PRIu64 "\n", ops[i].type, ops[i].skip, ops[i].size, ops[i].align, ops[i].value);
+
+        Py_DECREF(attr_type);
+        Py_DECREF(int_attr_type);
+        Py_DECREF(attr_skip);
+        Py_DECREF(attr_size);
+        Py_DECREF(attr_align);
+        Py_DECREF(attr_value);
+    }
+
+    return ops;
+}
+
+cdr_key_vm* make_key_vm(PyObject* cdr)
+{
+    PyObject* attr_keymachine = PyObject_GetAttrString(cdr, "cdr_key_machine");
+    
+    if (attr_keymachine == NULL) return NULL;
+
+    PyObject* args = PyTuple_New(0);
+    PyObject* list = PyObject_CallObject(attr_keymachine, args);
+    Py_DECREF(attr_keymachine);
+    Py_DECREF(args);
+
+    if (list == NULL) return NULL;
+    cdr_key_vm* vm = (cdr_key_vm*) malloc(sizeof(struct cdr_key_vm_s));
+    if (vm == NULL) {
+        Py_DECREF(list);
+        return NULL;
+    }
+
+    vm->instructions = make_vm_ops_from_py_op_list(list);
+    vm->final_size_is_static = false;
+    vm->initial_alloc_size = 1024;
+
+    Py_DECREF(list);
+
+    return vm;
+}
 
 
 typedef struct ddsi_serdata ddsi_serdata_t;
@@ -1297,11 +1366,41 @@ ddspy_take_next(PyObject *self, PyObject *args)
 }
 
 
+static PyObject *
+ddspy_calc_key(PyObject *self, PyObject *args)
+{
+    PyObject* cdr;
+    Py_buffer sample_data;
+
+    if (!PyArg_ParseTuple(args, "Oy*", &cdr, &sample_data))
+        return NULL;
+
+    cdr_key_vm* vm = make_key_vm(cdr);
+
+    if (vm == NULL) return NULL;
+
+    cdr_key_vm_runner* runner = cdr_key_vm_create_runner(vm);
+
+    size_t enc = cdr_key_vm_run(runner, (const uint8_t*) sample_data.buf, (size_t)sample_data.len);
+
+    PyObject* returnv = Py_BuildValue("y#", (char*) runner->workspace, enc);
+
+    free(runner->workspace);
+    free(runner);
+    free(vm->instructions);
+    free(vm);
+    return returnv;
+}
+
 
 char ddspy_docs[] = "DDSPY module";
 
 PyMethodDef ddspy_funcs[] = {
-	{	"ddspy_topic_create",
+	{	"ddspy_calc_key",
+		(PyCFunction)ddspy_calc_key,
+		METH_VARARGS,
+		ddspy_docs},
+    {	"ddspy_topic_create",
 		(PyCFunction)ddspy_topic_create,
 		METH_VARARGS,
 		ddspy_docs},
@@ -1390,6 +1489,10 @@ PyMethodDef ddspy_funcs[] = {
 
 char ddspymod_docs[] = "This is hello world module.";
 
+void free_ddspy(void) {
+    Py_DECREF(sampleinfo_descriptor);
+}
+
 PyModuleDef ddspy_mod = {
 	PyModuleDef_HEAD_INIT,
 	"ddspy",
@@ -1399,11 +1502,12 @@ PyModuleDef ddspy_mod = {
 	NULL,
 	NULL,
 	NULL,
-	NULL
+	free_ddspy
 };
 
 PyMODINIT_FUNC PyInit_ddspy(void) {
     PyObject* import = PyImport_ImportModule("cyclonedds.internal"); 
     sampleinfo_descriptor = PyObject_GetAttrString(import, "SampleInfo");
+    Py_DECREF(import);
 	return PyModule_Create(&ddspy_mod);
 }
