@@ -10,132 +10,8 @@
  * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
 """
 
-from dataclasses import dataclass, is_dataclass
-from enum import Enum, IntEnum, auto
-from typing import Union
-import struct
-import sys
-from inspect import isclass
-
-from .types import ArrayHolder, BoundStringHolder, SequenceHolder, default, primitive_types, IdlUnion, NoneType
-from .type_helper import Annotated, get_origin, get_args, get_type_hints
-
-
-class CdrKeyVMOpType(IntEnum):
-    Done = 0
-    StreamStatic = 1
-    Stream2ByteSize = 2
-    Stream4ByteSize = 3
-    ByteSwap = 4
-    RepeatStatic = 5
-    Repeat2ByteSize = 6
-    Repeat4ByteSize = 7
-    EndRepeat = 8
-    Union1Byte = 9
-    Union2Byte = 10
-    Union4Byte = 11
-    Union8Byte = 12
-    Jump = 13
-
-
-@dataclass
-class CdrKeyVmOp:
-    type: CdrKeyVMOpType
-    skip: bool
-    size: int = 0
-    value: int = 0
-    align: int = 0
-
-
-class Endianness(Enum):
-    Little = auto()
-    Big = auto()
-
-    @staticmethod
-    def native():
-        return Endianness.Little if sys.byteorder == "little" else Endianness.Big
-
-
-class Buffer:
-    def __init__(self, bytes=None, align_offset=0):
-        self._bytes = bytearray(bytes) if bytes else bytearray(512)
-        self._pos = 0
-        self._size = len(self._bytes)
-        self._endian = '='
-        self._align_offset = align_offset
-        self.endianness = Endianness.native()
-
-    def set_endianness(self, endianness):
-        self.endianness = endianness
-        if self.endianness == Endianness.Little:
-            self._endian = "<"
-        else:
-            self._endian = ">"
-
-    def zero_out(self):
-        # As per testing (https://stackoverflow.com/questions/19671145)
-        # Quickest way to zero is to re-alloc..
-        self._bytes = bytearray(self._size)
-
-    def set_align_offset(self, offset):
-        self._align_offset = offset
-
-    def seek(self, pos):
-        self._pos = pos
-        return self
-
-    def tell(self):
-        return self._pos
-
-    def ensure_size(self, size):
-        if self._pos + size > self._size:
-            old_bytes = self._bytes
-            old_size = self._size
-            self._size *= 2
-            self._bytes = bytearray(self._size)
-            self._bytes[0:old_size] = old_bytes
-
-    def align(self, alignment):
-        self._pos = ((self._pos - self._align_offset + alignment - 1) & ~(alignment - 1)) + self._align_offset
-        return self
-
-    def write(self, pack, size, value):
-        self.ensure_size(size)
-        struct.pack_into(self._endian + pack, self._bytes, self._pos, value)
-        self._pos += size
-        return self
-
-    def write_bytes(self, bytes):
-        length = len(bytes)
-        self.ensure_size(length)
-        self._bytes[self._pos:self._pos+length] = bytes
-        self._pos += length
-        return self
-
-    def read_bytes(self, length):
-        b = bytes(self._bytes[self._pos:self._pos+length])
-        self._pos += length
-        return b
-
-    def read(self, pack, size):
-        v = struct.unpack_from(self._endian + pack, buffer=self._bytes, offset=self._pos)
-        self._pos += size
-        return v[0]
-
-    def asbytes(self):
-        return bytes(self._bytes[0:self._pos])
-
-
-class MaxSizeFinder:
-    def __init__(self):
-        self.size = 0
-
-    def align(self, alignment):
-        self.size = (self.size + alignment - 1) & ~(alignment - 1)
-
-    def increase(self, bytes, alignment):
-        self.align(alignment)
-        self.size += bytes
+from .types import default, primitive_types
+from .support import Buffer, MaxSizeFinder, CdrKeyVmOp, CdrKeyVMOpType
 
 
 class Machine:
@@ -386,6 +262,7 @@ class UnionMachine(Machine):
         label = self.discriminator.deserialize(buffer)
 
         if label not in self.labels_submachines:
+            label = None
             contents = self.default.deserialize(buffer)
         else:
             contents = self.labels_submachines[label].deserialize(buffer)
@@ -402,9 +279,9 @@ class UnionMachine(Machine):
             submachine.max_size(finder)
             sizes.append(finder.size - pre_size)
         
-        if default:
+        if self.default:
             finder.size = pre_size
-            default.max_size(finder)
+            self.default.max_size(finder)
             sizes.append(finder.size - pre_size)
 
         finder.size = pre_size + max(sizes)
@@ -421,18 +298,20 @@ class UnionMachine(Machine):
 
         buffer = Buffer(bytes=self.discriminator.alignment)
 
+        value_skip = skip or self.type._is_key
+
         for label, submachine in self.labels_submachines.items():
             buffer.seek(0)
             self.discriminator.serialize(buffer, label)
             buffer.seek(0)
             value = buffer.read({1: 'B', 2: 'H', 4: 'I', 8: 'Q'}[self.discriminator.alignment], self.discriminator.alignment)
             headers.append(CdrKeyVmOp(union_type, skip, value=value))
-            opsets.append(submachine.cdr_key_machine_op(skip))
+            opsets.append(submachine.cdr_key_machine_op(value_skip))
 
         lens = [len(o) + 2 for o in opsets]
 
         if self.default is not None:
-            opsets.append(self.discriminator.cdr_key_machine_op(skip) + self.default.cdr_key_machine_op(skip))
+            opsets.append(self.discriminator.cdr_key_machine_op(skip) + self.default.cdr_key_machine_op(value_skip))
             lens.append(len(opsets[-1]))
         else:
             lens[-1] -= 1
@@ -447,6 +326,20 @@ class UnionMachine(Machine):
 
         return sum(opsets, [])
 
+
+class UnionKeyMachine(UnionMachine):
+    def serialize(self, buffer, union):
+        if not self.type._is_key:
+            super().serialize(buffer, union)
+            return
+        
+        try:
+            if union.discriminator is None:
+                self.discriminator.serialize(buffer, union._default_val)
+            else:
+                self.discriminator.serialize(buffer, union.discriminator)
+        except Exception as e:
+            raise Exception(f"Failed to encode union, {self.type}, value is {union.value}") from e
 
 
 class MappingMachine(Machine):
@@ -516,11 +409,13 @@ class StructMachine(Machine):
             m.max_size(finder)
 
     def cdr_key_machine_op(self, skip):
-        return sum((m.cdr_key_machine_op(skip) for m in self.members_machines.values()), [])
-
-    def cdr_key_machine_with_keylist(self, keylist):
-        return sum((m.cdr_key_machine_op(name not in keylist) for name, m in self.members_machines.items()), [])
-
+        return sum(
+            (
+                m.cdr_key_machine_op(skip or (not self.type.cdr.keyless and name not in self.type.cdr.keylist))
+                for name, m in self.members_machines.items()
+            ), 
+            []
+        )
 
 
 class InstanceMachine(Machine):
@@ -529,45 +424,29 @@ class InstanceMachine(Machine):
         self.alignment = 1
 
     def serialize(self, buffer, value):
-        if value is None:
-            print(f"Skipping the {self.type} object for now.")
-            return
-        return value.serialize(buffer)
+        return self.type.cdr.machine.serialize(buffer, value)
 
     def deserialize(self, buffer):
-        return self.type.deserialize(buffer)
+        return self.type.cdr.machine.deserialize(buffer)
 
     def max_size(self, finder):
-        self.type.cdr.machine.max_size(finder)
+        if hasattr(self.type.cdr, 'key_max_size'):
+            return self.type.cdr.key_max_size
+        else:
+            # If we get here the object can contain itself
+            # Size can be infinite
+            return 1_000_000_000
 
     def cdr_key_machine_op(self, skip):
         return self.type.cdr.machine.cdr_key_machine_op(skip)
 
 
-class DeferredInstanceMachine(Machine):
-    def __init__(self, object_type_name, cdr):
-        self.alignment = 1
-        self.object_type_name = object_type_name
-        self.type = cdr.resolve(object_type_name, self)
-
-    def refer(self, type):
-        self.type = type
-
+class InstanceKeyMachine(InstanceMachine):
     def serialize(self, buffer, value):
-        return value.serialize(buffer)
+        return value.cdr.key_machine.serialize(buffer, value)
 
     def deserialize(self, buffer):
-        if not self.type:
-            raise TypeError(f"Deferred type {self.object_type_name} was never defined.")
-        return self.type.deserialize(buffer)
-
-    def max_size(self, finder):
-        if not self.type:
-            raise TypeError(f"Deferred type {self.object_type_name} was never defined.")
-        self.type.cdr.machine.max_size(finder)
-
-    def cdr_key_machine_op(self, skip):
-        return self.type.cdr.machine.cdr_key_machine_op(skip)
+        raise NotImplementedError()
 
 
 class EnumMachine(Machine):
@@ -589,65 +468,3 @@ class EnumMachine(Machine):
             stream += [CdrKeyVmOp(CdrKeyVMOpType.ByteSwap, skip, align=4)]
         return stream
 
-
-def build_machine(cdr, _type, top=False) -> Machine:
-    if type(_type) == str:
-        return DeferredInstanceMachine(_type, cdr)
-    if _type == str:
-        return StringMachine()
-    elif _type in primitive_types:
-        return PrimitiveMachine(_type)
-    elif _type == bytes:
-        return BytesMachine()
-    elif _type == NoneType:
-        return NoneMachine()
-    elif get_origin(_type) == Annotated:
-        args = get_args(_type)
-        if len(args) >= 2:
-            holder = args[1]
-            if type(holder) == tuple:
-                # Edge case for python 3.6: bug in backport? TODO: investigate and report
-                holder = holder[0]
-            if isinstance(holder, ArrayHolder):
-                return ArrayMachine(
-                    build_machine(cdr, holder.type),
-                    size=holder.length
-                )
-            elif isinstance(holder, SequenceHolder):
-                return SequenceMachine(
-                    build_machine(cdr, holder.type),
-                    maxlen=holder.max_length
-                )
-            elif isinstance(holder, BoundStringHolder):
-                return StringMachine(
-                    bound=holder.max_length
-                )
-    elif get_origin(_type) == Union and len(get_args(_type)) == 2 and get_args(_type)[1] == NoneType:
-        # TODO
-        return build_machine(cdr, get_args(_type)[0])
-    elif get_origin(_type) == list:
-        return SequenceMachine(
-            build_machine(cdr, get_args(_type)[0])
-        )
-    elif get_origin(_type) == dict:
-        return MappingMachine(
-            build_machine(cdr, get_args(_type)[0]),
-            build_machine(cdr, get_args(_type)[1])
-        )
-    elif isclass(_type) and issubclass(_type, IdlUnion):
-        return UnionMachine(
-            _type,
-            build_machine(cdr, _type._discriminator),
-            {dv: build_machine(cdr, tp) for dv, (_, tp) in _type._cases.items()},
-            default=build_machine(cdr, _type._default[1]) if _type._default else None
-        )
-    elif isclass(_type) and issubclass(_type, Enum):
-        return EnumMachine(_type)
-    elif isclass(_type) and is_dataclass(_type) and top:
-        _fields = get_type_hints(_type, include_extras=True)
-        _members = {k: build_machine(cdr, v) for k, v in _fields.items()}
-        return StructMachine(_type, _members)
-    elif isclass(_type) and is_dataclass(_type) and hasattr(_type, 'cdr'):
-        return InstanceMachine(_type)
-
-    raise TypeError(f"{repr(_type)} is not valid in CDR classes because it cannot be encoded.")

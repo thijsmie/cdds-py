@@ -72,6 +72,8 @@ size_t cdr_key_vm_run(cdr_key_vm_runner* runner, const uint8_t* cdr_sample_in, c
     const uint8_t* cdr_sample = cdr_sample_in + 4;
     const size_t cdr_sample_size = cdr_sample_size - 4;
 
+    memset(runner->workspace, 0, runner->workspace_size);
+
     while (instruction->type != CdrKeyVMOpDone) {
         //printf("op: %d %d %" PRIu32 " %d %" PRIu64 "\n", instruction->type, instruction->skip, instruction->size, instruction->align, instruction->value);
         //printf("size: %zu, wpos: %zu, spos: %zu\n", size, workspace_pos, sample_pos);
@@ -421,5 +423,7 @@ size_t cdr_key_vm_run(cdr_key_vm_runner* runner, const uint8_t* cdr_sample_in, c
         }
     }
 
+    make_space_for(runner, 16);
+    workspace_pos = workspace_pos > 16 ? workspace_pos : 16;
     return workspace_pos;
 }

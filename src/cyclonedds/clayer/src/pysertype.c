@@ -154,6 +154,14 @@ cdr_key_vm_op* make_vm_ops_from_py_op_list(PyObject* list)
         Py_DECREF(attr_value);
     }
 
+    for (size_t i = len; i > 0; --i) {
+        if (ops[i-1].skip) {
+            ops[i-1].type = CdrKeyVMOpDone;
+        } else {
+            break;
+        }
+    }
+
     return ops;
 }
 
@@ -813,14 +821,6 @@ ddspy_sertype_t *ddspy_sertype_new(PyObject *pytype)
     Py_DECREF(pykeyless);
     
     new->my_py_type = pytype;
-
-    PyObject* finalize = PyObject_GetAttrString(cdr, "finalize");
-    if (!valid_topic_py_or_set_error(finalize)) return NULL;
-    PyObject* args = PyTuple_New(0);
-    PyObject* result = PyObject_CallObject(finalize, args);
-    Py_DECREF(args);
-    Py_DECREF(finalize);
-    Py_XDECREF(result);
 
     new->deserialize_attr = PyObject_GetAttrString(cdr, "deserialize");
     new->serialize_attr = PyObject_GetAttrString(cdr, "serialize");

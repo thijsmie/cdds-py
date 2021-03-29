@@ -63,6 +63,14 @@ cdr_key_vm_op* make_vm_ops_from_py_op_list(PyObject* list)
         Py_DECREF(attr_value);
     }
 
+    for (size_t i = len; i > 0; --i) {
+        if (ops[i-1].skip) {
+            ops[i-1].type = CdrKeyVMOpDone;
+        } else {
+            break;
+        }
+    }
+
     return ops;
 }
 
@@ -102,8 +110,6 @@ typedef struct ddsi_sertype ddsi_sertype_t;
 typedef struct ddspy_sertype {
     ddsi_sertype_t my_c_type;
     PyObject* my_py_type;
-    PyObject* deserialize_attr;
-    PyObject* serialize_attr;
     cdr_key_vm* key_vm;
     bool key_maxsize_bigger_16;
 } ddspy_sertype_t;
@@ -122,7 +128,6 @@ typedef struct ddspy_serdata {
 
 // Python refcount: one ref for sample.
 typedef struct ddspy_sample_container {
-    PyObject* pysample;
     ddspy_serdata_t* usample;
     size_t usample_size;
 } ddspy_sample_container_t;
@@ -308,45 +313,18 @@ ddsi_serdata_t *serdata_from_sample(
 {
     ddspy_sample_container_t *container = (ddspy_sample_container_t*) sample;
 
-    /// If there is no PyObject in the container this is not possible.
-    assert(container->pysample);
+    ddspy_serdata_t* d = ddspy_serdata_new(type, kind, sample->usample_size);
+    memcpy((char*) d->data, sample->usample_size, size);
 
-    /// Make calls into python possible.
-    PyGILState_STATE state = PyGILState_Ensure();
-
-    PyObject* arglist = Py_BuildValue("(O)", container->pysample);
-    // nullcheck
-    PyObject* result = PyObject_CallObject(((const ddspy_sertype_t*) type)->serialize_attr, arglist);
-    // nullcheck
-    Py_DECREF(arglist);
-
-    if (result == NULL) {
-        // Error condition: This is when python has set an error code, no serialization happened.
-        // We won't set hash_populated, but we have to start the python interpreter back up
-        PyGILState_Release(state);
-        return NULL;
-    }
-
-    /// This is not a copy
-    const char* buf = PyBytes_AsString(result);
-    int size = PyBytes_Size(result);
-
-    ddspy_serdata_t* d = ddspy_serdata_new(type, kind, size);
-    memcpy((char*) d->data, buf, size);
-    Py_DECREF(result);
-
-    ddspy_serdata_populate_key(d);
-
-    ddspy_serdata_t *d;
     switch(kind)
     {
         case SDK_DATA:
+            ddspy_serdata_populate_key(d);
         break;
         case SDK_KEY:
             d->data_is_key = true;
-            free(d->data);
-            d->data = d->key;
-            d->data_size = d->key_size;
+            d->key = d->data;
+            d->key_size = d->data_size;
         break;
         default:
         case SDK_EMPTY:
@@ -383,8 +361,9 @@ bool serdata_to_sample(
     (void)bufptr;
     (void)buflim;
 
+    // This borrow here is going to fail sometime, fix this
+
     ddspy_sample_container_t *container = (ddspy_sample_container_t*) sample;
-    container->pysample = NULL;
     container->usample = cserdata(dcmn)->data;
     container->usample_size = cserdata(dcmn)->data_size;
 
@@ -398,8 +377,8 @@ ddsi_serdata_t *serdata_to_typeless(const ddsi_serdata_t* dcmn)
     d_tl->c_data.type = NULL;
     d_tl->c_data.hash = dcmn->hash;
     d_tl->c_data.timestamp.v = INT64_MIN;
-    d_tl->key = cserdata(dcmn)->key;
-    d_tl->data = cserdata(dcmn)->key;
+    memcpy(d_tl->key, cserdata(dcmn)->key, cserdata(dcmn)->key_size);
+    d_tl->data = d_tl->key;
     d_tl->key_size = cserdata(dcmn)->key_size;
     d_tl->data_size = cserdata(dcmn)->key_size;
     d_tl->hash = cserdata(dcmn)->hash;
@@ -476,15 +455,7 @@ const struct ddsi_serdata_ops ddspy_serdata_ops = {
 
 void sertype_free(struct ddsi_sertype* tpcmn)
 {
-    PyGILState_STATE state = PyGILState_Ensure();
-
-    Py_XDECREF(((ddspy_sertype_t*) tpcmn)->my_py_type);
-    Py_XDECREF(((ddspy_sertype_t*) tpcmn)->deserialize_attr);
-    Py_XDECREF(((ddspy_sertype_t*) tpcmn)->serialize_attr);
-
     ddsi_sertype_fini(tpcmn);
-
-    PyGILState_Release(state);
 }
 
 void sertype_zero_samples(const struct ddsi_sertype* d, void* _sample, size_t size)
@@ -494,8 +465,8 @@ void sertype_zero_samples(const struct ddsi_sertype* d, void* _sample, size_t si
     ddspy_sample_container_t *sample = (ddspy_sample_container_t*) _sample;
 
     for(size_t i = 0; i < size; ++i) {
-        (sample+i)->pysample = NULL;
-        // TODO: decrease ref here
+        (sample+i)->usample = NULL;
+        (sample+i)->usample_size = 0;
     }
 
     return;
@@ -508,7 +479,7 @@ void sertype_realloc_samples(void** ptrs, const struct ddsi_sertype* d, void* sa
     if (sample == NULL) {
         // Initial alloc
         for(size_t i = 0; i < new; ++i)
-            (newsamples+i)->pysample = NULL;
+            (newsamples+i)->usample = NULL;
         *ptrs = newsamples;
         return;
     }
@@ -516,7 +487,7 @@ void sertype_realloc_samples(void** ptrs, const struct ddsi_sertype* d, void* sa
         memcpy(newsamples, sample, old * sizeof(ddspy_sample_container_t));
 
         for(size_t i = old; i < new; ++i)
-            (newsamples+i)->pysample = NULL;
+            (newsamples+i)->usample = NULL;
     }
     else {
         ddspy_sample_container_t* newsamples = (ddspy_sample_container_t*) malloc(new * sizeof(ddspy_sample_container_t));
@@ -530,6 +501,11 @@ void sertype_realloc_samples(void** ptrs, const struct ddsi_sertype* d, void* sa
 
 void sertype_free_samples(const struct ddsi_sertype* d, void** ptrs, size_t size, dds_free_op_t op)
 {
+    for(size_t i = 0; i < size; ++i) {
+        if (((ddspy_sample_container_t*) (*ptrs+i))->usample != NULL)
+            free(((ddspy_sample_container_t*) (*ptrs+i))->usample);
+    }
+
     sertype_zero_samples(d, *ptrs, size);
 
     if (op & DDS_FREE_ALL_BIT) {
@@ -600,6 +576,15 @@ bool valid_topic_py_or_set_error(PyObject *py_obj)
     return false;
 }
 
+bool valid_pt_or_set_error(void *py_obj)
+{
+    if (PyErr_Occurred()) return false;
+    if (py_obj != NULL) return true;
+
+    PyErr_SetString(PyExc_TypeError, "Invalid c object created.");
+    return false;
+}
+
 
 ddspy_sertype_t *ddspy_sertype_new(PyObject *pytype)
 {
@@ -630,22 +615,9 @@ ddspy_sertype_t *ddspy_sertype_new(PyObject *pytype)
     Py_DECREF(pykeyless);
     
     new->my_py_type = pytype;
+    new->key_vm = make_key_vm(cdr);
+    if (!valid_pt_or_set_error(new->key_vm)) return NULL;
 
-    PyObject* finalize = PyObject_GetAttrString(cdr, "finalize");
-    if (!valid_topic_py_or_set_error(finalize)) return NULL;
-    PyObject* args = PyTuple_New(0);
-    PyObject* result = PyObject_CallObject(finalize, args);
-    Py_DECREF(args);
-    Py_DECREF(finalize);
-    Py_XDECREF(result);
-
-    new->deserialize_attr = PyObject_GetAttrString(cdr, "deserialize");
-    new->serialize_attr = PyObject_GetAttrString(cdr, "serialize");
-
-    if (!valid_topic_py_or_set_error(new->deserialize_attr) ||
-        !valid_topic_py_or_set_error(new->serialize_attr))
-        return NULL;
-    
     PyObject* pykeysize = PyObject_GetAttrString(cdr, "key_max_size");
     if (!valid_topic_py_or_set_error(pykeysize)) return NULL;
 
@@ -665,8 +637,6 @@ ddspy_sertype_t *ddspy_sertype_new(PyObject *pytype)
 
     return new;
 }
-
-
 
 /// Python BIND
 
@@ -704,9 +674,13 @@ ddspy_write(PyObject *self, PyObject *args)
     ddspy_sample_container_t container;
     dds_entity_t writer;
     dds_return_t sts;
+    Py_buffer sample_data;
 
-    if (!PyArg_ParseTuple(args, "iO", &writer, &container.sample))
+    if (!PyArg_ParseTuple(args, "iy*", &writer, &sample_data))
         return NULL;
+
+    container.usample = sample_data.buf;
+    container.usample_size = sample_data.len;
 
     sts = dds_write(writer, &container);
 
@@ -720,9 +694,13 @@ ddspy_write_ts(PyObject *self, PyObject *args)
     dds_entity_t writer;
     dds_return_t sts;
     dds_time_t time;
+    Py_buffer sample_data;
 
-    if (!PyArg_ParseTuple(args, "iOL", &writer, &container.sample, &time))
+    if (!PyArg_ParseTuple(args, "iy*L", &writer, &sample_data, &time))
         return NULL;
+
+    container.usample = sample_data.buf;
+    container.usample_size = sample_data.len;
 
     sts = dds_write_ts(writer, &container, time);
 
@@ -735,9 +713,13 @@ ddspy_dispose(PyObject *self, PyObject *args)
     ddspy_sample_container_t container;
     dds_entity_t writer;
     dds_return_t sts;
+    Py_buffer sample_data;
 
-    if (!PyArg_ParseTuple(args, "iO", &writer, &container.sample))
+    if (!PyArg_ParseTuple(args, "iy*", &writer, &sample_data))
         return NULL;
+
+    container.usample = sample_data.buf;
+    container.usample_size = sample_data.len;
 
     sts = dds_dispose(writer, &container);
 
@@ -751,9 +733,13 @@ ddspy_dispose_ts(PyObject *self, PyObject *args)
     dds_entity_t writer;
     dds_return_t sts;
     dds_time_t time;
+    Py_buffer sample_data;
 
-    if (!PyArg_ParseTuple(args, "iOL", &writer, &container.sample, &time))
+    if (!PyArg_ParseTuple(args, "iy*L", &writer, &sample_data, &time))
         return NULL;
+
+    container.usample = sample_data.buf;
+    container.usample_size = sample_data.len;
 
     sts = dds_dispose_ts(writer, &container, time);
 
@@ -766,9 +752,13 @@ ddspy_writedispose(PyObject *self, PyObject *args)
     ddspy_sample_container_t container;
     dds_entity_t writer;
     dds_return_t sts;
+    Py_buffer sample_data;
 
-    if (!PyArg_ParseTuple(args, "iO", &writer, &container.sample))
+    if (!PyArg_ParseTuple(args, "iy*", &writer, &sample_data))
         return NULL;
+
+    container.usample = sample_data.buf;
+    container.usample_size = sample_data.len;
 
     sts = dds_writedispose(writer, &container);
 
@@ -782,9 +772,13 @@ ddspy_writedispose_ts(PyObject *self, PyObject *args)
     dds_entity_t writer;
     dds_return_t sts;
     dds_time_t time;
+    Py_buffer sample_data;
 
-    if (!PyArg_ParseTuple(args, "iOL", &writer, &container.sample, &time))
+    if (!PyArg_ParseTuple(args, "iy*L", &writer, &sample_data, &time))
         return NULL;
+
+    container.usample = sample_data.buf;
+    container.usample_size = sample_data.len;
 
     sts = dds_writedispose_ts(writer, &container, time);
 
@@ -824,7 +818,7 @@ ddspy_dispose_handle_ts(PyObject *self, PyObject *args)
 
 static PyObject * sampleinfo_descriptor;
 
-static void set_sampleinfo_attribute(PyObject *sample, dds_sample_info_t *sampleinfo)
+static PyObject* get_sampleinfo_pyobject(dds_sample_info_t *sampleinfo)
 {
     PyObject* arguments = Py_BuildValue("IIIOLKKkkkkk",
         sampleinfo->sample_state,
@@ -842,8 +836,7 @@ static void set_sampleinfo_attribute(PyObject *sample, dds_sample_info_t *sample
     );
     PyObject *pysampleinfo = PyObject_CallObject(sampleinfo_descriptor, arguments);
     Py_DECREF(arguments);
-    PyObject_SetAttrString(sample, "sample_info", pysampleinfo);
-    Py_DECREF(pysampleinfo);
+    return pysampleinfo;
 }
 
 static PyObject *
@@ -877,9 +870,10 @@ ddspy_read(PyObject *self, PyObject *args)
     PyObject* list = PyList_New(sts);
 
     for(int i = 0; i < sts; ++i) {
-        set_sampleinfo_attribute(container[i].sample, &info[i]);
-        PyList_SetItem(list, i, container[i].sample);
-        py_return_ref(container[i].sample);
+        PyObject* sampleinfo = get_sampleinfo_pyobject(&info[i]);
+        PyObject* item = Py_BuildValue("(y#O)", container[i]->usample, container[i]->usample_size, sampleinfo);
+        PyList_SetItem(list, i, item); // steals ref
+        Py_DECREF(sampleinfo);
     }
     free(info);
     free(container);
@@ -920,9 +914,10 @@ ddspy_take(PyObject *self, PyObject *args)
     PyObject* list = PyList_New(sts);
 
     for(int i = 0; i < sts; ++i) {
-        set_sampleinfo_attribute(container[i].sample, &info[i]);
-        PyList_SetItem(list, i, container[i].sample);
-        py_return_ref(container[i].sample);
+        PyObject* sampleinfo = get_sampleinfo_pyobject(&info[i]);
+        PyObject* item = Py_BuildValue("(y#O)", container[i]->usample, container[i]->usample_size, sampleinfo);
+        PyList_SetItem(list, i, item); // steals ref
+        Py_DECREF(sampleinfo);
     }
     free(info);
     free(container);
@@ -964,9 +959,10 @@ ddspy_read_handle(PyObject *self, PyObject *args)
     PyObject* list = PyList_New(sts);
 
     for(int i = 0; i < sts; ++i) {
-        set_sampleinfo_attribute(container[i].sample, &info[i]);
-        PyList_SetItem(list, i, container[i].sample);
-        py_return_ref(container[i].sample);
+        PyObject* sampleinfo = get_sampleinfo_pyobject(&info[i]);
+        PyObject* item = Py_BuildValue("(y#O)", container[i]->usample, container[i]->usample_size, sampleinfo);
+        PyList_SetItem(list, i, item); // steals ref
+        Py_DECREF(sampleinfo);
     }
     free(info);
     free(container);
@@ -1008,9 +1004,10 @@ ddspy_take_handle(PyObject *self, PyObject *args)
     PyObject* list = PyList_New(sts);
 
     for(int i = 0; i < sts; ++i) {
-        set_sampleinfo_attribute(container[i].sample, &info[i]);
-        PyList_SetItem(list, i, container[i].sample);
-        py_return_ref(container[i].sample);
+        PyObject* sampleinfo = get_sampleinfo_pyobject(&info[i]);
+        PyObject* item = Py_BuildValue("(y#O)", container[i]->usample, container[i]->usample_size, sampleinfo);
+        PyList_SetItem(list, i, item); // steals ref
+        Py_DECREF(sampleinfo);
     }
     free(info);
     free(container);
@@ -1026,9 +1023,13 @@ ddspy_register_instance(PyObject *self, PyObject *args)
     dds_instance_handle_t handle;
     dds_return_t sts;
     ddspy_sample_container_t container;
+    Py_buffer sample_data;
 
-    if (!PyArg_ParseTuple(args, "iO", &writer, &container.sample))
+    if (!PyArg_ParseTuple(args, "iy*", &writer, &sample_data))
         return NULL;
+
+    container.usample = sample_data.buf;
+    container.usample_size = sample_data.len;
 
     sts = dds_register_instance(writer, &handle, &container);
 
@@ -1045,9 +1046,13 @@ ddspy_unregister_instance(PyObject *self, PyObject *args)
     dds_entity_t writer;
     dds_return_t sts;
     ddspy_sample_container_t container;
+    Py_buffer sample_data;
 
-    if (!PyArg_ParseTuple(args, "iO", &writer, &container.sample))
+    if (!PyArg_ParseTuple(args, "iy*", &writer, &sample_data))
         return NULL;
+
+    container.usample = sample_data.buf;
+    container.usample_size = sample_data.len;
 
     sts = dds_unregister_instance(writer, &container);
 
@@ -1078,9 +1083,13 @@ ddspy_unregister_instance_ts(PyObject *self, PyObject *args)
     dds_return_t sts;
     ddspy_sample_container_t container;
     dds_time_t time;
+    Py_buffer sample_data;
 
-    if (!PyArg_ParseTuple(args, "iOL", &writer, &container.sample, &time))
+    if (!PyArg_ParseTuple(args, "iy*L", &writer, &sample_data, &time))
         return NULL;
+
+    container.usample = sample_data.buf;
+    container.usample_size = sample_data.len;
 
     sts = dds_unregister_instance_ts(writer, &container, time);
 
@@ -1111,9 +1120,13 @@ ddspy_lookup_instance(PyObject *self, PyObject *args)
     dds_entity_t entity;
     dds_return_t sts;
     ddspy_sample_container_t container;
+    Py_buffer sample_data;
 
-    if (!PyArg_ParseTuple(args, "iO", &entity, &container.sample))
+    if (!PyArg_ParseTuple(args, "iy*", &writer, &sample_data))
         return NULL;
+
+    container.usample = sample_data.buf;
+    container.usample_size = sample_data.len;
 
     sts = dds_lookup_instance(entity, &container);
 
@@ -1128,6 +1141,7 @@ ddspy_read_next(PyObject *self, PyObject *args)
     dds_sample_info_t info;
     ddspy_sample_container_t container;
     ddspy_sample_container_t* pt_container;
+    container.usample = NULL;
 
     if (!PyArg_ParseTuple(args, "i", &reader))
         return NULL;
@@ -1139,14 +1153,16 @@ ddspy_read_next(PyObject *self, PyObject *args)
         return PyLong_FromLong((long) sts);
     }
 
-    if (sts == 0 || container.sample == NULL) {
+    if (sts == 0 || container.usample == NULL) {
         Py_INCREF(Py_None);
         return Py_None;
     }
-   
-    set_sampleinfo_attribute(container.sample, &info);
-    py_return_ref(container.sample);
-    return container.sample;
+
+    PyObject* sampleinfo = get_sampleinfo_pyobject(&info);
+    PyObject* item = Py_BuildValue("(y#O)", container.usample, container.usample_size, sampleinfo);
+    Py_DECREF(sampleinfo);
+
+    return item;
 }
 
 static PyObject *
@@ -1157,6 +1173,7 @@ ddspy_take_next(PyObject *self, PyObject *args)
     dds_sample_info_t info;
     ddspy_sample_container_t container;
     ddspy_sample_container_t* pt_container;
+    container.usample = NULL;
 
     if (!PyArg_ParseTuple(args, "i", &reader))
         return NULL;
@@ -1172,10 +1189,12 @@ ddspy_take_next(PyObject *self, PyObject *args)
         Py_INCREF(Py_None);
         return Py_None;
     }
-   
-    set_sampleinfo_attribute(container.sample, &info);
-    py_return_ref(container.sample);
-    return container.sample;
+
+    PyObject* sampleinfo = get_sampleinfo_pyobject(&info);
+    PyObject* item = Py_BuildValue("(y#O)", container.usample, container.usample_size, sampleinfo);
+    Py_DECREF(sampleinfo);
+
+    return item;
 }
 
 
