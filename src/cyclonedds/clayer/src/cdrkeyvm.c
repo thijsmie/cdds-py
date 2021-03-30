@@ -31,13 +31,14 @@ cdr_key_vm_runner* cdr_key_vm_create_runner(cdr_key_vm* vm)
     if (vm == NULL) return NULL;
     cdr_key_vm_runner* runner = (cdr_key_vm_runner*) malloc(sizeof(struct cdr_key_vm_runner_s));
     if (runner == NULL) return NULL;
-    runner->workspace = malloc(vm->initial_alloc_size);
-    memset(runner->workspace, 0, vm->initial_alloc_size);
+    size_t alloc_size = vm->initial_alloc_size < 16 ? 16 : vm->initial_alloc_size;
+    runner->workspace = malloc(alloc_size);
+    memset(runner->workspace, 0, alloc_size);
     if (runner->workspace == NULL) {
         free(runner);
         return NULL;
     }
-    runner->workspace_size = vm->initial_alloc_size;
+    runner->workspace_size = alloc_size;
     runner->my_vm = vm;
     return runner;
 }
@@ -70,7 +71,7 @@ size_t cdr_key_vm_run(cdr_key_vm_runner* runner, const uint8_t* cdr_sample_in, c
 
     // Work relative from post-dds-header
     const uint8_t* cdr_sample = cdr_sample_in + 4;
-    const size_t cdr_sample_size = cdr_sample_size - 4;
+    const size_t cdr_sample_size = cdr_sample_size_in - 4;
 
     memset(runner->workspace, 0, runner->workspace_size);
 
@@ -423,7 +424,6 @@ size_t cdr_key_vm_run(cdr_key_vm_runner* runner, const uint8_t* cdr_sample_in, c
         }
     }
 
-    make_space_for(runner, 16);
     workspace_pos = workspace_pos > 16 ? workspace_pos : 16;
     return workspace_pos;
 }
