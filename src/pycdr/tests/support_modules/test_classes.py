@@ -95,13 +95,3 @@ class EasyUnion:
 @cdr
 class SingleUnion:
     value: EasyUnion
-
-
-@cdr
-class List:
-    nodes: pt.sequence['Node']
-
-
-@cdr
-class Node:
-    subnodes: pt.sequence['Node']

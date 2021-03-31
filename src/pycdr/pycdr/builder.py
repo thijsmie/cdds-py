@@ -12,7 +12,6 @@
 
 from enum import Enum
 from inspect import isclass
-from typing import ForwardRef
 from collections import defaultdict
 
 from .support import qualified_name, module_prefix, MaxSizeFinder
@@ -110,8 +109,6 @@ class Builder:
             return SequenceMachine(
                 cls._machine_for_type(module_prefix, get_args(_type)[0], key)
             )
-        elif get_origin(_type) == ForwardRef:
-            return cls._machine_for_cdrclass(module_prefix, _type.__forward_arg__, key)
         elif get_origin(_type) == dict:
             return MappingMachine(
                 cls._machine_for_type(module_prefix, get_args(_type)[0], key),
@@ -121,7 +118,14 @@ class Builder:
         
     @classmethod
     def _machine_struct(cls, module_prefix, _type, key):
-        fields = _type.__annotations__
+        try:
+            fields = get_type_hints(_type, include_extras=True)
+        except NameError as e:
+            key = e.args[0].split('\'')[1]
+            if '.' not in key:
+                raise BuildDefer(module_prefix + key)
+            else:
+                raise BuildDefer(key)
         members = {
             name: cls._machine_for_type(module_prefix, field_type, key) 
             for name, field_type in fields.items()
