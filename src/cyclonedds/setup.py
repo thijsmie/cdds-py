@@ -22,7 +22,6 @@ with open("README.md", "r", encoding="utf-8") as fh:
 if "CYCLONEDDS_HOME" in os.environ:
     home = os.environ["CYCLONEDDS_HOME"]
     ddspy = Extension('ddspy', 
-        extra_compile_args = ["-O0", "-g"],
         sources = ['clayer/src/pysertype.c', 'clayer/src/cdrkeyvm.c'], 
         libraries=['ddsc'], 
         include_dirs=[os.path.join(home, "include"), 'clayer/src'],

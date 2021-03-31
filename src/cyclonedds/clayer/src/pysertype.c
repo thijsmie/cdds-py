@@ -21,6 +21,7 @@
 #include "dds/dds.h"
 
 #include "dds/ddsrt/endian.h"
+#include "dds/ddsrt/mh3.h"
 #include "dds/ddsrt/md5.h"
 #include "dds/ddsi/q_radmin.h"
 #include "dds/ddsi/ddsi_serdata.h"
@@ -92,7 +93,7 @@ cdr_key_vm* make_key_vm(PyObject* cdr)
 
     vm->instructions = make_vm_ops_from_py_op_list(list);
     vm->final_size_is_static = false;
-    vm->initial_alloc_size = 1024;
+    vm->initial_alloc_size = 128;
 
     Py_DECREF(list);
 
@@ -177,7 +178,7 @@ void ddspy_serdata_calc_hash(ddspy_serdata_t* this)
     } else {
         memcpy((char*) &(this->hash), (char*) this->key, 16);
     }
-    memcpy((char*) &(this->c_data.hash), &(this->hash), 4);
+    this->c_data.hash = ddsrt_mh3(this->key, this->key_size, 0) ^ this->c_data.type->serdata_basehash;
 }
 
 
@@ -196,11 +197,18 @@ void ddspy_serdata_populate_key(ddspy_serdata_t* this)
 
 bool serdata_eqkey(const struct ddsi_serdata* a, const struct ddsi_serdata* b)
 {
+    assert(cserdata(a)->key != NULL);
+    assert(cserdata(b)->key != NULL);
     return 0 == memcmp(&cserdata(a)->hash, &cserdata(b)->hash, 16);
 }
 
 uint32_t serdata_size(const struct ddsi_serdata* dcmn)
 {
+    assert(cserdata(dcmn)->key != NULL);
+    assert(cserdata(dcmn)->data != NULL);
+    if (cserdata(dcmn)->data_is_key) {
+        return (uint32_t) cserdata(dcmn)->key_size;
+    }
     return (uint32_t) cserdata(dcmn)->data_size;
 }
 
@@ -230,21 +238,24 @@ ddsi_serdata_t *serdata_from_ser(
         }
         fragchain = fragchain->nextfrag;
     }
-
+    
+    ddspy_serdata_populate_key(d);
+    
     switch (kind)
     {
     case SDK_KEY:
         d->data_is_key = true;
-        d->key = d->data;
-        d->key_size = d->data_size;
-        ddspy_serdata_calc_hash(d);
         break;
     case SDK_DATA:
-        ddspy_serdata_populate_key(d);
         break;
     case SDK_EMPTY:
         assert(0);
     }
+    
+    assert(d->key != NULL);
+    assert(d->data != NULL);
+    assert(d->data_size != 0);
+    assert(d->key_size >= 16);
 
     return (ddsi_serdata_t*) d;
 }
@@ -268,21 +279,24 @@ ddsi_serdata_t *serdata_from_ser_iov(
         cursor += n_bytes;
         off += n_bytes;
     }
-
+    
+    ddspy_serdata_populate_key(d);
+    
     switch (kind)
     {
     case SDK_KEY:
         d->data_is_key = true;
-        d->key = d->data;
-        d->key_size = d->data_size;
-        ddspy_serdata_calc_hash(d);
         break;
     case SDK_DATA:
-        ddspy_serdata_populate_key(d);
         break;
     case SDK_EMPTY:
         assert(0);
     }
+    
+    assert(d->key != NULL);
+    assert(d->data != NULL);
+    assert(d->data_size != 0);
+    assert(d->key_size >= 16);
 
     return (ddsi_serdata_t*) d;
 }
@@ -295,6 +309,7 @@ ddsi_serdata_t *serdata_from_keyhash(
   (void)topic;
   //replace with (if key_size_max <= 16) then populate the data class with the key hash (key_read)
   // TODO
+  assert(0);
   return NULL;
 }
 
@@ -309,36 +324,59 @@ ddsi_serdata_t *serdata_from_sample(
     ddspy_serdata_t* d = ddspy_serdata_new(type, kind, container->usample_size);
     memcpy((char*) d->data, container->usample, container->usample_size);
 
-    switch(kind)
+    ddspy_serdata_populate_key(d);
+    
+    switch (kind)
     {
-        case SDK_DATA:
-            ddspy_serdata_populate_key(d);
+    case SDK_KEY:
+        d->data_is_key = true;
         break;
-        case SDK_KEY:
-            d->data_is_key = true;
-            d->key = d->data;
-            d->key_size = d->data_size;
-            ddspy_serdata_calc_hash(d);
+    case SDK_DATA:
         break;
-        default:
-        case SDK_EMPTY:
-            assert(0);
+    case SDK_EMPTY:
+        assert(0);
     }
+    
+    
+    assert(d->key != NULL);
+    assert(d->data != NULL);
+    assert(d->data_size != 0);
+    assert(d->key_size >= 16);
     
     return (ddsi_serdata_t*) d;
 }
 
 void serdata_to_ser(const ddsi_serdata_t* dcmn, size_t off, size_t sz, void* buf)
 {
-    memcpy(buf, (char*) cserdata(dcmn)->data + off, sz);
+    assert(cserdata(dcmn)->key != NULL);
+    assert(cserdata(dcmn)->data != NULL);
+    assert(cserdata(dcmn)->data_size != 0);
+    assert(cserdata(dcmn)->key_size >= 16);
+    if (cserdata(dcmn)->data_is_key) {
+        memcpy(buf, (char*) cserdata(dcmn)->key + off, sz);
+    }
+    else {
+        memcpy(buf, (char*) cserdata(dcmn)->data + off, sz);
+    }
 }
 
 ddsi_serdata_t *serdata_to_ser_ref(
   const struct ddsi_serdata* dcmn, size_t off,
   size_t sz, ddsrt_iovec_t* ref)
 {
-    ref->iov_base = (char*) cserdata(dcmn)->data + off;
-    ref->iov_len = sz;
+    assert(cserdata(dcmn)->key != NULL);
+    assert(cserdata(dcmn)->data != NULL);
+    assert(cserdata(dcmn)->data_size != 0);
+    assert(cserdata(dcmn)->key_size >= 16);
+
+    if (cserdata(dcmn)->data_is_key) {
+        ref->iov_base = (char*) cserdata(dcmn)->key + off;
+        ref->iov_len = sz;
+    }
+    else {
+        ref->iov_base = (char*) cserdata(dcmn)->data + off;
+        ref->iov_len = sz;
+    }
     return ddsi_serdata_ref(dcmn);
 }
 
@@ -355,6 +393,12 @@ bool serdata_to_sample(
     (void)bufptr;
     (void)buflim;
     ddspy_sample_container_t *container = (ddspy_sample_container_t*) sample;
+    
+    assert(cserdata(dcmn)->key != NULL);
+    assert(cserdata(dcmn)->data != NULL);
+    assert(cserdata(dcmn)->data_size != 0);
+    assert(cserdata(dcmn)->key_size >= 16);
+    assert(container->usample == NULL);
 
     container->usample = malloc(cserdata(dcmn)->data_size);
     memcpy(container->usample, cserdata(dcmn)->data, cserdata(dcmn)->data_size);
@@ -376,6 +420,10 @@ ddsi_serdata_t *serdata_to_typeless(const ddsi_serdata_t* dcmn)
     memcpy(d_tl->data, cserdata(dcmn)->data, cserdata(dcmn)->data_size);
     memcpy(d_tl->key, cserdata(dcmn)->key, cserdata(dcmn)->key_size);
     d_tl->key_size = cserdata(dcmn)->key_size;*/
+    assert(cserdata(dcmn)->key != NULL);
+    assert(cserdata(dcmn)->data != NULL);
+    assert(cserdata(dcmn)->data_size != 0);
+    assert(cserdata(dcmn)->key_size >= 16);
 
     return ddsi_serdata_ref(dcmn);
 }
@@ -385,21 +433,31 @@ bool serdata_typeless_to_sample(
   const struct ddsi_serdata* dcmn, void* sample,
   void**buf, void*buflim)
 {
-    /*ddspy_sample_container_t* container = (ddspy_sample_container_t*) sample;
+    ddspy_sample_container_t* container = (ddspy_sample_container_t*) sample;
+    
+    assert(cserdata(dcmn)->key != NULL);
+    assert(cserdata(dcmn)->data != NULL);
+    assert(cserdata(dcmn)->data_size != 0);
+    assert(cserdata(dcmn)->key_size >= 16);
+    assert(container->usample == NULL);
 
     container->usample = malloc(cserdata(dcmn)->data_size);
     container->usample_size = cserdata(dcmn)->data_size;
 
     memcpy(container->usample, cserdata(dcmn)->data, container->usample_size);
-    */
-    return false;
+    
+    return true;
 }
 
 void serdata_free(struct ddsi_serdata* dcmn)
 {
+    assert(cserdata(dcmn)->key != NULL);
+    assert(cserdata(dcmn)->data != NULL);
+    assert(cserdata(dcmn)->data_size != 0);
+    assert(cserdata(dcmn)->key_size >= 16);
+
     free(serdata(dcmn)->data);
-    if (!serdata(dcmn)->data_is_key && serdata(dcmn)->key != NULL)
-        free(serdata(dcmn)->key);
+    free(serdata(dcmn)->key);
     free(dcmn);
 }
 
@@ -412,6 +470,12 @@ size_t serdata_print(const struct ddsi_sertype* tpcmn, const struct ddsi_serdata
 
 void serdata_get_keyhash(const ddsi_serdata_t* d, struct ddsi_keyhash* buf, bool force_md5)
 {
+    assert(cserdata(d)->key != NULL);
+    assert(cserdata(d)->data != NULL);
+    assert(cserdata(d)->data_size != 0);
+    assert(cserdata(d)->key_size >= 16);
+    assert(d->type != NULL);
+
     if (force_md5 && !(((const ddspy_sertype_t*) d->type)->key_maxsize_bigger_16))
     {
         ddsrt_md5_state_t md5st;
@@ -443,54 +507,44 @@ const struct ddsi_serdata_ops ddspy_serdata_ops = {
   &serdata_get_keyhash
 };
 
-
 void sertype_free(struct ddsi_sertype* tpcmn)
 {
     ddsi_sertype_fini(tpcmn);
 }
 
-void sertype_zero_samples(const struct ddsi_sertype* d, void* _sample, size_t size)
+void sertype_zero_samples(const struct ddsi_sertype *sertype_common, void *samples, size_t count)
 {
-    (void*) d;
-    (void*) _sample;
-    (void*) &size;
-
-    return;
+    memset(samples, 0, sizeof(ddspy_sample_container_t) * count);
 }
 
-void sertype_realloc_samples(void** ptrs, const struct ddsi_sertype* d, void* sample, size_t old, size_t new)
+void sertype_realloc_samples(void **ptrs, const struct ddsi_sertype *sertype_common, void *old, size_t oldcount, size_t count)
 {
-    /*ddspy_sample_container_t* oldsamples = (ddspy_sample_container_t*) sample;
-    ddspy_sample_container_t* newsamples = (ddspy_sample_container_t*) malloc(new * sizeof(ddspy_sample_container_t));
-    memset(newsamples, 0, new * sizeof(ddspy_sample_container_t));
+    char *new = (oldcount == count) ? old : dds_realloc (old, sizeof(ddspy_sample_container_t) * count);
+    if (new && count > oldcount)
+        memset (new + sizeof(ddspy_sample_container_t) * oldcount, 0, sizeof(ddspy_sample_container_t) * (count - oldcount));
 
-    for (size_t i = new; i < old; ++i) {
-        if ((oldsamples + i)->usample != NULL)
-            free((oldsamples + i)->usample);
+    for (size_t i = 0; i < count; i++)
+    {
+        void *ptr = (char *) new + i * sizeof(ddspy_sample_container_t);
+        ptrs[i] = ptr;
     }
-    for (size_t i = 0; i < (old > new ? new : old); i++) {
-        (newsamples + i)->usample = (oldsamples + i)->usample;
-        (newsamples + i)->usample_size = (oldsamples + i)->usample_size;
-    }
-
-    if (sample)
-        free(sample);
-    *ptrs = (void*) newsamples;*/
 }
 
-void sertype_free_samples(const struct ddsi_sertype* d, void** ptrs, size_t size, dds_free_op_t op)
+void sertype_free_samples(const struct ddsi_sertype *sertype_common, void **ptrs, size_t count, dds_free_op_t op)
 {
-    /*for(size_t i = 0; i < size; ++i) {
-        if (((ddspy_sample_container_t*) (*ptrs+i))->usample != NULL) {
-            free(((ddspy_sample_container_t*) (*ptrs+i))->usample);
-            ((ddspy_sample_container_t*) (*ptrs+i))->usample = NULL;
+    if (count > 0)
+    {
+        if (op & DDS_FREE_CONTENTS_BIT)
+        {
+            if (((ddspy_sample_container_t*) ptrs[0])->usample != NULL)
+                free(((ddspy_sample_container_t*) ptrs[0])->usample);
+        }
+        
+        if (op & DDS_FREE_ALL_BIT)
+        {
+            dds_free (ptrs[0]);
         }
     }
-
-    if (op & DDS_FREE_ALL_BIT) {
-        free(*ptrs);
-        *ptrs = NULL;
-    }*/
 }
 
 bool sertype_equal(const ddsi_sertype_t* acmn, const ddsi_sertype_t* bcmn)
@@ -675,10 +729,14 @@ ddspy_write(PyObject *self, PyObject *args)
     if (!PyArg_ParseTuple(args, "iy*", &writer, &sample_data))
         return NULL;
 
+    assert(PyBuffer_IsContiguous(sample_data, 'C'));
+
     container.usample = sample_data.buf;
     container.usample_size = sample_data.len;
 
     sts = dds_write(writer, &container);
+
+    PyBuffer_Release(&sample_data);
 
     return PyLong_FromLong((long) sts);
 }
@@ -700,6 +758,8 @@ ddspy_write_ts(PyObject *self, PyObject *args)
 
     sts = dds_write_ts(writer, &container, time);
 
+    PyBuffer_Release(&sample_data);
+
     return PyLong_FromLong((long) sts);
 }
 
@@ -718,6 +778,8 @@ ddspy_dispose(PyObject *self, PyObject *args)
     container.usample_size = sample_data.len;
 
     sts = dds_dispose(writer, &container);
+
+    PyBuffer_Release(&sample_data);
 
     return PyLong_FromLong((long) sts);
 }
@@ -739,6 +801,8 @@ ddspy_dispose_ts(PyObject *self, PyObject *args)
 
     sts = dds_dispose_ts(writer, &container, time);
 
+    PyBuffer_Release(&sample_data);
+
     return PyLong_FromLong((long) sts);
 }
 
@@ -757,6 +821,8 @@ ddspy_writedispose(PyObject *self, PyObject *args)
     container.usample_size = sample_data.len;
 
     sts = dds_writedispose(writer, &container);
+
+    PyBuffer_Release(&sample_data);
 
     return PyLong_FromLong((long) sts);
 }
@@ -777,6 +843,8 @@ ddspy_writedispose_ts(PyObject *self, PyObject *args)
     container.usample_size = sample_data.len;
 
     sts = dds_writedispose_ts(writer, &container, time);
+
+    PyBuffer_Release(&sample_data);
 
     return PyLong_FromLong((long) sts);
 }
@@ -856,6 +924,7 @@ ddspy_read(PyObject *self, PyObject *args)
 
     for(int i = 0; i < N; ++i) {
         rcontainer[i] = &container[i];
+        container[i].usample = NULL;
     }
 
     sts = dds_read(reader, (void**) rcontainer, info, N, N);
@@ -901,6 +970,7 @@ ddspy_take(PyObject *self, PyObject *args)
 
     for(int i = 0; i < N; ++i) {
         rcontainer[i] = &container[i];
+        container[i].usample = NULL;
     }
 
     sts = dds_take(reader, (void**)rcontainer, info, N, N);
@@ -947,6 +1017,7 @@ ddspy_read_handle(PyObject *self, PyObject *args)
 
     for(int i = 0; i < N; ++i) {
         rcontainer[i] = &container[i];
+        container[i].usample = NULL;
     }
 
     sts = dds_read_instance(reader, (void**)rcontainer, info, N, N, handle);
@@ -993,6 +1064,7 @@ ddspy_take_handle(PyObject *self, PyObject *args)
 
     for(int i = 0; i < N; ++i) {
         rcontainer[i] = &(container[i]);
+        container[i].usample = NULL;
     }
 
     sts = dds_take_instance(reader, (void**) rcontainer, info, N, N, handle);
@@ -1033,6 +1105,8 @@ ddspy_register_instance(PyObject *self, PyObject *args)
 
     sts = dds_register_instance(writer, &handle, &container);
 
+    PyBuffer_Release(&sample_data);
+
     if (sts < 0) {
         return PyLong_FromLong((long) sts);
     }
@@ -1055,6 +1129,8 @@ ddspy_unregister_instance(PyObject *self, PyObject *args)
     container.usample_size = sample_data.len;
 
     sts = dds_unregister_instance(writer, &container);
+
+    PyBuffer_Release(&sample_data);
 
     return PyLong_FromLong((long) sts);
 }
@@ -1093,6 +1169,8 @@ ddspy_unregister_instance_ts(PyObject *self, PyObject *args)
 
     sts = dds_unregister_instance_ts(writer, &container, time);
 
+    PyBuffer_Release(&sample_data);
+
     return PyLong_FromLong((long) sts);
 }
 
@@ -1129,6 +1207,8 @@ ddspy_lookup_instance(PyObject *self, PyObject *args)
     container.usample_size = sample_data.len;
 
     sts = dds_lookup_instance(entity, &container);
+
+    PyBuffer_Release(&sample_data);
 
     return PyLong_FromLong((long) sts);
 }
@@ -1216,6 +1296,8 @@ ddspy_calc_key(PyObject *self, PyObject *args)
     cdr_key_vm_runner* runner = cdr_key_vm_create_runner(vm);
 
     size_t enc = cdr_key_vm_run(runner, (const uint8_t*) sample_data.buf, (size_t)sample_data.len);
+
+    PyBuffer_Release(&sample_data);
 
     PyObject* returnv = Py_BuildValue("y#", (char*) runner->workspace, enc);
 

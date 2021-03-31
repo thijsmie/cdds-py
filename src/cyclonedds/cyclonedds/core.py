@@ -1254,7 +1254,12 @@ class QueryCondition(_Condition):
 
         def call(sample_pt):
             try:
-                return self.filter(ct.cast(sample_pt, ct.POINTER(reader.topic.data_type))[0])
+                sample_info = ct.cast(sample_pt, ct.POINTER(dds_c_t.sample_buffer))[0]
+                array_type = ct.c_ubyte * sample_info.len
+                array = ct.cast(sample_info.buf, ct.POINTER(array_type))
+                contents = array.contents[:]
+                data = self.reader._topic.data_type.deserialize(bytes(contents))
+                return self.filter(data)
             except Exception:  # Block any python exception from going into C
                 return False
 

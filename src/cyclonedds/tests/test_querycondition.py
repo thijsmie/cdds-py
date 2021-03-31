@@ -34,13 +34,13 @@ def test_querycondition_get_reader(common_setup):
     qc = QueryCondition(common_setup.dr, SampleState.Any | InstanceState.Any | ViewState.Any, lambda x: False)
     assert qc.get_datareader() == common_setup.dr
 
-"""
-@pytest.mark.xfail(reason="TODO: implement typeless serdata")
+
+# @pytest.mark.xfail(reason="TODO: implement typeless serdata")
 def test_querycondition_read(common_setup):
     qc = QueryCondition(
         common_setup.dr,
-        SampleState.Any | ViewState.Any | InstanceState.NotAliveDisposed,
-        lambda msg: msg.message.startswith("Hi")
+        SampleState.Read | ViewState.Any | InstanceState.Any,
+        lambda msg: msg.message.startswith("Goodbye")
     )
 
     assert not qc.triggered
@@ -49,17 +49,12 @@ def test_querycondition_read(common_setup):
     for m in messages:
         common_setup.dw.write(m)
 
-    received = common_setup.dr.read(N=6)
-
-    assert messages == received
-
-    common_setup.dw.dispose(messages[5])
+    common_setup.dr.read(N=5)
     assert not qc.triggered
 
-    common_setup.dw.dispose(messages[1])
+    common_setup.dr.read(N=6)
     assert qc.triggered
 
     received = common_setup.dr.read(condition=qc)
 
-    assert len(received) == 1 and received[0] == messages[1]
-"""
+    assert len(received) == 1 and received[0] == messages[5]

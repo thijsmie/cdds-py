@@ -283,3 +283,9 @@ class dds_c_t:  # noqa N801
             ('generation_rank', ct.c_uint32),
             ('absolute_generation_rank', ct.c_uint32)
         ]
+
+    class sample_buffer(ct.Structure):  # noqa N801
+        _fields_ = [
+            ('buf', ct.c_void_p),
+            ('len', ct.c_size_t)
+        ]
