@@ -115,27 +115,27 @@ class DataWriter(Entity):
 
     def write(self, sample, timestamp=None):
         if timestamp is not None:
-            ret = ddspy_write_ts(self._ref, sample, timestamp)
+            ret = ddspy_write_ts(self._ref, sample.serialize(), timestamp)
         else:
-            ret = ddspy_write(self._ref, sample)
+            ret = ddspy_write(self._ref, sample.serialize())
 
         if ret < 0:
             raise DDSException(ret, f"Occurred while writing sample in {repr(self)}")
 
     def write_dispose(self, sample, timestamp=None):
         if timestamp is not None:
-            ret = ddspy_writedispose_ts(self._ref, sample, timestamp)
+            ret = ddspy_writedispose_ts(self._ref, sample.serialize(), timestamp)
         else:
-            ret = ddspy_writedispose(self._ref, sample)
+            ret = ddspy_writedispose(self._ref, sample.serialize())
 
         if ret < 0:
             raise DDSException(ret, f"Occurred while writedisposing sample in {repr(self)}")
 
     def dispose(self, sample, timestamp=None):
         if timestamp is not None:
-            ret = ddspy_dispose_ts(self._ref, sample, timestamp)
+            ret = ddspy_dispose_ts(self._ref, sample.serialize(), timestamp)
         else:
-            ret = ddspy_dispose(self._ref, sample)
+            ret = ddspy_dispose(self._ref, sample.serialize())
 
         if ret < 0:
             raise DDSException(ret, f"Occurred while disposing in {repr(self)}")
@@ -150,16 +150,16 @@ class DataWriter(Entity):
             raise DDSException(ret, f"Occurred while disposing in {repr(self)}")
 
     def register_instance(self, sample):
-        ret = ddspy_register_instance(self._ref, sample)
+        ret = ddspy_register_instance(self._ref, sample.serialize())
         if ret < 0:
             raise DDSException(ret, f"Occurred while registering instance in {repr(self)}")
         return ret
 
     def unregister_instance(self, sample, timestamp: int = None):
         if timestamp is not None:
-            ret = ddspy_unregister_instance_ts(self._ref, sample, timestamp)
+            ret = ddspy_unregister_instance_ts(self._ref, sample.serialize(), timestamp)
         else:
-            ret = ddspy_unregister_instance(self._ref, sample)
+            ret = ddspy_unregister_instance(self._ref, sample.serialize())
 
         if ret < 0:
             raise DDSException(ret, f"Occurred while unregistering instance in {repr(self)}")
@@ -182,7 +182,7 @@ class DataWriter(Entity):
         raise DDSException(ret, f"Occurred while waiting for acks from {repr(self)}")
 
     def lookup_instance(self, sample):
-        ret = ddspy_lookup_instance(self._ref, sample)
+        ret = ddspy_lookup_instance(self._ref, sample.serialize())
         if ret < 0:
             raise DDSException(ret, f"Occurred while lookup up instance from {repr(self)}")
         if ret == 0:

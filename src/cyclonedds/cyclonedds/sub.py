@@ -87,6 +87,7 @@ class DataReader(Entity):
             ),
             listener=listener
         )
+        self._topic = topic
         if cqos:
             _CQos.cqos_destroy(cqos)
 
@@ -98,7 +99,12 @@ class DataReader(Entity):
 
         if type(ret) == int:
             raise DDSException(ret, f"Occurred while reading data in {repr(self)}")
-        return ret
+        
+        samples = []
+        for (data, info) in ret:
+            samples.append(self._topic.data_type.deserialize(data))
+            samples[-1].sample_info = info
+        return samples
 
     def take(self, N: int = 1, condition: Entity = None, instance_handle: int = None) -> List[object]:
         if instance_handle is not None:
@@ -108,15 +114,25 @@ class DataReader(Entity):
 
         if type(ret) == int:
             raise DDSException(ret, f"Occurred while taking data in {repr(self)}")
-        return ret
+
+        samples = []
+        for (data, info) in ret:
+            samples.append(self._topic.data_type.deserialize(data))
+            samples[-1].sample_info = info
+        return samples
 
     def read_next(self) -> Optional[object]:
         ret = ddspy_read_next(self._ref)
         
         if type(ret) == int:
             raise DDSException(ret, f"Occurred while reading next in {repr(self)}")
+
+        if ret is None:
+            return None
         
-        return ret
+        sample = self._topic.data_type.deserialize(ret[0])
+        sample.sample_info = ret[1]
+        return sample
 
     def take_next(self) -> Optional[object]:
         ret = ddspy_take_next(self._ref)
@@ -124,7 +140,12 @@ class DataReader(Entity):
         if type(ret) == int:
             raise DDSException(ret, f"Occurred while taking next in {repr(self)}")
         
-        return ret
+        if ret is None:
+            return None
+        
+        sample = self._topic.data_type.deserialize(ret[0])
+        sample.sample_info = ret[1]
+        return sample
 
     def read_iter(self, timeout: int = None) -> Generator[object, None, None]:
         waitset = WaitSet(self.participant)
@@ -166,7 +187,7 @@ class DataReader(Entity):
         raise DDSException(ret, f"Occured while waiting for historical data in {repr(self)}")
 
     def lookup_instance(self, sample):
-        ret = ddspy_lookup_instance(self._ref, sample)
+        ret = ddspy_lookup_instance(self._ref, sample.serialize())
         if ret < 0:
             raise DDSException(ret, f"Occurred while lookup up instance from {repr(self)}")
         if ret == 0:

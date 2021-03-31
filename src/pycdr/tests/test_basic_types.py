@@ -33,16 +33,6 @@ def test_all_primitives():
     assert v1 == v2
 
 
-def test_simple_keyed():
-    tc.Keyed.cdr.finalize()
-
-    v = tc.Keyed(a=1, b=2)
-    ser_value = v.serialize()
-    ser_key = tc.Keyed.cdr.keyhash(v)
-    holder_decoded = tc.Keyed.cdr.keyholder.deserialize(ser_key)
-    assert holder_decoded == tc.Keyed.cdr.keyholder(a=1)
-
-
 def test_simple_union():
     values = [
         tc.SingleUnion(value=tc.EasyUnion(a=1)),

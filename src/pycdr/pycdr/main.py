@@ -10,58 +10,13 @@
  * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
 """
 
-from .machinery import build_machine, Buffer, MaxSizeFinder, Endianness
-from .type_helper import get_type_hints
-
 from hashlib import md5
-from inspect import isclass
-from collections import defaultdict
-from dataclasses import make_dataclass
 
-
-def module_prefix(cls):
-    cls = cls.__class__ if not isclass(cls) else cls
-    module = cls.__module__
-    if module is None or module == str.__class__.__module__:
-        return ""
-    return module + "."
-
-
-def qualified_name(instance, sep="."):
-    cls = instance.__class__ if not isclass(instance) else instance
-    return (module_prefix(cls) + cls.__name__).replace('.', sep)
-
-
-def make_keyholder(datatype, keylist):
-    fields = [(k, v) for k, v in get_type_hints(datatype, include_extras=True).items() if k in keylist]
-    cls = make_dataclass(qualified_name(datatype) + "KeyHolder", fields)
-    cls.cdr = CDR(cls)
-    cls.serialize = proto_serialize
-    cls.deserialize = classmethod(proto_deserialize)
-    return cls
+from .support import Buffer, Endianness, qualified_name
+from .builder import Builder
 
 
 class CDR:
-    defined_references = {}
-    deferred_references = defaultdict(list)
-
-    def resolve(self, type_name, instance):
-        if '.' in qualified_name(self.datatype) and '.' not in type_name:
-            # We got a local name, but we only deal in full paths
-            type_name = module_prefix(self.datatype) + type_name
-
-        if type_name not in self.defined_references:
-            self.deferred_references[type_name].append(instance)
-            return None
-        return self.defined_references[type_name]
-
-    @classmethod
-    def refer(cls, type_name, object):
-        for instance in cls.deferred_references[type_name]:
-            instance.refer(object)
-        del cls.deferred_references[type_name]
-        cls.defined_references[type_name] = object
-
     def __init__(self, datatype, final=True, mutable=False, appendable=False, nested=False, autoid_hash=False, keylist=None):
         self.buffer = Buffer()
         self.datatype = datatype
@@ -72,42 +27,42 @@ class CDR:
         self.nested = nested
         self.autoid_hash = autoid_hash
         self.keylist = keylist
-
-        self.keyholder = make_keyholder(datatype, keylist) if keylist else datatype
-
-        self.machine = build_machine(self, datatype, True)
-        self.key_machine = build_machine(self, self.keyholder, True) if keylist else self.machine
-
         self.keyless = keylist is None
+        
+        self.machine = None
+        self.key_machine = None
 
-    def finalize(self):
-        if not hasattr(self, 'key_max_size'):
-            finder = MaxSizeFinder()
-            self.key_machine.max_size(finder)
-            self.key_max_size = finder.size
+        datatype.cdr = self
+        Builder.build_machine(datatype)
 
     def serialize(self, object, buffer=None, endianness=None) -> bytes:
-        buffer = buffer or self.buffer.seek(0)
+        if self.machine is None:
+            raise Exception(f"{self.typename} is relies on unknown types {', '.join(Builder.missing_report_for(self.datatype))}.")
+
+        ibuffer = buffer or self.buffer.seek(0)
         if endianness is not None:
-            buffer.set_endianness(endianness)
+            ibuffer.set_endianness(endianness)
 
-        if buffer.tell() == 0:
-            if buffer.endianness == Endianness.Big:
-                buffer.write('b', 1, 0)
-                buffer.write('b', 1, 0)
-                buffer.write('b', 1, 0)
-                buffer.write('b', 1, 0)
-            else:
-                buffer.write('b', 1, 0)
-                buffer.write('b', 1, 1)
-                buffer.write('b', 1, 0)
-                buffer.write('b', 1, 0)
+        if ibuffer.endianness == Endianness.Big:
+            ibuffer.write('b', 1, 0)
+            ibuffer.write('b', 1, 0)
+            ibuffer.write('b', 1, 0)
+            ibuffer.write('b', 1, 0)
+        else:
+            ibuffer.write('b', 1, 0)
+            ibuffer.write('b', 1, 1)
+            ibuffer.write('b', 1, 0)
+            ibuffer.write('b', 1, 0)
+        ibuffer.set_align_offset(4)
 
-        self.machine.serialize(buffer, object)
-        return buffer.asbytes()
+        self.machine.serialize(ibuffer, object)
+        return ibuffer.asbytes()
 
     def deserialize(self, data) -> object:
-        buffer = Buffer(data) if not isinstance(data, Buffer) else data
+        if self.machine is None:
+            raise Exception(f"{self.typename} relies on unknown types {', '.join(Builder.missing_report_for(self.datatype))}.")
+
+        buffer = Buffer(data, align_offset=4) if not isinstance(data, Buffer) else data
 
         if buffer.tell() == 0:
             buffer.read('b', 1)
@@ -123,25 +78,25 @@ class CDR:
 
     def key(self, object) -> bytes:
         self.buffer.seek(0)
+        self.buffer.zero_out()
+        self.buffer.set_align_offset(0)
         self.buffer.set_endianness(Endianness.Big)
-        self.buffer.write('b', 1, 0)
-        self.buffer.write('b', 1, 0)
-        self.buffer.write('b', 1, 0)
-        self.buffer.write('b', 1, 0)
 
         self.key_machine.serialize(self.buffer, object)
-        return self.buffer.asbytes()
 
+        b = self.buffer.asbytes()
+        return b.ljust(16, b'\0')
+        
     def keyhash(self, object) -> bytes:
-        if not hasattr(self, 'key_max_size'):
-            self.finalize()
-
         if self.key_max_size <= 16:
-            return self.key(object).ljust(16, b'\0')
+            return self.key(object)
         
         m = md5()
         m.update(self.key(object))
         return m.digest()
+
+    def cdr_key_machine(self, skip=False):
+        return self.machine.cdr_key_machine_op(skip)
 
 
 def proto_serialize(self, buffer=None, endianness=None):
