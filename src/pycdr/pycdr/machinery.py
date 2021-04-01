@@ -10,7 +10,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
 """
 
-from .types import default, primitive_types
+from .types import primitive_types
 from .support import Buffer, MaxSizeFinder, CdrKeyVmOp, CdrKeyVMOpType
 
 
@@ -18,7 +18,7 @@ class Machine:
     """Given a type, serialize and deserialize"""
     def __init__(self, type):
         self.alignment = 1
-    
+
     def serialize(self, buffer, value):
         pass
 
@@ -35,7 +35,7 @@ class Machine:
 class NoneMachine(Machine):
     def __init__(self):
         self.alignment = 1
-    
+
     def serialize(self, buffer, value):
         pass
 
@@ -98,7 +98,7 @@ class StringMachine(Machine):
             finder.increase(self.bound + 5, 2)  # string size + length serialized (4) + null byte (1)
         else:
             finder.increase(2**64 - 1 + 5, 2)
-    
+
     def cdr_key_machine_op(self, skip):
         return [CdrKeyVmOp(CdrKeyVMOpType.Stream4ByteSize, skip, 1, align=1)]
 
@@ -125,7 +125,7 @@ class BytesMachine(Machine):
             finder.increase(self.bound + 3, 2)  # string size + length serialized (2)
         else:
             finder.increase(65535 + 3, 2)
-    
+
     def cdr_key_machine_op(self, skip):
         return [CdrKeyVmOp(CdrKeyVMOpType.Stream4ByteSize, skip, 1, align=1)]
 
@@ -149,7 +149,6 @@ class ByteArrayMachine(Machine):
 
     def cdr_key_machine_op(self, skip):
         return [CdrKeyVmOp(CdrKeyVMOpType.StreamStatic, skip, self.size, align=1)]
-        
 
 
 class ArrayMachine(Machine):
@@ -182,14 +181,19 @@ class ArrayMachine(Machine):
 
     def cdr_key_machine_op(self, skip):
         if isinstance(self.submachine, PrimitiveMachine):
-            stream = [CdrKeyVmOp(CdrKeyVMOpType.StreamStatic, skip, self.submachine.alignment * self.size, align=self.submachine.alignment)]
+            stream = [CdrKeyVmOp(
+                CdrKeyVMOpType.StreamStatic,
+                skip,
+                self.submachine.alignment * self.size,
+                align=self.submachine.alignment
+            )]
             if not skip and self.submachine.alignment != 1:
                 stream += [CdrKeyVmOp(CdrKeyVMOpType.ByteSwap, skip, align=self.submachine.alignment)]
             return stream
 
         subops = self.submachine.cdr_key_machine_op(skip)
         return [CdrKeyVmOp(CdrKeyVMOpType.RepeatStatic, skip, self.size, value=len(subops)+2)] + \
-                subops + [CdrKeyVmOp(CdrKeyVMOpType.EndRepeat, skip, len(subops))]
+            subops + [CdrKeyVmOp(CdrKeyVMOpType.EndRepeat, skip, len(subops))]
 
 
 class SequenceMachine(Machine):
@@ -228,24 +232,29 @@ class SequenceMachine(Machine):
 
     def cdr_key_machine_op(self, skip):
         if isinstance(self.submachine, PrimitiveMachine):
-            stream = [CdrKeyVmOp(CdrKeyVMOpType.Stream2ByteSize, skip, self.submachine.alignment, align=self.submachine.alignment)]
+            stream = [CdrKeyVmOp(
+                CdrKeyVMOpType.Stream2ByteSize,
+                skip,
+                self.submachine.alignment,
+                align=self.submachine.alignment
+            )]
             if not skip and self.submachine.alignment != 1:
                 stream += [CdrKeyVmOp(CdrKeyVMOpType.ByteSwap, skip, align=self.submachine.alignment)]
             return stream
 
         subops = self.submachine.cdr_key_machine_op(skip)
         return [CdrKeyVmOp(CdrKeyVMOpType.Repeat2ByteSize, skip, value=len(subops)+2)] + \
-                subops + [CdrKeyVmOp(CdrKeyVMOpType.EndRepeat, skip, len(subops))]
+            subops + [CdrKeyVmOp(CdrKeyVMOpType.EndRepeat, skip, len(subops))]
 
 
 class UnionMachine(Machine):
-    def __init__(self, type, discriminator_machine, labels_submachines, default=None):
+    def __init__(self, type, discriminator_machine, labels_submachines, default_case=None):
         self.type = type
         self.labels_submachines = labels_submachines
         self.alignment = max(s.alignment for s in labels_submachines.values())
         self.alignment = max(self.alignment, discriminator_machine.alignment)
         self.discriminator = discriminator_machine
-        self.default = default
+        self.default = default_case
 
     def serialize(self, buffer, union):
         try:
@@ -273,12 +282,12 @@ class UnionMachine(Machine):
         self.discriminator.max_size(finder)
         pre_size = finder.size
         sizes = []
-        
+
         for submachine in self.labels_submachines.values():
             finder.size = pre_size
             submachine.max_size(finder)
             sizes.append(finder.size - pre_size)
-        
+
         if self.default:
             finder.size = pre_size
             self.default.max_size(finder)
@@ -332,7 +341,7 @@ class UnionKeyMachine(UnionMachine):
         if not self.type._is_key:
             super().serialize(buffer, union)
             return
-        
+
         try:
             if union.discriminator is None:
                 self.discriminator.serialize(buffer, union._default_val)
@@ -413,7 +422,7 @@ class StructMachine(Machine):
             (
                 m.cdr_key_machine_op(skip or (not self.type.cdr.keyless and name not in self.type.cdr.keylist))
                 for name, m in self.members_machines.items()
-            ), 
+            ),
             []
         )
 
@@ -452,7 +461,7 @@ class InstanceKeyMachine(InstanceMachine):
 class EnumMachine(Machine):
     def __init__(self, enum):
         self.enum = enum
-    
+
     def serialize(self, buffer, value):
         buffer.write("I", 4, int(value))
 
@@ -461,10 +470,9 @@ class EnumMachine(Machine):
 
     def max_size(self, finder: MaxSizeFinder):
         finder.increase(4, 4)
-    
+
     def cdr_key_machine_op(self, skip):
         stream = [CdrKeyVmOp(CdrKeyVMOpType.StreamStatic, skip, 4, align=4)]
         if not skip:
             stream += [CdrKeyVmOp(CdrKeyVMOpType.ByteSwap, skip, align=4)]
         return stream
-

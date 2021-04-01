@@ -20,7 +20,7 @@ elif sys.version_info < (3, 7):
     from typing_extensions import Annotated  # noqa F401
     from typing_inspect import get_origin, get_args  # noqa F401
     from typing import get_type_hints as _get_type_hints  # noqa F401
-    
+
     def get_type_hints(cls, include_extras=False, globalns=None, localns=None):
         return _get_type_hints(cls, globalns, localns)
 elif sys.version_info < (3, 9):

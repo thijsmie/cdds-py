@@ -28,7 +28,7 @@ class CDR:
         self.autoid_hash = autoid_hash
         self.keylist = keylist
         self.keyless = keylist is None
-        
+
         self.machine = None
         self.key_machine = None
 
@@ -37,7 +37,8 @@ class CDR:
 
     def serialize(self, object, buffer=None, endianness=None) -> bytes:
         if self.machine is None:
-            raise Exception(f"{self.typename} is relies on unknown types {', '.join(Builder.missing_report_for(self.datatype))}.")
+            report = ', '.join(Builder.missing_report_for(self.datatype))
+            raise Exception(f"{self.typename} is relies on unknown types {report}.")
 
         ibuffer = buffer or self.buffer.seek(0)
         if endianness is not None:
@@ -86,11 +87,11 @@ class CDR:
 
         b = self.buffer.asbytes()
         return b.ljust(16, b'\0')
-        
+
     def keyhash(self, object) -> bytes:
         if self.key_max_size <= 16:
             return self.key(object)
-        
+
         m = md5()
         m.update(self.key(object))
         return m.digest()

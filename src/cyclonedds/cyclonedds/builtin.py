@@ -23,8 +23,6 @@ from .qos import _CQos
 from .util import duration
 
 
-# The TYPE_CHECKING variable will always evaluate to False, incurring no runtime costs
-# But the import here allows your static type checker to resolve fully qualified cyclonedds names
 if TYPE_CHECKING:
     import cyclonedds
 

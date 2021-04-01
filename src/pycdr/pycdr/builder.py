@@ -18,7 +18,8 @@ from .support import qualified_name, module_prefix, MaxSizeFinder
 from .type_helper import Annotated, get_origin, get_args, get_type_hints
 from .types import ArrayHolder, BoundStringHolder, SequenceHolder, primitive_types, IdlUnion, NoneType
 from .machinery import NoneMachine, PrimitiveMachine, StringMachine, BytesMachine, ByteArrayMachine, UnionMachine, \
-    ArrayMachine, SequenceMachine, InstanceMachine, MappingMachine, EnumMachine, StructMachine, InstanceKeyMachine, UnionKeyMachine
+    ArrayMachine, SequenceMachine, InstanceMachine, MappingMachine, EnumMachine, StructMachine, InstanceKeyMachine, \
+    UnionKeyMachine
 
 
 class BuildDefer(Exception):
@@ -31,7 +32,7 @@ class Builder:
         str: StringMachine,
         bytes: BytesMachine,
         bytearray: ByteArrayMachine,
-        NoneType: NoneMachine   
+        NoneType: NoneMachine
     }
 
     defined_classes = {}
@@ -54,12 +55,12 @@ class Builder:
     @classmethod
     def _machine_for_cdrclass(cls, module_prefix, _type, key):
         if type(_type) != str:
-           qn = qualified_name(_type)
+            qn = qualified_name(_type)
         else:
             if '.' not in _type:
                 qn = module_prefix + _type
             else:
-                qn = _type 
+                qn = _type
 
         if qn in cls.defined_classes:
             if key:
@@ -115,7 +116,7 @@ class Builder:
                 cls._machine_for_type(module_prefix, get_args(_type)[1], key)
             )
         raise TypeError(f"{repr(_type)} is not valid in CDR classes because it cannot be encoded.")
-        
+
     @classmethod
     def _machine_struct(cls, module_prefix, _type, key):
         try:
@@ -127,7 +128,7 @@ class Builder:
             else:
                 raise BuildDefer(key)
         members = {
-            name: cls._machine_for_type(module_prefix, field_type, key) 
+            name: cls._machine_for_type(module_prefix, field_type, key)
             for name, field_type in fields.items()
             if not key or _type.cdr.keyless or name in _type.cdr.keylist
         }
@@ -137,7 +138,7 @@ class Builder:
     def _machine_union(cls, module_prefix, _type, key):
         discriminator = cls._machine_for_type(module_prefix, _type._discriminator, key)
         cases = {
-            label: cls._machine_for_type(module_prefix, case_type, key) 
+            label: cls._machine_for_type(module_prefix, case_type, key)
             for label, (_, case_type) in _type._cases.items()
         }
         default = cls._machine_for_type(module_prefix, _type._default[1], key) if _type._default else None
@@ -155,14 +156,14 @@ class Builder:
 
         for deferral in cls.generic_deferred_classes:
             cls.build_machine(deferral)
-            
+
         del cls.deferred_classes[qn]
 
     @classmethod
     def build_machine(cls, _type):
         mp = module_prefix(_type)
         qn = qualified_name(_type)
-        
+
         if qn not in cls.defined_classes.keys():
             cls._process_deferral(qn, _type)
 
@@ -178,12 +179,11 @@ class Builder:
             return
 
         _type.cdr.machine = machine
-        _type.cdr.key_machine = key_machine 
-        
+        _type.cdr.key_machine = key_machine
+
         finder = MaxSizeFinder()
         key_machine.max_size(finder)
         _type.cdr.key_max_size = finder.size
 
         if _type in cls.generic_deferred_classes:
             cls.generic_deferred_classes.remove(_type)
-

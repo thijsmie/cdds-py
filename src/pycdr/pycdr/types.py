@@ -88,7 +88,7 @@ class SequenceHolder:
             return f"sequence[{self.type}, {self.max_length}]"
         else:
             return f"sequence[{self.type}"
-            
+
 
 class SequenceGenerator:
     def __getitem__(self, tup):
@@ -104,7 +104,7 @@ class SequenceGenerator:
 class BoundStringHolder:
     def __init__(self, max_length):
         self.max_length = max_length
-    
+
     def __repr__(self) -> str:
         return f"bound_str[{self.max_length}]"
 
@@ -259,7 +259,7 @@ def make_union(name, discriminator, fields, key=False):
         if type(holder) == tuple:
             # Edge case for python 3.6: bug in backport? TODO: investigate and report
             holder = holder[0]
-            
+
         if not isinstance(holder, ValidUnionHolder):
             raise TypeError("Fields of a union need to be case or default.")
 
@@ -267,14 +267,16 @@ def make_union(name, discriminator, fields, key=False):
             if type(holder.discriminator_value) == list:
                 for d in holder.discriminator_value:
                     if d in cases:
-                        raise TypeError(f"Discriminator values must uniquely define a case, but the case {d} occurred multiple times.")
+                        raise TypeError(f"Discriminator values must uniquely define a case, "
+                                        f"but the case {d} occurred multiple times.")
                     cases[d] = (field, holder.type)
                     if field not in field_set:
                         field_set[field] = (d, holder.type)
             else:
                 d = holder.discriminator_value
                 if d in cases:
-                    raise TypeError(f"Discriminator values must uniquely define a case, but the case {d} occurred multiple times.")
+                    raise TypeError(f"Discriminator values must uniquely define a case, "
+                                    f"but the case {d} occurred multiple times.")
                 cases[d] = (field, holder.type)
                 if field not in field_set:
                     field_set[field] = (d, holder.type)
@@ -287,13 +289,13 @@ def make_union(name, discriminator, fields, key=False):
         __class__ = name
         __name__ = name
         __qualname__ = name
-        
+
         def __repr__(self):
             cdata = ", ".join(f"{field}: {type}" for field, type in fields.items())
             return f"{name}[{discriminator.__name__}]({cdata})"
-        
+
         __str__ = __repr__
-        
+
     class MyUnion(IdlUnion, metaclass=MyUnionMeta):
         __class__ = name
         __name__ = name

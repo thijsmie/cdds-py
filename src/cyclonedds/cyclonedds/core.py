@@ -19,8 +19,6 @@ from .internal import c_call, c_callable, dds_c_t, DDS
 from .qos import Qos, Policy, _CQos
 
 
-# The TYPE_CHECKING variable will always evaluate to False, incurring no runtime costs
-# But the import here allows your static type checker to resolve fully qualified cyclonedds names
 if TYPE_CHECKING:
     import cyclonedds
 
@@ -943,11 +941,11 @@ class Listener(DDS):
             self._set_on_sample_lost(self._ref, self._on_sample_lost)
 
     def on_sample_rejected(self, reader: 'cyclonedds.sub.DataReader',
-                       status: dds_c_t.sample_rejected_status) -> None:
+                           status: dds_c_t.sample_rejected_status) -> None:
         pass
 
     def set_on_sample_rejected(self, callable: Callable[['cyclonedds.sub.DataReader',
-                                                     dds_c_t.sample_rejected_status], None]):
+                                                         dds_c_t.sample_rejected_status], None]):
         self.on_sample_rejected = callable
         if callable is None:
             self._set_on_sample_rejected(self._ref, None)
@@ -960,12 +958,13 @@ class Listener(DDS):
 
             self._on_sample_rejected = _on_sample_rejected_fn(call)
             self._set_on_sample_rejected(self._ref, self._on_sample_rejected)
+
     def on_requested_deadline_missed(self, reader: 'cyclonedds.sub.DataReader',
-                       status: dds_c_t.requested_deadline_missed_status) -> None:
+                                     status: dds_c_t.requested_deadline_missed_status) -> None:
         pass
 
     def set_on_requested_deadline_missed(self, callable: Callable[['cyclonedds.sub.DataReader',
-                                                     dds_c_t.requested_deadline_missed_status], None]):
+                                                                   dds_c_t.requested_deadline_missed_status], None]):
         self.on_requested_deadline_missed = callable
         if callable is None:
             self._set_on_requested_deadline_missed(self._ref, None)
@@ -980,11 +979,11 @@ class Listener(DDS):
             self._set_on_requested_deadline_missed(self._ref, self._on_requested_deadline_missed)
 
     def on_requested_incompatible_qos(self, reader: 'cyclonedds.sub.DataReader',
-                       status: dds_c_t.requested_incompatible_qos_status) -> None:
+                                      status: dds_c_t.requested_incompatible_qos_status) -> None:
         pass
 
     def set_on_requested_incompatible_qos(self, callable: Callable[['cyclonedds.sub.DataReader',
-                                                     dds_c_t.requested_incompatible_qos_status], None]):
+                                                                    dds_c_t.requested_incompatible_qos_status], None]):
         self.on_requested_incompatible_qos = callable
         if callable is None:
             self._set_on_requested_incompatible_qos(self._ref, None)
@@ -999,11 +998,11 @@ class Listener(DDS):
             self._set_on_requested_incompatible_qos(self._ref, self._on_requested_incompatible_qos)
 
     def on_publication_matched(self, writer: 'cyclonedds.pub.DataWriter',
-                       status: dds_c_t.publication_matched_status) -> None:
+                               status: dds_c_t.publication_matched_status) -> None:
         pass
 
     def set_on_publication_matched(self, callable: Callable[['cyclonedds.pub.DataWriter',
-                                                     dds_c_t.publication_matched_status], None]):
+                                                             dds_c_t.publication_matched_status], None]):
         self.on_publication_matched = callable
         if callable is None:
             self._set_on_publication_matched(self._ref, None)
@@ -1018,11 +1017,11 @@ class Listener(DDS):
             self._set_on_publication_matched(self._ref, self._on_publication_matched)
 
     def on_subscription_matched(self, reader: 'cyclonedds.sub.DataReader',
-                       status: dds_c_t.subscription_matched_status) -> None:
+                                status: dds_c_t.subscription_matched_status) -> None:
         pass
 
     def set_on_subscription_matched(self, callable: Callable[['cyclonedds.sub.DataReader',
-                                                     dds_c_t.subscription_matched_status], None]):
+                                                              dds_c_t.subscription_matched_status], None]):
         self.on_subscription_matched = callable
         if callable is None:
             self._set_on_subscription_matched(self._ref, None)
@@ -1085,7 +1084,8 @@ class Listener(DDS):
         pass
 
     @c_call("dds_lset_requested_deadline_missed")
-    def _set_on_requested_deadline_missed(self, listener: dds_c_t.listener_p, callback: _on_requested_deadline_missed_fn) -> None:
+    def _set_on_requested_deadline_missed(self, listener: dds_c_t.listener_p,
+                                          callback: _on_requested_deadline_missed_fn) -> None:
         pass
 
     @c_call("dds_lset_requested_incompatible_qos")
@@ -1555,6 +1555,6 @@ class WaitSet(Entity):
         pass
 
 
-__all__ = ["DDSException", "DDSAPIException", "Entity", "Qos", "Policy", 
+__all__ = ["DDSException", "DDSAPIException", "Entity", "Qos", "Policy",
            "Listener", "DDSStatus", "ViewState", "InstanceState", "SampleState",
            "ReadCondition", "QueryCondition", "GuardCondition", "WaitSet"]

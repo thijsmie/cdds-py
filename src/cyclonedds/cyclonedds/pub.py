@@ -16,30 +16,14 @@ from .internal import c_call, dds_c_t
 from .core import Entity, DDSException
 from .qos import _CQos
 
+from ddspy import ddspy_write, ddspy_write_ts, ddspy_dispose, ddspy_writedispose, ddspy_writedispose_ts, \
+    ddspy_dispose_handle, ddspy_dispose_handle_ts, ddspy_register_instance, ddspy_unregister_instance,   \
+    ddspy_unregister_instance_handle, ddspy_unregister_instance_ts, ddspy_unregister_instance_handle_ts, \
+    ddspy_lookup_instance, ddspy_dispose_ts
 
-# The TYPE_CHECKING variable will always evaluate to False, incurring no runtime costs
-# But the import here allows your static type checker to resolve fully qualified cyclonedds names
+
 if TYPE_CHECKING:
     import cyclonedds
-    ddspy_write = lambda e, s: None
-    ddspy_write_ts = lambda e, s, t: None
-    ddspy_dispose = lambda e, s: None
-    ddspy_dispose_ts = lambda e, s, t: None
-    ddspy_dispose_handle = lambda e, s: None
-    ddspy_dispose_handle_ts = lambda e, s, t: None
-    ddspy_writedispose = lambda e, s: None
-    ddspy_writedispose_ts = lambda e, s, t: None
-    ddspy_register_instance = lambda e, s: None
-    ddspy_unregister_instance = lambda e, s: None
-    ddspy_unregister_instance_handle = lambda e, s: None
-    ddspy_unregister_instance_ts = lambda e, s, t: None
-    ddspy_unregister_instance_handle_ts = lambda e, h, t: None
-    ddspy_lookup_instance = lambda e, s: None
-else:
-    from ddspy import ddspy_write, ddspy_write_ts, ddspy_dispose, ddspy_writedispose, ddspy_writedispose_ts, \
-        ddspy_dispose_handle, ddspy_dispose_handle_ts, ddspy_register_instance, ddspy_unregister_instance, \
-        ddspy_unregister_instance_handle, ddspy_unregister_instance_ts, ddspy_unregister_instance_handle_ts, \
-        ddspy_lookup_instance
 
 
 class Publisher(Entity):

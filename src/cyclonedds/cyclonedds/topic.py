@@ -17,15 +17,11 @@ from .internal import c_call, dds_c_t
 from .core import Entity, DDSException
 from .qos import _CQos
 
-# The TYPE_CHECKING variable will always evaluate to False, incurring no runtime costs
-# But the import here allows your static type checker to resolve fully qualified cyclonedds names
+from ddspy import ddspy_topic_create
+
+
 if TYPE_CHECKING:
     import cyclonedds
-    def ddspy_topic_create(entity: int, name: str, dtype, qos=None, listener=None):
-        pass
-else:
-    from ddspy import ddspy_topic_create
-
 
 
 class Topic(Entity):

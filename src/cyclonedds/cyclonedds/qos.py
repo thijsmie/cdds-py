@@ -13,10 +13,11 @@ class BasePolicy:
 def _no_init(*args, **kwargs):
     raise NotImplementedError("This Qos object cannot be initialized like this.")
 
+
 def _policy_singleton(scope, name):
     return make_dataclass(
-        f"Policy.{scope}.{name}", [], 
-        bases=(BasePolicy,), 
+        f"Policy.{scope}.{name}", [],
+        bases=(BasePolicy,),
         namespace={'__scope__': scope, '__repr__': lambda s: f"Policy.{scope}.{name}"},
         frozen=True)()
 
@@ -293,7 +294,7 @@ class Policy:
         __init__ = _no_init
         __scope__ = "Liveliness"
 
-        @dataclass(frozen=True) 
+        @dataclass(frozen=True)
         class Automatic(BasePolicy):
             """Use Automatic Liveliness
 
@@ -306,7 +307,7 @@ class Policy:
             __scope__: ClassVar[str] = "Liveliness"
             lease_duration: int
 
-        @dataclass(frozen=True) 
+        @dataclass(frozen=True)
         class ManualByParticipant(BasePolicy):
             """Use ManualByParticipant Liveliness
 
@@ -319,7 +320,7 @@ class Policy:
             __scope__: ClassVar[str] = "Liveliness"
             lease_duration: int
 
-        @dataclass(frozen=True) 
+        @dataclass(frozen=True)
         class ManualByTopic(BasePolicy):
             """Use ManualByTopic Liveliness
 
@@ -368,7 +369,7 @@ class Policy:
         def __post_init__(self):
             # Tuple-fy partitions to ensure immutability
             super().__setattr__('partitions', tuple(getattr(self, 'partitions')))
-    
+
     @dataclass(frozen=True)
     class TransportPriority(BasePolicy):
         __scope__: ClassVar[str] = "TransportPriority"
@@ -425,7 +426,7 @@ class Policy:
         data: bytes
 
 
-class Qos: 
+class Qos:
     _policy_mapper = {
         "Policy.Reliability.BestEffort": Policy.Reliability.BestEffort,
         "Policy.Reliability.Reliable": Policy.Reliability.Reliable,
@@ -487,7 +488,7 @@ class Qos:
         for i in range(len(self.__policies)):
             if not isinstance(self.__policies[i], BasePolicy):
                 raise TypeError(str(self.__policies[i]), " is not a Policy.")
-            
+
         for i in range(1, len(self.__policies)):
             if self.__policies[i-1].__scope__ == self.__policies[i].__scope__:
                 raise ValueError("Multiple Qos policies of type {}.".format(self.__policies[i].__scope__))
@@ -528,7 +529,6 @@ class Qos:
                 if p == key:
                     return True
         return False
-
 
     def __len__(self):
         return len(self.__policies)
@@ -701,7 +701,6 @@ class _CQos(DDS):
             return cls._set_presentation_access_scope(qos, 1, policy.coherent_access, policy.ordered_access)
         return cls._set_presentation_access_scope(qos, 2, policy.coherent_access, policy.ordered_access)
 
-
     @static_c_call("dds_qset_presentation")
     def _set_presentation_access_scope(self, qos: dds_c_t.qos_p, access_scope: dds_c_t.presentation_access_scope,
                                        coherent_access: ct.c_bool, ordered_access: ct.c_bool) -> None:
@@ -835,7 +834,7 @@ class _CQos(DDS):
     @classmethod
     def _set_p_readerdatalifecycle(cls, qos, policy):
         return cls._set_reader_data_lifecycle(
-            qos, 
+            qos,
             policy.autopurge_nowriter_samples_delay,
             policy.autopurge_disposed_samples_delay
         )
@@ -891,7 +890,7 @@ class _CQos(DDS):
     @classmethod
     def _set_p_userdata(cls, qos, policy):
         cls._set_userdata(qos, policy.data, len(policy.data))
-    
+
     @static_c_call("dds_qset_userdata")
     def _set_userdata(self, qos: dds_c_t.qos_p, value: ct.c_void_p, size: ct.c_size_t) -> None:
         pass
@@ -916,7 +915,7 @@ class _CQos(DDS):
     def _set_groupdata(self, qos: dds_c_t.qos_p, value: ct.c_void_p, size: ct.c_size_t) -> None:
         pass
 
-    #### END OF SETTERS, START OF GETTERS ####
+    # END OF SETTERS, START OF GETTERS #
     _gc_data_size = ct.c_size_t()
     _gc_data_value = ct.c_void_p()
     _gc_durability = dds_c_t.durability()
@@ -1226,7 +1225,7 @@ class _CQos(DDS):
     @classmethod
     def _get_p_readerdatalifecycle(cls, qos):
         if not cls._get_reader_data_lifecycle(qos, ct.byref(cls._gc_autopurge_nowriter_samples_delay),
-                                               ct.byref(cls._gc_autopurge_disposed_samples_delay)):
+                                              ct.byref(cls._gc_autopurge_disposed_samples_delay)):
             return None
 
         return Policy.ReaderDataLifecycle(
@@ -1275,7 +1274,7 @@ class _CQos(DDS):
         pass
 
     # Ignore local
-    
+
     @classmethod
     def _get_p_ignorelocal(cls, qos):
         if not cls._get_ignorelocal(qos, ct.byref(cls._gc_ignorelocal)):
@@ -1297,7 +1296,7 @@ class _CQos(DDS):
     def _get_p_userdata(cls, qos):
         if not cls._get_userdata(qos, ct.byref(cls._gc_data_value), ct.byref(cls._gc_data_size)):
             return None
-        
+
         if cls._gc_data_size == 0 or not bool(cls._gc_data_value):
             return None
 
@@ -1305,7 +1304,7 @@ class _CQos(DDS):
         mybytes = bytes(ct.cast(cls._gc_data_value, ct.POINTER(byte_type))[0])
 
         return Policy.Userdata(data=mybytes)
-    
+
     @static_c_call("dds_qget_userdata")
     def _get_userdata(self, qos: dds_c_t.qos_p, value: ct.POINTER(ct.c_void_p), size: ct.POINTER(ct.c_size_t)) -> bool:
         pass
@@ -1316,7 +1315,7 @@ class _CQos(DDS):
     def _get_p_topicdata(cls, qos):
         if not cls._get_topicdata(qos, ct.byref(cls._gc_data_value), ct.byref(cls._gc_data_size)):
             return None
-        
+
         if cls._gc_data_size == 0 or not bool(cls._gc_data_value):
             return None
 
@@ -1335,7 +1334,7 @@ class _CQos(DDS):
     def _get_p_groupdata(cls, qos):
         if not cls._get_groupdata(qos, ct.byref(cls._gc_data_value), ct.byref(cls._gc_data_size)):
             return None
-        
+
         if cls._gc_data_size == 0 or not bool(cls._gc_data_value):
             return None
 

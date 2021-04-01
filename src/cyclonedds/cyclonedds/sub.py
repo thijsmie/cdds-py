@@ -17,21 +17,12 @@ from .internal import c_call, dds_c_t
 from .qos import _CQos
 from .util import duration
 
+from ddspy import ddspy_read, ddspy_take, ddspy_read_handle, ddspy_take_handle, ddspy_lookup_instance, \
+    ddspy_read_next, ddspy_take_next
 
-# The TYPE_CHECKING variable will always evaluate to False, incurring no runtime costs
-# But the import here allows your static type checker to resolve fully qualified cyclonedds names
+
 if TYPE_CHECKING:
     import cyclonedds
-    ddspy_read = lambda e, n: None
-    ddspy_take = lambda e, n: None
-    ddspy_read_handle = lambda e, n, h: None
-    ddspy_take_handle = lambda e, n, h: None
-    ddspy_lookup_instance = lambda e, s: None
-    ddspy_read_next = lambda e: None
-    ddspy_take_next = lambda e: None
-else:
-    from ddspy import ddspy_read, ddspy_take, ddspy_read_handle, ddspy_take_handle, ddspy_lookup_instance, \
-        ddspy_read_next, ddspy_take_next
 
 
 class Subscriber(Entity):
@@ -99,7 +90,7 @@ class DataReader(Entity):
 
         if type(ret) == int:
             raise DDSException(ret, f"Occurred while reading data in {repr(self)}")
-        
+
         samples = []
         for (data, info) in ret:
             samples.append(self._topic.data_type.deserialize(data))
@@ -123,26 +114,26 @@ class DataReader(Entity):
 
     def read_next(self) -> Optional[object]:
         ret = ddspy_read_next(self._ref)
-        
+
         if type(ret) == int:
             raise DDSException(ret, f"Occurred while reading next in {repr(self)}")
 
         if ret is None:
             return None
-        
+
         sample = self._topic.data_type.deserialize(ret[0])
         sample.sample_info = ret[1]
         return sample
 
     def take_next(self) -> Optional[object]:
         ret = ddspy_take_next(self._ref)
-        
+
         if type(ret) == int:
             raise DDSException(ret, f"Occurred while taking next in {repr(self)}")
-        
+
         if ret is None:
             return None
-        
+
         sample = self._topic.data_type.deserialize(ret[0])
         sample.sample_info = ret[1]
         return sample

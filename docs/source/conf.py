@@ -36,7 +36,7 @@ extensions = [
     "sphinx.ext.viewcode",
     'sphinx_markdown_builder'
 ]
-autodoc_mock_imports=["ctypes.CDLL"]
+autodoc_mock_imports=["ctypes.CDLL", "ddspy"]
 autodoc_member_order = 'bysource'
 autodoc_typehints = 'description'
 
