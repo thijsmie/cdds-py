@@ -71,7 +71,7 @@ def test_reader_invalid():
 
     with pytest.raises(TypeError):
         dr.read(-1)
-    
+
     with pytest.raises(TypeError):
         dr.take(-1)
 
@@ -92,3 +92,41 @@ def test_reader_readnext_takenext():
     dw.write(msg)
     assert dr.take_next() == msg
     assert dr.take_next() is None
+
+
+def test_reader_readiter():
+    dp = DomainParticipant(0)
+    tp = Topic(dp, "Message", Message)
+    sub = Subscriber(dp)
+    pub = Publisher(dp)
+    dr = DataReader(sub, tp)
+    dw = DataWriter(pub, tp)
+
+    msg = Message("Hello")
+    dw.write(msg)
+
+    read = False
+
+    for msgr in dr.read_iter(timeout=duration(milliseconds=10)):
+        assert not read
+        assert msg == msgr
+        read = True
+
+
+def test_reader_takeiter():
+    dp = DomainParticipant(0)
+    tp = Topic(dp, "Message", Message)
+    sub = Subscriber(dp)
+    pub = Publisher(dp)
+    dr = DataReader(sub, tp)
+    dw = DataWriter(pub, tp)
+
+    msg = Message("Hello")
+    dw.write(msg)
+
+    read = False
+
+    for msgr in dr.take_iter(timeout=duration(milliseconds=10)):
+        assert not read
+        assert msg == msgr
+        read = True

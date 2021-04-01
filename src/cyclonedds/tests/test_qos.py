@@ -1,4 +1,5 @@
 import pytest
+import itertools
 from cyclonedds.qos import Policy, Qos, _CQos
 
 
@@ -41,6 +42,7 @@ some_qosses = [
     Qos(Policy.Topicdata(b"\n\nrrlskdjflsdj"))
 ]
 
+qos_pairs = list(itertools.combinations(some_qosses, 2))
 
 def to_c_and_back(qos):
     cqos = _CQos.qos_to_cqos(qos)
@@ -57,3 +59,56 @@ def test_qos_conversion(qos):
 @pytest.mark.parametrize("qos", some_qosses)
 def test_qos_conversion(qos):
     assert qos == Qos.fromdict(qos.asdict())
+
+
+@pytest.mark.parametrize("qos1,qos2", qos_pairs)
+def test_qos_inequality(qos1, qos2):
+    assert qos1 != qos2
+
+
+@pytest.mark.parametrize("qos", some_qosses)
+def test_qos_loop(qos):
+    for policy in qos:
+        p = policy
+    assert p in qos
+
+
+def test_qos_lookup():
+    qos = Qos(Policy.Durability.Volatile)
+    assert qos[Policy.Durability] == Policy.Durability.Volatile
+    qos = Qos(Policy.History.KeepLast(20))
+    assert qos[Policy.History] == Policy.History.KeepLast(20)
+    assert qos[Policy.History.KeepLast] == Policy.History.KeepLast(20)
+
+
+def test_qos_inheritance():
+    qos = Qos(Policy.Durability.Volatile)
+    qos2 = Qos(Policy.Deadline(10), base=qos)
+    qos3 = Qos(Policy.Durability.Transient, base=qos)
+    assert qos2 == Qos(Policy.Durability.Volatile, Policy.Deadline(10)) == Qos(Policy.Deadline(10), Policy.Durability.Volatile)
+    assert qos3 == Qos(Policy.Durability.Transient)
+    assert qos3 != Qos()
+    assert qos3 != Qos(Policy.Durability.Volatile)
+
+
+def test_qos_raise_wrong_usage():
+    with pytest.raises(NotImplementedError):
+        Policy()
+
+    with pytest.raises(NotImplementedError):
+        Policy.Durability()
+
+    with pytest.raises(TypeError):
+        Policy.Durability.Persistent()
+
+    with pytest.raises(TypeError):
+        Qos(1)
+
+    with pytest.raises(ValueError):
+        Qos(
+            Policy.Durability.Persistent,
+            Policy.Durability.Volatile
+        )
+
+    with pytest.raises(ValueError):
+        Qos.fromdict({"Durability": {}})

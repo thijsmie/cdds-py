@@ -1,4 +1,5 @@
 build/
+build-windows/
 **/build
 .vscode/*
 __pycache__

@@ -1196,7 +1196,7 @@ static PyObject *
 ddspy_lookup_instance(PyObject *self, PyObject *args)
 {
     dds_entity_t entity;
-    dds_return_t sts;
+    dds_instance_handle_t sts;
     ddspy_sample_container_t container;
     Py_buffer sample_data;
 
@@ -1210,7 +1210,7 @@ ddspy_lookup_instance(PyObject *self, PyObject *args)
 
     PyBuffer_Release(&sample_data);
 
-    return PyLong_FromLong((long) sts);
+    return PyLong_FromUnsignedLongLong(sts);
 }
 
 static PyObject *
