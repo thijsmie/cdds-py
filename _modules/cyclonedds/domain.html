@@ -169,8 +169,6 @@
 <span class="kn">from</span> <span class="nn">.qos</span> <span class="kn">import</span> <span class="n">_CQos</span>
 
 
-<span class="c1"># The TYPE_CHECKING variable will always evaluate to False, incurring no runtime costs</span>
-<span class="c1"># But the import here allows your static type checker to resolve fully qualified cyclonedds names</span>
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">import</span> <span class="nn">cyclonedds</span>
 

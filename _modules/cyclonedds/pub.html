@@ -166,30 +166,14 @@
 <span class="kn">from</span> <span class="nn">.core</span> <span class="kn">import</span> <span class="n">Entity</span><span class="p">,</span> <span class="n">DDSException</span>
 <span class="kn">from</span> <span class="nn">.qos</span> <span class="kn">import</span> <span class="n">_CQos</span>
 
+<span class="kn">from</span> <span class="nn">ddspy</span> <span class="kn">import</span> <span class="n">ddspy_write</span><span class="p">,</span> <span class="n">ddspy_write_ts</span><span class="p">,</span> <span class="n">ddspy_dispose</span><span class="p">,</span> <span class="n">ddspy_writedispose</span><span class="p">,</span> <span class="n">ddspy_writedispose_ts</span><span class="p">,</span> \
+    <span class="n">ddspy_dispose_handle</span><span class="p">,</span> <span class="n">ddspy_dispose_handle_ts</span><span class="p">,</span> <span class="n">ddspy_register_instance</span><span class="p">,</span> <span class="n">ddspy_unregister_instance</span><span class="p">,</span>   \
+    <span class="n">ddspy_unregister_instance_handle</span><span class="p">,</span> <span class="n">ddspy_unregister_instance_ts</span><span class="p">,</span> <span class="n">ddspy_unregister_instance_handle_ts</span><span class="p">,</span> \
+    <span class="n">ddspy_lookup_instance</span><span class="p">,</span> <span class="n">ddspy_dispose_ts</span>
 
-<span class="c1"># The TYPE_CHECKING variable will always evaluate to False, incurring no runtime costs</span>
-<span class="c1"># But the import here allows your static type checker to resolve fully qualified cyclonedds names</span>
+
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">import</span> <span class="nn">cyclonedds</span>
-    <span class="n">ddspy_write</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">e</span><span class="p">,</span> <span class="n">s</span><span class="p">:</span> <span class="kc">None</span>
-    <span class="n">ddspy_write_ts</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">e</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">:</span> <span class="kc">None</span>
-    <span class="n">ddspy_dispose</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">e</span><span class="p">,</span> <span class="n">s</span><span class="p">:</span> <span class="kc">None</span>
-    <span class="n">ddspy_dispose_ts</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">e</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">:</span> <span class="kc">None</span>
-    <span class="n">ddspy_dispose_handle</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">e</span><span class="p">,</span> <span class="n">s</span><span class="p">:</span> <span class="kc">None</span>
-    <span class="n">ddspy_dispose_handle_ts</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">e</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">:</span> <span class="kc">None</span>
-    <span class="n">ddspy_writedispose</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">e</span><span class="p">,</span> <span class="n">s</span><span class="p">:</span> <span class="kc">None</span>
-    <span class="n">ddspy_writedispose_ts</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">e</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">:</span> <span class="kc">None</span>
-    <span class="n">ddspy_register_instance</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">e</span><span class="p">,</span> <span class="n">s</span><span class="p">:</span> <span class="kc">None</span>
-    <span class="n">ddspy_unregister_instance</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">e</span><span class="p">,</span> <span class="n">s</span><span class="p">:</span> <span class="kc">None</span>
-    <span class="n">ddspy_unregister_instance_handle</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">e</span><span class="p">,</span> <span class="n">s</span><span class="p">:</span> <span class="kc">None</span>
-    <span class="n">ddspy_unregister_instance_ts</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">e</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">:</span> <span class="kc">None</span>
-    <span class="n">ddspy_unregister_instance_handle_ts</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">e</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">t</span><span class="p">:</span> <span class="kc">None</span>
-    <span class="n">ddspy_lookup_instance</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">e</span><span class="p">,</span> <span class="n">s</span><span class="p">:</span> <span class="kc">None</span>
-<span class="k">else</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">ddspy</span> <span class="kn">import</span> <span class="n">ddspy_write</span><span class="p">,</span> <span class="n">ddspy_write_ts</span><span class="p">,</span> <span class="n">ddspy_dispose</span><span class="p">,</span> <span class="n">ddspy_writedispose</span><span class="p">,</span> <span class="n">ddspy_writedispose_ts</span><span class="p">,</span> \
-        <span class="n">ddspy_dispose_handle</span><span class="p">,</span> <span class="n">ddspy_dispose_handle_ts</span><span class="p">,</span> <span class="n">ddspy_register_instance</span><span class="p">,</span> <span class="n">ddspy_unregister_instance</span><span class="p">,</span> \
-        <span class="n">ddspy_unregister_instance_handle</span><span class="p">,</span> <span class="n">ddspy_unregister_instance_ts</span><span class="p">,</span> <span class="n">ddspy_unregister_instance_handle_ts</span><span class="p">,</span> \
-        <span class="n">ddspy_lookup_instance</span>
 
 
 <div class="viewcode-block" id="Publisher"><a class="viewcode-back" href="../../cyclonedds.pub.html#cyclonedds.pub.Publisher">[docs]</a><span class="k">class</span> <span class="nc">Publisher</span><span class="p">(</span><span class="n">Entity</span><span class="p">):</span>

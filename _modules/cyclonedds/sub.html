@@ -167,21 +167,12 @@
 <span class="kn">from</span> <span class="nn">.qos</span> <span class="kn">import</span> <span class="n">_CQos</span>
 <span class="kn">from</span> <span class="nn">.util</span> <span class="kn">import</span> <span class="n">duration</span>
 
+<span class="kn">from</span> <span class="nn">ddspy</span> <span class="kn">import</span> <span class="n">ddspy_read</span><span class="p">,</span> <span class="n">ddspy_take</span><span class="p">,</span> <span class="n">ddspy_read_handle</span><span class="p">,</span> <span class="n">ddspy_take_handle</span><span class="p">,</span> <span class="n">ddspy_lookup_instance</span><span class="p">,</span> \
+    <span class="n">ddspy_read_next</span><span class="p">,</span> <span class="n">ddspy_take_next</span>
 
-<span class="c1"># The TYPE_CHECKING variable will always evaluate to False, incurring no runtime costs</span>
-<span class="c1"># But the import here allows your static type checker to resolve fully qualified cyclonedds names</span>
+
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">import</span> <span class="nn">cyclonedds</span>
-    <span class="n">ddspy_read</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">e</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="kc">None</span>
-    <span class="n">ddspy_take</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">e</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="kc">None</span>
-    <span class="n">ddspy_read_handle</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">e</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">h</span><span class="p">:</span> <span class="kc">None</span>
-    <span class="n">ddspy_take_handle</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">e</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">h</span><span class="p">:</span> <span class="kc">None</span>
-    <span class="n">ddspy_lookup_instance</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">e</span><span class="p">,</span> <span class="n">s</span><span class="p">:</span> <span class="kc">None</span>
-    <span class="n">ddspy_read_next</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">e</span><span class="p">:</span> <span class="kc">None</span>
-    <span class="n">ddspy_take_next</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">e</span><span class="p">:</span> <span class="kc">None</span>
-<span class="k">else</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">ddspy</span> <span class="kn">import</span> <span class="n">ddspy_read</span><span class="p">,</span> <span class="n">ddspy_take</span><span class="p">,</span> <span class="n">ddspy_read_handle</span><span class="p">,</span> <span class="n">ddspy_take_handle</span><span class="p">,</span> <span class="n">ddspy_lookup_instance</span><span class="p">,</span> \
-        <span class="n">ddspy_read_next</span><span class="p">,</span> <span class="n">ddspy_take_next</span>
 
 
 <div class="viewcode-block" id="Subscriber"><a class="viewcode-back" href="../../cyclonedds.sub.html#cyclonedds.sub.Subscriber">[docs]</a><span class="k">class</span> <span class="nc">Subscriber</span><span class="p">(</span><span class="n">Entity</span><span class="p">):</span>
@@ -249,7 +240,7 @@
 
         <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span> <span class="o">==</span> <span class="nb">int</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">DDSException</span><span class="p">(</span><span class="n">ret</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Occurred while reading data in {repr(self)}&quot;</span><span class="p">)</span>
-        
+
         <span class="n">samples</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">info</span><span class="p">)</span> <span class="ow">in</span> <span class="n">ret</span><span class="p">:</span>
             <span class="n">samples</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_topic</span><span class="o">.</span><span class="n">data_type</span><span class="o">.</span><span class="n">deserialize</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
@@ -273,26 +264,26 @@
 
 <div class="viewcode-block" id="DataReader.read_next"><a class="viewcode-back" href="../../cyclonedds.sub.html#cyclonedds.sub.DataReader.read_next">[docs]</a>    <span class="k">def</span> <span class="nf">read_next</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">object</span><span class="p">]:</span>
         <span class="n">ret</span> <span class="o">=</span> <span class="n">ddspy_read_next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ref</span><span class="p">)</span>
-        
+
         <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span> <span class="o">==</span> <span class="nb">int</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">DDSException</span><span class="p">(</span><span class="n">ret</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Occurred while reading next in {repr(self)}&quot;</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">ret</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
-        
+
         <span class="n">sample</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_topic</span><span class="o">.</span><span class="n">data_type</span><span class="o">.</span><span class="n">deserialize</span><span class="p">(</span><span class="n">ret</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
         <span class="n">sample</span><span class="o">.</span><span class="n">sample_info</span> <span class="o">=</span> <span class="n">ret</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">sample</span></div>
 
 <div class="viewcode-block" id="DataReader.take_next"><a class="viewcode-back" href="../../cyclonedds.sub.html#cyclonedds.sub.DataReader.take_next">[docs]</a>    <span class="k">def</span> <span class="nf">take_next</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">object</span><span class="p">]:</span>
         <span class="n">ret</span> <span class="o">=</span> <span class="n">ddspy_take_next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ref</span><span class="p">)</span>
-        
+
         <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span> <span class="o">==</span> <span class="nb">int</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">DDSException</span><span class="p">(</span><span class="n">ret</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Occurred while taking next in {repr(self)}&quot;</span><span class="p">)</span>
-        
+
         <span class="k">if</span> <span class="n">ret</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
-        
+
         <span class="n">sample</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_topic</span><span class="o">.</span><span class="n">data_type</span><span class="o">.</span><span class="n">deserialize</span><span class="p">(</span><span class="n">ret</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
         <span class="n">sample</span><span class="o">.</span><span class="n">sample_info</span> <span class="o">=</span> <span class="n">ret</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">sample</span></div>

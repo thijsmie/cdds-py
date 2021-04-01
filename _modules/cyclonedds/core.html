@@ -169,8 +169,6 @@
 <span class="kn">from</span> <span class="nn">.qos</span> <span class="kn">import</span> <span class="n">Qos</span><span class="p">,</span> <span class="n">Policy</span><span class="p">,</span> <span class="n">_CQos</span>
 
 
-<span class="c1"># The TYPE_CHECKING variable will always evaluate to False, incurring no runtime costs</span>
-<span class="c1"># But the import here allows your static type checker to resolve fully qualified cyclonedds names</span>
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">import</span> <span class="nn">cyclonedds</span>
 
@@ -1093,11 +1091,11 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_set_on_sample_lost</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ref</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_on_sample_lost</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Listener.on_sample_rejected"><a class="viewcode-back" href="../../cyclonedds.core.html#cyclonedds.core.Listener.on_sample_rejected">[docs]</a>    <span class="k">def</span> <span class="nf">on_sample_rejected</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reader</span><span class="p">:</span> <span class="s1">&#39;cyclonedds.sub.DataReader&#39;</span><span class="p">,</span>
-                       <span class="n">status</span><span class="p">:</span> <span class="n">dds_c_t</span><span class="o">.</span><span class="n">sample_rejected_status</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+                           <span class="n">status</span><span class="p">:</span> <span class="n">dds_c_t</span><span class="o">.</span><span class="n">sample_rejected_status</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="Listener.set_on_sample_rejected"><a class="viewcode-back" href="../../cyclonedds.core.html#cyclonedds.core.Listener.set_on_sample_rejected">[docs]</a>    <span class="k">def</span> <span class="nf">set_on_sample_rejected</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">callable</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="s1">&#39;cyclonedds.sub.DataReader&#39;</span><span class="p">,</span>
-                                                     <span class="n">dds_c_t</span><span class="o">.</span><span class="n">sample_rejected_status</span><span class="p">],</span> <span class="kc">None</span><span class="p">]):</span>
+                                                         <span class="n">dds_c_t</span><span class="o">.</span><span class="n">sample_rejected_status</span><span class="p">],</span> <span class="kc">None</span><span class="p">]):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">on_sample_rejected</span> <span class="o">=</span> <span class="n">callable</span>
         <span class="k">if</span> <span class="n">callable</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_set_on_sample_rejected</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ref</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
@@ -1110,12 +1108,13 @@
 
             <span class="bp">self</span><span class="o">.</span><span class="n">_on_sample_rejected</span> <span class="o">=</span> <span class="n">_on_sample_rejected_fn</span><span class="p">(</span><span class="n">call</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_set_on_sample_rejected</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ref</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_on_sample_rejected</span><span class="p">)</span></div>
+
 <div class="viewcode-block" id="Listener.on_requested_deadline_missed"><a class="viewcode-back" href="../../cyclonedds.core.html#cyclonedds.core.Listener.on_requested_deadline_missed">[docs]</a>    <span class="k">def</span> <span class="nf">on_requested_deadline_missed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reader</span><span class="p">:</span> <span class="s1">&#39;cyclonedds.sub.DataReader&#39;</span><span class="p">,</span>
-                       <span class="n">status</span><span class="p">:</span> <span class="n">dds_c_t</span><span class="o">.</span><span class="n">requested_deadline_missed_status</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+                                     <span class="n">status</span><span class="p">:</span> <span class="n">dds_c_t</span><span class="o">.</span><span class="n">requested_deadline_missed_status</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="Listener.set_on_requested_deadline_missed"><a class="viewcode-back" href="../../cyclonedds.core.html#cyclonedds.core.Listener.set_on_requested_deadline_missed">[docs]</a>    <span class="k">def</span> <span class="nf">set_on_requested_deadline_missed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">callable</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="s1">&#39;cyclonedds.sub.DataReader&#39;</span><span class="p">,</span>
-                                                     <span class="n">dds_c_t</span><span class="o">.</span><span class="n">requested_deadline_missed_status</span><span class="p">],</span> <span class="kc">None</span><span class="p">]):</span>
+                                                                   <span class="n">dds_c_t</span><span class="o">.</span><span class="n">requested_deadline_missed_status</span><span class="p">],</span> <span class="kc">None</span><span class="p">]):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">on_requested_deadline_missed</span> <span class="o">=</span> <span class="n">callable</span>
         <span class="k">if</span> <span class="n">callable</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_set_on_requested_deadline_missed</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ref</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
@@ -1130,11 +1129,11 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_set_on_requested_deadline_missed</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ref</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_on_requested_deadline_missed</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Listener.on_requested_incompatible_qos"><a class="viewcode-back" href="../../cyclonedds.core.html#cyclonedds.core.Listener.on_requested_incompatible_qos">[docs]</a>    <span class="k">def</span> <span class="nf">on_requested_incompatible_qos</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reader</span><span class="p">:</span> <span class="s1">&#39;cyclonedds.sub.DataReader&#39;</span><span class="p">,</span>
-                       <span class="n">status</span><span class="p">:</span> <span class="n">dds_c_t</span><span class="o">.</span><span class="n">requested_incompatible_qos_status</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+                                      <span class="n">status</span><span class="p">:</span> <span class="n">dds_c_t</span><span class="o">.</span><span class="n">requested_incompatible_qos_status</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="Listener.set_on_requested_incompatible_qos"><a class="viewcode-back" href="../../cyclonedds.core.html#cyclonedds.core.Listener.set_on_requested_incompatible_qos">[docs]</a>    <span class="k">def</span> <span class="nf">set_on_requested_incompatible_qos</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">callable</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="s1">&#39;cyclonedds.sub.DataReader&#39;</span><span class="p">,</span>
-                                                     <span class="n">dds_c_t</span><span class="o">.</span><span class="n">requested_incompatible_qos_status</span><span class="p">],</span> <span class="kc">None</span><span class="p">]):</span>
+                                                                    <span class="n">dds_c_t</span><span class="o">.</span><span class="n">requested_incompatible_qos_status</span><span class="p">],</span> <span class="kc">None</span><span class="p">]):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">on_requested_incompatible_qos</span> <span class="o">=</span> <span class="n">callable</span>
         <span class="k">if</span> <span class="n">callable</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_set_on_requested_incompatible_qos</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ref</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
@@ -1149,11 +1148,11 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_set_on_requested_incompatible_qos</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ref</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_on_requested_incompatible_qos</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Listener.on_publication_matched"><a class="viewcode-back" href="../../cyclonedds.core.html#cyclonedds.core.Listener.on_publication_matched">[docs]</a>    <span class="k">def</span> <span class="nf">on_publication_matched</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">writer</span><span class="p">:</span> <span class="s1">&#39;cyclonedds.pub.DataWriter&#39;</span><span class="p">,</span>
-                       <span class="n">status</span><span class="p">:</span> <span class="n">dds_c_t</span><span class="o">.</span><span class="n">publication_matched_status</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+                               <span class="n">status</span><span class="p">:</span> <span class="n">dds_c_t</span><span class="o">.</span><span class="n">publication_matched_status</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="Listener.set_on_publication_matched"><a class="viewcode-back" href="../../cyclonedds.core.html#cyclonedds.core.Listener.set_on_publication_matched">[docs]</a>    <span class="k">def</span> <span class="nf">set_on_publication_matched</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">callable</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="s1">&#39;cyclonedds.pub.DataWriter&#39;</span><span class="p">,</span>
-                                                     <span class="n">dds_c_t</span><span class="o">.</span><span class="n">publication_matched_status</span><span class="p">],</span> <span class="kc">None</span><span class="p">]):</span>
+                                                             <span class="n">dds_c_t</span><span class="o">.</span><span class="n">publication_matched_status</span><span class="p">],</span> <span class="kc">None</span><span class="p">]):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">on_publication_matched</span> <span class="o">=</span> <span class="n">callable</span>
         <span class="k">if</span> <span class="n">callable</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_set_on_publication_matched</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ref</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
@@ -1168,11 +1167,11 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_set_on_publication_matched</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ref</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_on_publication_matched</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Listener.on_subscription_matched"><a class="viewcode-back" href="../../cyclonedds.core.html#cyclonedds.core.Listener.on_subscription_matched">[docs]</a>    <span class="k">def</span> <span class="nf">on_subscription_matched</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reader</span><span class="p">:</span> <span class="s1">&#39;cyclonedds.sub.DataReader&#39;</span><span class="p">,</span>
-                       <span class="n">status</span><span class="p">:</span> <span class="n">dds_c_t</span><span class="o">.</span><span class="n">subscription_matched_status</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+                                <span class="n">status</span><span class="p">:</span> <span class="n">dds_c_t</span><span class="o">.</span><span class="n">subscription_matched_status</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="Listener.set_on_subscription_matched"><a class="viewcode-back" href="../../cyclonedds.core.html#cyclonedds.core.Listener.set_on_subscription_matched">[docs]</a>    <span class="k">def</span> <span class="nf">set_on_subscription_matched</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">callable</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="s1">&#39;cyclonedds.sub.DataReader&#39;</span><span class="p">,</span>
-                                                     <span class="n">dds_c_t</span><span class="o">.</span><span class="n">subscription_matched_status</span><span class="p">],</span> <span class="kc">None</span><span class="p">]):</span>
+                                                              <span class="n">dds_c_t</span><span class="o">.</span><span class="n">subscription_matched_status</span><span class="p">],</span> <span class="kc">None</span><span class="p">]):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">on_subscription_matched</span> <span class="o">=</span> <span class="n">callable</span>
         <span class="k">if</span> <span class="n">callable</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_set_on_subscription_matched</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ref</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
@@ -1235,7 +1234,8 @@
         <span class="k">pass</span>
 
     <span class="nd">@c_call</span><span class="p">(</span><span class="s2">&quot;dds_lset_requested_deadline_missed&quot;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">_set_on_requested_deadline_missed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">listener</span><span class="p">:</span> <span class="n">dds_c_t</span><span class="o">.</span><span class="n">listener_p</span><span class="p">,</span> <span class="n">callback</span><span class="p">:</span> <span class="n">_on_requested_deadline_missed_fn</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">_set_on_requested_deadline_missed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">listener</span><span class="p">:</span> <span class="n">dds_c_t</span><span class="o">.</span><span class="n">listener_p</span><span class="p">,</span>
+                                          <span class="n">callback</span><span class="p">:</span> <span class="n">_on_requested_deadline_missed_fn</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">pass</span>
 
     <span class="nd">@c_call</span><span class="p">(</span><span class="s2">&quot;dds_lset_requested_incompatible_qos&quot;</span><span class="p">)</span>
@@ -1705,7 +1705,7 @@
         <span class="k">pass</span></div>
 
 
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;DDSException&quot;</span><span class="p">,</span> <span class="s2">&quot;DDSAPIException&quot;</span><span class="p">,</span> <span class="s2">&quot;Entity&quot;</span><span class="p">,</span> <span class="s2">&quot;Qos&quot;</span><span class="p">,</span> <span class="s2">&quot;Policy&quot;</span><span class="p">,</span> 
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;DDSException&quot;</span><span class="p">,</span> <span class="s2">&quot;DDSAPIException&quot;</span><span class="p">,</span> <span class="s2">&quot;Entity&quot;</span><span class="p">,</span> <span class="s2">&quot;Qos&quot;</span><span class="p">,</span> <span class="s2">&quot;Policy&quot;</span><span class="p">,</span>
            <span class="s2">&quot;Listener&quot;</span><span class="p">,</span> <span class="s2">&quot;DDSStatus&quot;</span><span class="p">,</span> <span class="s2">&quot;ViewState&quot;</span><span class="p">,</span> <span class="s2">&quot;InstanceState&quot;</span><span class="p">,</span> <span class="s2">&quot;SampleState&quot;</span><span class="p">,</span>
            <span class="s2">&quot;ReadCondition&quot;</span><span class="p">,</span> <span class="s2">&quot;QueryCondition&quot;</span><span class="p">,</span> <span class="s2">&quot;GuardCondition&quot;</span><span class="p">,</span> <span class="s2">&quot;WaitSet&quot;</span><span class="p">]</span>
 </pre></div>
