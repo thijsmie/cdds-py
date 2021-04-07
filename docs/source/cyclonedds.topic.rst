@@ -1,5 +1,5 @@
-cyclonedds.topic
-================
+topic
+=====
 
 .. autoclass:: cyclonedds.topic.Topic
    :members:

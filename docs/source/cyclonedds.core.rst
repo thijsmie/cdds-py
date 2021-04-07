@@ -1,5 +1,5 @@
-cyclonedds.core
-===============
+core
+====
 
 .. autoclass:: cyclonedds.core.Qos
    :members:

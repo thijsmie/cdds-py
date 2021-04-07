@@ -1,5 +1,5 @@
-cyclonedds.domain
-=================
+domain
+======
 
 
 .. autoclass:: cyclonedds.domain.Domain

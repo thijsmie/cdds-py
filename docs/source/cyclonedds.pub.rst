@@ -1,5 +1,5 @@
-cyclonedds.pub
-==============
+pub
+===
 
 .. autoclass:: cyclonedds.pub.Publisher
    :members:

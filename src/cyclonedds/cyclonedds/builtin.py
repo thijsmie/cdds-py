@@ -124,9 +124,25 @@ class BuiltinDataReader(DataReader):
     """
     def __init__(self,
                  subscriber_or_participant: Union['cyclonedds.sub.Subscriber', 'cyclonedds.domain.DomainParticipant'],
-                 builtin_topic: 'cyclonedds.topic.BuiltinTopic',
+                 builtin_topic: 'cyclonedds.builtin.BuiltinTopic',
                  qos: Optional['cyclonedds.core.Qos'] = None,
-                 listener: Optional['cyclonedds.core.Listener'] = None):
+                 listener: Optional['cyclonedds.core.Listener'] = None) -> None:
+        """Initialize the BuiltinDataReader
+
+        Parameters
+        ----------
+        subscriber_or_participant: cyclonedds.sub.Subscriber, cyclonedds.domain.DomainParticipant
+            The subscriber to which this reader will be added. If you supply a DomainParticipant a subscriber will be created for you.
+
+        builtin_topic: cyclonedds.builtin.BuiltinTopic
+            Which Builtin Topic to subscribe to. This can be one of BuiltinTopicDcpsParticipant, BuiltinTopicDcpsTopic,
+            BuiltinTopicDcpsPublication or BuiltinTopicDcpsSubscription. Please note that BuiltinTopicDcpsTopic will fail if
+            you built CycloneDDS without Topic Discovery.
+        qos: cyclonedds.core.Qos, optional = None
+            Optionally supply a Qos.
+        listener: cyclonedds.core.Listener = None
+            Optionally supply a Listener.
+        """
         self._topic = builtin_topic
         self._N = 0
         self._sampleinfos = None
@@ -175,7 +191,7 @@ class BuiltinDataReader(DataReader):
             sampleinfo.absolute_generation_rank
         )
 
-    def read(self, N: int = 1, condition=None):
+    def read(self, N: int = 1, condition: Union['cyclonedds.core.ReadCondition', 'cyclonedds.core.QueryCondition']=None):
         """Read a maximum of N samples, non-blocking. Optionally use a read/query-condition to select which samples
         you are interested in.
 
@@ -183,6 +199,8 @@ class BuiltinDataReader(DataReader):
         ----------
         N: int
             The maximum number of samples to read.
+        condition: cyclonedds.core.ReadCondition, cyclonedds.core.QueryCondition, optional
+            Only read samples that satisfy the supplied condition.
 
         Raises
         ------
@@ -216,6 +234,8 @@ class BuiltinDataReader(DataReader):
         ----------
         N: int
             The maximum number of samples to read.
+        condition: cyclonedds.core.ReadCondition, cyclonedds.core.QueryCondition, optional
+            Only take samples that satisfy the supplied condition.
 
         Raises
         ------
@@ -241,18 +261,40 @@ class BuiltinDataReader(DataReader):
         return return_samples
 
     def read_next(self) -> Optional[object]:
+        """Shortcut method to read exactly one sample or return None.
+
+        Raises
+        ------
+        DDSException
+            If any error code is returned by the DDS API it is converted into an exception.
+        """
         samples = self.read(condition=self._next_condition)
         if samples:
             return samples[0]
         return None
 
     def take_next(self) -> Optional[object]:
+        """Shortcut method to take exactly one sample or return None.
+
+        Raises
+        ------
+        DDSException
+            If any error code is returned by the DDS API it is converted into an exception.
+        """
         samples = self.take(condition=self._next_condition)
         if samples:
             return samples[0]
         return None
 
     def read_iter(self, timeout: int = None) -> Generator[object, None, None]:
+        """Shortcut method to iterate reading samples. Iteration will stop once the timeout you supply expires.
+        Every time a sample is received the timeout is reset.
+
+        Raises
+        ------
+        DDSException
+            If any error code is returned by the DDS API it is converted into an exception.
+        """
         waitset = WaitSet(self.participant)
         condition = ReadCondition(self, ViewState.Any | InstanceState.Any | SampleState.NotRead)
         waitset.attach(condition)
@@ -268,6 +310,14 @@ class BuiltinDataReader(DataReader):
                 break
 
     def take_iter(self, timeout: int = None) -> Generator[object, None, None]:
+        """Shortcut method to iterate taking samples. Iteration will stop once the timeout you supply expires.
+        Every time a sample is received the timeout is reset.
+
+        Raises
+        ------
+        DDSException
+            If any error code is returned by the DDS API it is converted into an exception.
+        """
         waitset = WaitSet(self.participant)
         condition = ReadCondition(self, ViewState.Any | InstanceState.Any | SampleState.NotRead)
         waitset.attach(condition)

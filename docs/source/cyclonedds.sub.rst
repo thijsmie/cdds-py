@@ -1,5 +1,5 @@
-cyclonedds.sub
-==============
+sub
+===
 
 .. autoclass:: cyclonedds.sub.Subscriber
    :members:

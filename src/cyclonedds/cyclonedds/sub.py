@@ -138,7 +138,7 @@ class DataReader(Entity):
         sample.sample_info = ret[1]
         return sample
 
-    def read_iter(self, timeout: int = None) -> Generator[object, None, None]:
+    def read_iter(self, condition=None, timeout: int = None) -> Generator[object, None, None]:
         waitset = WaitSet(self.participant)
         condition = ReadCondition(self, ViewState.Any | InstanceState.Any | SampleState.NotRead)
         waitset.attach(condition)
@@ -146,25 +146,25 @@ class DataReader(Entity):
 
         while True:
             while True:
-                a = self.read_next()
-                if a is None:
+                a = self.read(condition=condition)
+                if not a:
                     break
-                yield a
+                yield a[0]
             if waitset.wait(timeout) == 0:
                 break
 
-    def take_iter(self, timeout: int = None) -> Generator[object, None, None]:
+    def take_iter(self, condition=None, timeout: int = None) -> Generator[object, None, None]:
         waitset = WaitSet(self.participant)
-        condition = ReadCondition(self, ViewState.Any | InstanceState.Any | SampleState.NotRead)
+        condition = condition or ReadCondition(self, ViewState.Any | InstanceState.Any | SampleState.NotRead)
         waitset.attach(condition)
         timeout = timeout or duration(weeks=99999)
 
         while True:
             while True:
-                a = self.take_next()
-                if a is None:
+                a = self.take(condition=condition)
+                if not a:
                     break
-                yield a
+                yield a[0]
             if waitset.wait(timeout) == 0:
                 break
 

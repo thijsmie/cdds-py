@@ -2,13 +2,7 @@ API
 ===
 
 .. toctree::
-   :maxdepth: 4
+   :maxdepth: 1
+   :glob:
 
-   cyclonedds.core
-   cyclonedds.domain
-   cyclonedds.topic
-   cyclonedds.pub
-   cyclonedds.sub
-   cyclonedds.util
-   cyclonedds.builtin
-   cyclonedds.internal
+   cyclonedds.*

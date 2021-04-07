@@ -1,5 +1,5 @@
-cyclonedds.internal
-===================
+internal
+========
 
 As the name suggests, the functionality in this module is meant for internal package use only.
 
