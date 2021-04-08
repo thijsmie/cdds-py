@@ -34,7 +34,9 @@
 
     
     <link rel="index" title="Index" href="../../genindex.html" />
-    <link rel="search" title="Search" href="../../search.html" /> 
+    <link rel="search" title="Search" href="../../search.html" />
+    <link href="../../_static/style.css" rel="stylesheet" type="text/css">
+
 </head>
 
 <body class="wy-body-for-nav">
@@ -79,9 +81,15 @@
               
             
             
-              <p class="caption"><span class="caption-text">Contents:</span></p>
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../datatypes.html">IDL datatypes in Python</a></li>
+</ul>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../cyclonedds.html">CycloneDDS-Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">API</a></li>
+</ul>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="../../pycdr.html">PyCDR</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../dds.html">General information about DDS</a></li>
 </ul>
@@ -160,7 +168,9 @@
 <span class="sd"> * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span>
+<span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">import</span> <span class="nn">concurrent.futures</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">AsyncGenerator</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span>
 
 <span class="kn">from</span> <span class="nn">.core</span> <span class="kn">import</span> <span class="n">Entity</span><span class="p">,</span> <span class="n">DDSException</span><span class="p">,</span> <span class="n">WaitSet</span><span class="p">,</span> <span class="n">ReadCondition</span><span class="p">,</span> <span class="n">SampleState</span><span class="p">,</span> <span class="n">InstanceState</span><span class="p">,</span> <span class="n">ViewState</span>
 <span class="kn">from</span> <span class="nn">.internal</span> <span class="kn">import</span> <span class="n">c_call</span><span class="p">,</span> <span class="n">dds_c_t</span>
@@ -288,7 +298,7 @@
         <span class="n">sample</span><span class="o">.</span><span class="n">sample_info</span> <span class="o">=</span> <span class="n">ret</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">sample</span></div>
 
-<div class="viewcode-block" id="DataReader.read_iter"><a class="viewcode-back" href="../../cyclonedds.sub.html#cyclonedds.sub.DataReader.read_iter">[docs]</a>    <span class="k">def</span> <span class="nf">read_iter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="nb">object</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+<div class="viewcode-block" id="DataReader.read_iter"><a class="viewcode-back" href="../../cyclonedds.sub.html#cyclonedds.sub.DataReader.read_iter">[docs]</a>    <span class="k">def</span> <span class="nf">read_iter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">condition</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="nb">object</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
         <span class="n">waitset</span> <span class="o">=</span> <span class="n">WaitSet</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">participant</span><span class="p">)</span>
         <span class="n">condition</span> <span class="o">=</span> <span class="n">ReadCondition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ViewState</span><span class="o">.</span><span class="n">Any</span> <span class="o">|</span> <span class="n">InstanceState</span><span class="o">.</span><span class="n">Any</span> <span class="o">|</span> <span class="n">SampleState</span><span class="o">.</span><span class="n">NotRead</span><span class="p">)</span>
         <span class="n">waitset</span><span class="o">.</span><span class="n">attach</span><span class="p">(</span><span class="n">condition</span><span class="p">)</span>
@@ -296,27 +306,63 @@
 
         <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
             <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
-                <span class="n">a</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_next</span><span class="p">()</span>
-                <span class="k">if</span> <span class="n">a</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">a</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">condition</span><span class="o">=</span><span class="n">condition</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">a</span><span class="p">:</span>
                     <span class="k">break</span>
-                <span class="k">yield</span> <span class="n">a</span>
+                <span class="k">yield</span> <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
             <span class="k">if</span> <span class="n">waitset</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="n">timeout</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="k">break</span></div>
 
-<div class="viewcode-block" id="DataReader.take_iter"><a class="viewcode-back" href="../../cyclonedds.sub.html#cyclonedds.sub.DataReader.take_iter">[docs]</a>    <span class="k">def</span> <span class="nf">take_iter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="nb">object</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+<div class="viewcode-block" id="DataReader.take_iter"><a class="viewcode-back" href="../../cyclonedds.sub.html#cyclonedds.sub.DataReader.take_iter">[docs]</a>    <span class="k">def</span> <span class="nf">take_iter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">condition</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="nb">object</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
         <span class="n">waitset</span> <span class="o">=</span> <span class="n">WaitSet</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">participant</span><span class="p">)</span>
-        <span class="n">condition</span> <span class="o">=</span> <span class="n">ReadCondition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ViewState</span><span class="o">.</span><span class="n">Any</span> <span class="o">|</span> <span class="n">InstanceState</span><span class="o">.</span><span class="n">Any</span> <span class="o">|</span> <span class="n">SampleState</span><span class="o">.</span><span class="n">NotRead</span><span class="p">)</span>
+        <span class="n">condition</span> <span class="o">=</span> <span class="n">condition</span> <span class="ow">or</span> <span class="n">ReadCondition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ViewState</span><span class="o">.</span><span class="n">Any</span> <span class="o">|</span> <span class="n">InstanceState</span><span class="o">.</span><span class="n">Any</span> <span class="o">|</span> <span class="n">SampleState</span><span class="o">.</span><span class="n">NotRead</span><span class="p">)</span>
         <span class="n">waitset</span><span class="o">.</span><span class="n">attach</span><span class="p">(</span><span class="n">condition</span><span class="p">)</span>
         <span class="n">timeout</span> <span class="o">=</span> <span class="n">timeout</span> <span class="ow">or</span> <span class="n">duration</span><span class="p">(</span><span class="n">weeks</span><span class="o">=</span><span class="mi">99999</span><span class="p">)</span>
 
         <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
             <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
-                <span class="n">a</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">take_next</span><span class="p">()</span>
-                <span class="k">if</span> <span class="n">a</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">a</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="n">condition</span><span class="o">=</span><span class="n">condition</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">a</span><span class="p">:</span>
                     <span class="k">break</span>
-                <span class="k">yield</span> <span class="n">a</span>
+                <span class="k">yield</span> <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
             <span class="k">if</span> <span class="n">waitset</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="n">timeout</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="k">break</span></div>
+
+<div class="viewcode-block" id="DataReader.read_aiter"><a class="viewcode-back" href="../../cyclonedds.sub.html#cyclonedds.sub.DataReader.read_aiter">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">read_aiter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">condition</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="nb">object</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+        <span class="n">waitset</span> <span class="o">=</span> <span class="n">WaitSet</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">participant</span><span class="p">)</span>
+        <span class="n">condition</span> <span class="o">=</span> <span class="n">condition</span> <span class="ow">or</span> <span class="n">ReadCondition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ViewState</span><span class="o">.</span><span class="n">Any</span> <span class="o">|</span> <span class="n">InstanceState</span><span class="o">.</span><span class="n">Any</span> <span class="o">|</span> <span class="n">SampleState</span><span class="o">.</span><span class="n">NotRead</span><span class="p">)</span>
+        <span class="n">waitset</span><span class="o">.</span><span class="n">attach</span><span class="p">(</span><span class="n">condition</span><span class="p">)</span>
+        <span class="n">timeout</span> <span class="o">=</span> <span class="n">timeout</span> <span class="ow">or</span> <span class="n">duration</span><span class="p">(</span><span class="n">weeks</span><span class="o">=</span><span class="mi">99999</span><span class="p">)</span>
+
+        <span class="n">loop</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">get_running_loop</span><span class="p">()</span>
+        <span class="k">with</span> <span class="n">concurrent</span><span class="o">.</span><span class="n">futures</span><span class="o">.</span><span class="n">ThreadPoolExecutor</span><span class="p">()</span> <span class="k">as</span> <span class="n">pool</span><span class="p">:</span>
+            <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+                    <span class="n">a</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">condition</span><span class="o">=</span><span class="n">condition</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">a</span><span class="p">:</span>
+                        <span class="k">break</span>
+                    <span class="k">yield</span> <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">loop</span><span class="o">.</span><span class="n">run_in_executor</span><span class="p">(</span><span class="n">pool</span><span class="p">,</span> <span class="n">waitset</span><span class="o">.</span><span class="n">wait</span><span class="p">,</span> <span class="n">timeout</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">result</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="k">break</span></div>
+
+<div class="viewcode-block" id="DataReader.take_aiter"><a class="viewcode-back" href="../../cyclonedds.sub.html#cyclonedds.sub.DataReader.take_aiter">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">take_aiter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">condition</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="nb">object</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+        <span class="n">waitset</span> <span class="o">=</span> <span class="n">WaitSet</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">participant</span><span class="p">)</span>
+        <span class="n">condition</span> <span class="o">=</span> <span class="n">condition</span> <span class="ow">or</span> <span class="n">ReadCondition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ViewState</span><span class="o">.</span><span class="n">Any</span> <span class="o">|</span> <span class="n">InstanceState</span><span class="o">.</span><span class="n">Any</span> <span class="o">|</span> <span class="n">SampleState</span><span class="o">.</span><span class="n">NotRead</span><span class="p">)</span>
+        <span class="n">waitset</span><span class="o">.</span><span class="n">attach</span><span class="p">(</span><span class="n">condition</span><span class="p">)</span>
+        <span class="n">timeout</span> <span class="o">=</span> <span class="n">timeout</span> <span class="ow">or</span> <span class="n">duration</span><span class="p">(</span><span class="n">weeks</span><span class="o">=</span><span class="mi">99999</span><span class="p">)</span>
+
+        <span class="n">loop</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">get_running_loop</span><span class="p">()</span>
+        <span class="k">with</span> <span class="n">concurrent</span><span class="o">.</span><span class="n">futures</span><span class="o">.</span><span class="n">ThreadPoolExecutor</span><span class="p">()</span> <span class="k">as</span> <span class="n">pool</span><span class="p">:</span>
+            <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+                    <span class="n">a</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="n">condition</span><span class="o">=</span><span class="n">condition</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">a</span><span class="p">:</span>
+                        <span class="k">break</span>
+                    <span class="k">yield</span> <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">loop</span><span class="o">.</span><span class="n">run_in_executor</span><span class="p">(</span><span class="n">pool</span><span class="p">,</span> <span class="n">waitset</span><span class="o">.</span><span class="n">wait</span><span class="p">,</span> <span class="n">timeout</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">result</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="k">break</span></div>
 
 <div class="viewcode-block" id="DataReader.wait_for_historical_data"><a class="viewcode-back" href="../../cyclonedds.sub.html#cyclonedds.sub.DataReader.wait_for_historical_data">[docs]</a>    <span class="k">def</span> <span class="nf">wait_for_historical_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wait_for_historical_data</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ref</span><span class="p">,</span> <span class="n">timeout</span><span class="p">)</span>

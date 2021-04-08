@@ -1,18 +1,18 @@
-cyclonedds.builtin
-==================
+builtin
+=======
 
 .. autoclass:: cyclonedds.builtin.BuiltinDataReader
    :members:
    :show-inheritance:
+   
+   .. automethod:: __init__
 
 .. autoclass:: cyclonedds.builtin.DcpsParticipant
    :members:
-   :show-inheritance:
    :exclude-members: struct_class
 
 .. autoclass:: cyclonedds.builtin.DcpsEndpoint
    :members:
-   :show-inheritance:
    :exclude-members: struct_class
 
 .. autoclass:: cyclonedds.builtin.BuiltinTopic

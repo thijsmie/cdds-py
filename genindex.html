@@ -34,7 +34,9 @@
 
     
     <link rel="index" title="Index" href="#" />
-    <link rel="search" title="Search" href="search.html" /> 
+    <link rel="search" title="Search" href="search.html" />
+    <link href="_static/style.css" rel="stylesheet" type="text/css">
+
 </head>
 
 <body class="wy-body-for-nav">
@@ -79,9 +81,15 @@
               
             
             
-              <p class="caption"><span class="caption-text">Contents:</span></p>
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="datatypes.html">IDL datatypes in Python</a></li>
+</ul>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="cyclonedds.html">CycloneDDS-Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
+</ul>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="pycdr.html">PyCDR</a></li>
 <li class="toctree-l1"><a class="reference internal" href="dds.html">General information about DDS</a></li>
 </ul>
@@ -151,7 +159,8 @@
 <h1 id="index">Index</h1>
 
 <div class="genindex-jumpbox">
- <a href="#A"><strong>A</strong></a>
+ <a href="#_"><strong>_</strong></a>
+ | <a href="#A"><strong>A</strong></a>
  | <a href="#B"><strong>B</strong></a>
  | <a href="#C"><strong>C</strong></a>
  | <a href="#D"><strong>D</strong></a>
@@ -175,6 +184,14 @@
  | <a href="#W"><strong>W</strong></a>
  
 </div>
+<h2 id="_">_</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="cyclonedds.builtin.html#cyclonedds.builtin.BuiltinDataReader.__init__">__init__() (cyclonedds.builtin.BuiltinDataReader method)</a>
+</li>
+  </ul></td>
+</tr></table>
+
 <h2 id="A">A</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -758,14 +775,24 @@
         <li><a href="cyclonedds.sub.html#cyclonedds.sub.DataReader.read">(cyclonedds.sub.DataReader method)</a>
 </li>
       </ul></li>
-      <li><a href="cyclonedds.sub.html#cyclonedds.sub.DataReader.read_iter">read_iter() (cyclonedds.sub.DataReader method)</a>
+      <li><a href="cyclonedds.sub.html#cyclonedds.sub.DataReader.read_aiter">read_aiter() (cyclonedds.sub.DataReader method)</a>
 </li>
-      <li><a href="cyclonedds.sub.html#cyclonedds.sub.DataReader.read_next">read_next() (cyclonedds.sub.DataReader method)</a>
+      <li><a href="cyclonedds.builtin.html#cyclonedds.builtin.BuiltinDataReader.read_iter">read_iter() (cyclonedds.builtin.BuiltinDataReader method)</a>
+
+      <ul>
+        <li><a href="cyclonedds.sub.html#cyclonedds.sub.DataReader.read_iter">(cyclonedds.sub.DataReader method)</a>
 </li>
-      <li><a href="cyclonedds.core.html#cyclonedds.core.Entity.read_status">read_status() (cyclonedds.core.Entity method)</a>
+      </ul></li>
+      <li><a href="cyclonedds.builtin.html#cyclonedds.builtin.BuiltinDataReader.read_next">read_next() (cyclonedds.builtin.BuiltinDataReader method)</a>
+
+      <ul>
+        <li><a href="cyclonedds.sub.html#cyclonedds.sub.DataReader.read_next">(cyclonedds.sub.DataReader method)</a>
 </li>
+      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="cyclonedds.core.html#cyclonedds.core.Entity.read_status">read_status() (cyclonedds.core.Entity method)</a>
+</li>
       <li><a href="cyclonedds.core.html#cyclonedds.core.ReadCondition">ReadCondition (class in cyclonedds.core)</a>
 </li>
       <li><a href="cyclonedds.pub.html#cyclonedds.pub.DataWriter.register_instance">register_instance() (cyclonedds.pub.DataWriter method)</a>
@@ -856,10 +883,20 @@
         <li><a href="cyclonedds.sub.html#cyclonedds.sub.DataReader.take">(cyclonedds.sub.DataReader method)</a>
 </li>
       </ul></li>
-      <li><a href="cyclonedds.sub.html#cyclonedds.sub.DataReader.take_iter">take_iter() (cyclonedds.sub.DataReader method)</a>
+      <li><a href="cyclonedds.sub.html#cyclonedds.sub.DataReader.take_aiter">take_aiter() (cyclonedds.sub.DataReader method)</a>
 </li>
-      <li><a href="cyclonedds.sub.html#cyclonedds.sub.DataReader.take_next">take_next() (cyclonedds.sub.DataReader method)</a>
+      <li><a href="cyclonedds.builtin.html#cyclonedds.builtin.BuiltinDataReader.take_iter">take_iter() (cyclonedds.builtin.BuiltinDataReader method)</a>
+
+      <ul>
+        <li><a href="cyclonedds.sub.html#cyclonedds.sub.DataReader.take_iter">(cyclonedds.sub.DataReader method)</a>
 </li>
+      </ul></li>
+      <li><a href="cyclonedds.builtin.html#cyclonedds.builtin.BuiltinDataReader.take_next">take_next() (cyclonedds.builtin.BuiltinDataReader method)</a>
+
+      <ul>
+        <li><a href="cyclonedds.sub.html#cyclonedds.sub.DataReader.take_next">(cyclonedds.sub.DataReader method)</a>
+</li>
+      </ul></li>
       <li><a href="cyclonedds.core.html#cyclonedds.core.Entity.take_status">take_status() (cyclonedds.core.Entity method)</a>
 </li>
       <li><a href="cyclonedds.internal.html#cyclonedds.internal.dds_c_t.time">time (cyclonedds.internal.dds_c_t attribute)</a>

@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cyclonedds.sub &mdash; cyclonedds-py  documentation</title>
+  <title>sub &mdash; cyclonedds-py  documentation</title>
   
 
   
@@ -35,8 +35,10 @@
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="cyclonedds.util" href="cyclonedds.util.html" />
-    <link rel="prev" title="cyclonedds.pub" href="cyclonedds.pub.html" /> 
+    <link rel="next" title="topic" href="cyclonedds.topic.html" />
+    <link rel="prev" title="pub" href="cyclonedds.pub.html" />
+    <link href="_static/style.css" rel="stylesheet" type="text/css">
+
 </head>
 
 <body class="wy-body-for-nav">
@@ -81,23 +83,25 @@
               
             
             
-              <p class="caption"><span class="caption-text">Contents:</span></p>
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="datatypes.html">IDL datatypes in Python</a></li>
+</ul>
 <ul class="current">
-<li class="toctree-l1 current"><a class="reference internal" href="cyclonedds.html">CycloneDDS-Python</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="usage.html">Usage</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="api.html">API</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="cyclonedds.core.html">cyclonedds.core</a></li>
-<li class="toctree-l3"><a class="reference internal" href="cyclonedds.domain.html">cyclonedds.domain</a></li>
-<li class="toctree-l3"><a class="reference internal" href="cyclonedds.topic.html">cyclonedds.topic</a></li>
-<li class="toctree-l3"><a class="reference internal" href="cyclonedds.pub.html">cyclonedds.pub</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">cyclonedds.sub</a></li>
-<li class="toctree-l3"><a class="reference internal" href="cyclonedds.util.html">cyclonedds.util</a></li>
-<li class="toctree-l3"><a class="reference internal" href="cyclonedds.builtin.html">cyclonedds.builtin</a></li>
-<li class="toctree-l3"><a class="reference internal" href="cyclonedds.internal.html">cyclonedds.internal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="api.html">API</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="cyclonedds.builtin.html">builtin</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cyclonedds.core.html">core</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cyclonedds.domain.html">domain</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cyclonedds.internal.html">internal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cyclonedds.pub.html">pub</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">sub</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cyclonedds.topic.html">topic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cyclonedds.util.html">util</a></li>
 </ul>
 </li>
 </ul>
-</li>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="pycdr.html">PyCDR</a></li>
 <li class="toctree-l1"><a class="reference internal" href="dds.html">General information about DDS</a></li>
 </ul>
@@ -146,11 +150,9 @@
     
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
         
-          <li><a href="cyclonedds.html">CycloneDDS-Python</a> &raquo;</li>
-        
           <li><a href="api.html">API</a> &raquo;</li>
         
-      <li>cyclonedds.sub</li>
+      <li>sub</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -169,8 +171,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="cyclonedds-sub">
-<h1>cyclonedds.sub<a class="headerlink" href="#cyclonedds-sub" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="sub">
+<h1>sub<a class="headerlink" href="#sub" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt id="cyclonedds.sub.Subscriber">
 <em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">cyclonedds.sub.</span></code><code class="sig-name descname"><span class="pre">Subscriber</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">domain_participant</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qos</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">listener</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/sub.html#Subscriber"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.sub.Subscriber" title="Permalink to this definition">¶</a></dt>
@@ -242,7 +244,7 @@
 
 <dl class="py method">
 <dt id="cyclonedds.sub.DataReader.read_iter">
-<code class="sig-name descname"><span class="pre">read_iter</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/sub.html#DataReader.read_iter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.sub.DataReader.read_iter" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">read_iter</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">condition</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/sub.html#DataReader.read_iter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.sub.DataReader.read_iter" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>timeout</strong> (<em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>]</em>) – </p>
@@ -255,13 +257,39 @@
 
 <dl class="py method">
 <dt id="cyclonedds.sub.DataReader.take_iter">
-<code class="sig-name descname"><span class="pre">take_iter</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/sub.html#DataReader.take_iter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.sub.DataReader.take_iter" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">take_iter</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">condition</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/sub.html#DataReader.take_iter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.sub.DataReader.take_iter" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>timeout</strong> (<em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>]</em>) – </p>
 </dd>
 <dt class="field-even">Return type</dt>
 <dd class="field-even"><p>Generator[<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.9)">object</a>, <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a>, <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="cyclonedds.sub.DataReader.read_aiter">
+<code class="sig-name descname"><span class="pre">read_aiter</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">condition</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/sub.html#DataReader.read_aiter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.sub.DataReader.read_aiter" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>timeout</strong> (<em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>]</em>) – </p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>AsyncGenerator[<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.9)">object</a>, <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="cyclonedds.sub.DataReader.take_aiter">
+<code class="sig-name descname"><span class="pre">take_aiter</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">condition</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/sub.html#DataReader.take_aiter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.sub.DataReader.take_aiter" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>timeout</strong> (<em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>]</em>) – </p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>AsyncGenerator[<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.9)">object</a>, <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a>]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -296,10 +324,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="cyclonedds.util.html" class="btn btn-neutral float-right" title="cyclonedds.util" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="cyclonedds.topic.html" class="btn btn-neutral float-right" title="topic" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="cyclonedds.pub.html" class="btn btn-neutral float-left" title="cyclonedds.pub" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="cyclonedds.pub.html" class="btn btn-neutral float-left" title="pub" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

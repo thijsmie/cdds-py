@@ -1,0 +1,328 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Introduction &mdash; cyclonedds-py  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="IDL datatypes in Python" href="datatypes.html" />
+    <link rel="prev" title="CycloneDDS Python" href="index.html" />
+    <link href="_static/style.css" rel="stylesheet" type="text/css">
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> cyclonedds-py
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Introduction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#prerequisites">Prerequisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#your-first-python-dds-application">Your first Python DDS application</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="datatypes.html">IDL datatypes in Python</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="pycdr.html">PyCDR</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dds.html">General information about DDS</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">cyclonedds-py</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Introduction</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/intro.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="introduction">
+<span id="intro"></span><h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
+<p>This is the documentation for CycloneDDS Python, wrapping the Eclipse CycloneDDS C-API for easy creation of DDS applications.</p>
+<div class="section" id="prerequisites">
+<span id="installing"></span><h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this headline">¶</a></h2>
+<p>CycloneDDS Python requires CycloneDDS to be installed. While installing and using the CycloneDDS Python library you need to set the environment variable <code class="docutils literal notranslate"><span class="pre">CYCLONEDDS_HOME</span></code> to allow the installer to locate the library. It is recommended to set <code class="docutils literal notranslate"><span class="pre">CYCLONEDDS_HOME</span></code> automatically, by adding it to the <em>System Variables</em> on Windows, your <code class="docutils literal notranslate"><span class="pre">~/.bashrc</span></code> on Linux or <code class="docutils literal notranslate"><span class="pre">~/bash_profile</span></code> on MacOS.
+CycloneDDS Python requires Python version 3.6 or higher, with Python 3.10 support provisional while it is still unreleased.</p>
+</div>
+<div class="section" id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<p>You can install CycloneDDS directly from PyPI:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip install cyclonedds
+</pre></div>
+</div>
+<p>Right now you also need to install one dependency manually, this will be resolved once we have a proper release cycle for CycloneDDS Python.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip install pycdr
+</pre></div>
+</div>
+<p>If you get permission warnings you are trying to install CycloneDDS Python as system Python library. This can be resolved several ways, such as using <a class="reference external" href="https://docs.python.org/3/library/venv.html#module-venv" title="(in Python v3.9)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">virtual</span> <span class="pre">environments</span></code></a>, <a class="reference external" href="https://github.com/pyenv/pyenv">pyenv</a>, <a class="reference external" href="https://github.com/pypa/pipenv">pipenv</a>, <a class="reference external" href="https://python-poetry.org">poetry</a> or by performing a user install. The last one is the easiest, just add <code class="docutils literal notranslate"><span class="pre">--user</span></code> to your pip install, but a managed environment with one of the other solutions will ease your dependency management in the future.</p>
+</div>
+<div class="section" id="your-first-python-dds-application">
+<span id="first-app"></span><h2>Your first Python DDS application<a class="headerlink" href="#your-first-python-dds-application" title="Permalink to this headline">¶</a></h2>
+<p>Let’s make our entry into the world of DDS by making our presence known. We will not worry about configuration or what DDS does under the hood but just write a single message. To publish anything to DDS we need to define the type of message first. If you are worried about talking to other applications that are not necessarily running Python you would use the CycloneDDS IDL compiler, but for now we will just manually define our message type directly in Python using the <cite>pycdr</cite> package:</p>
+<div class="highlight-python3 notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5
+6
+7
+8</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pycdr</span> <span class="kn">import</span> <span class="n">cdr</span>
+
+<span class="nd">@cdr</span>
+<span class="k">class</span> <span class="nc">Message</span><span class="p">:</span>
+    <span class="n">text</span><span class="p">:</span> <span class="nb">str</span>
+
+<span class="n">name</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;What is your name? &quot;</span><span class="p">)</span>
+<span class="n">message</span> <span class="o">=</span> <span class="n">Message</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{name}</span><span class="s2"> has started his first DDS Python application!&quot;</span><span class="p">)</span>
+</pre></div>
+</td></tr></table></div>
+<p>With <cite>pycdr</cite> we write typed classes just like the standard library module <cite>dataclasses &lt;python:dataclasses&gt;</cite> (which in fact is what it uses under the hood). For this simple application we just put in a piece of text, but this system has the same expressive power as the OMG IDL specification, allowing you to use almost any complex datastructure you can think of.</p>
+<p>Now to send our message over DDS we need to perform a few steps:
+* Join the DDS network using a DomainParticipant
+* Define which datatype and under what name we will publish our message as a Topic
+* Make the DataWriter that publishes that Topic
+* And finally publish the message.</p>
+<div class="highlight-python3 notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">cyclonedds.domain</span> <span class="kn">import</span> <span class="n">DomainParticipant</span>
+<span class="kn">from</span> <span class="nn">cyclonedds.topic</span> <span class="kn">import</span> <span class="n">Topic</span>
+<span class="kn">from</span> <span class="nn">cyclonedds.pub</span> <span class="kn">import</span> <span class="n">DataWriter</span>
+
+<span class="n">participant</span> <span class="o">=</span> <span class="n">DomainParticipant</span><span class="p">()</span>
+<span class="n">topic</span> <span class="o">=</span> <span class="n">Topic</span><span class="p">(</span><span class="n">participant</span><span class="p">,</span> <span class="n">Message</span><span class="p">,</span> <span class="s2">&quot;Announcements&quot;</span><span class="p">)</span>
+<span class="n">writer</span> <span class="o">=</span> <span class="n">DataWriter</span><span class="p">(</span><span class="n">participant</span><span class="p">,</span> <span class="n">topic</span><span class="p">)</span>
+
+<span class="n">writer</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+</pre></div>
+</td></tr></table></div>
+<p>Hurray, we have published are first message! However, it is hard to tell if that actually did anything, since we don’t have anything set up that is listening. Let’s make a second script that takes messages from DDS and prints them to the terminal:</p>
+<div class="highlight-python3 notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">cyclonedds.domain</span> <span class="kn">import</span> <span class="n">DomainParticipant</span>
+<span class="kn">from</span> <span class="nn">cyclonedds.topic</span> <span class="kn">import</span> <span class="n">Topic</span>
+<span class="kn">from</span> <span class="nn">cyclonedds.sub</span> <span class="kn">import</span> <span class="n">DataReader</span>
+<span class="kn">from</span> <span class="nn">cyclonedds.util</span> <span class="kn">import</span> <span class="n">duration</span>
+<span class="kn">from</span> <span class="nn">pycdr</span> <span class="kn">import</span> <span class="n">cdr</span>
+
+<span class="nd">@cdr</span>
+<span class="k">class</span> <span class="nc">Message</span><span class="p">:</span>
+    <span class="n">text</span><span class="p">:</span> <span class="nb">str</span>
+
+<span class="n">participant</span> <span class="o">=</span> <span class="n">DomainParticipant</span><span class="p">()</span>
+<span class="n">topic</span> <span class="o">=</span> <span class="n">Topic</span><span class="p">(</span><span class="n">participant</span><span class="p">,</span> <span class="n">Message</span><span class="p">,</span> <span class="s2">&quot;Announcements&quot;</span><span class="p">)</span>
+<span class="n">reader</span> <span class="o">=</span> <span class="n">DataReader</span><span class="p">(</span><span class="n">participant</span><span class="p">,</span> <span class="n">topic</span><span class="p">)</span>
+
+<span class="c1"># If we don&#39;t receive a single announcement for five minutes we want the script to exit.</span>
+<span class="k">for</span> <span class="n">msg</span> <span class="ow">in</span> <span class="n">reader</span><span class="o">.</span><span class="n">take_iter</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="n">duration</span><span class="p">(</span><span class="n">minutes</span><span class="o">=</span><span class="mi">5</span><span class="p">)):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+</pre></div>
+</td></tr></table></div>
+<p>Now with this script running in a secondary terminal you should see the message pop up when you run the first script again.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="datatypes.html" class="btn btn-neutral float-right" title="IDL datatypes in Python" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="index.html" class="btn btn-neutral float-left" title="CycloneDDS Python" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Thijs Miedema, ADLINK Technology Inc.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

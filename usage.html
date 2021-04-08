@@ -36,7 +36,9 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="API" href="api.html" />
-    <link rel="prev" title="CycloneDDS-Python" href="cyclonedds.html" /> 
+    <link rel="prev" title="IDL datatypes in Python" href="datatypes.html" />
+    <link href="_static/style.css" rel="stylesheet" type="text/css">
+
 </head>
 
 <body class="wy-body-for-nav">
@@ -81,16 +83,18 @@
               
             
             
-              <p class="caption"><span class="caption-text">Contents:</span></p>
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="datatypes.html">IDL datatypes in Python</a></li>
+</ul>
 <ul class="current">
-<li class="toctree-l1 current"><a class="reference internal" href="cyclonedds.html">CycloneDDS-Python</a><ul class="current">
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Usage</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#participant">Participant</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Usage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#participant">Participant</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="api.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
 </ul>
-</li>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="pycdr.html">PyCDR</a></li>
 <li class="toctree-l1"><a class="reference internal" href="dds.html">General information about DDS</a></li>
 </ul>
@@ -139,8 +143,6 @@
     
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
         
-          <li><a href="cyclonedds.html">CycloneDDS-Python</a> &raquo;</li>
-        
       <li>Usage</li>
     
     
@@ -166,15 +168,13 @@
 <div class="section" id="participant">
 <h2>Participant<a class="headerlink" href="#participant" title="Permalink to this headline">¶</a></h2>
 <p>All communication within a DDS network happens through <em>domains</em>. A domain is a combination of an integer identifier and a set of config parameters. The concept of a domain is what allows you to run multiple DDS systems on a single network without interference. As in any other DDS API, this connection to a domain is represented with a <cite>DomainParticipant</cite> . Your connection to the DDS network is started with the creation of the participant and ended with its destruction.</p>
-<dl>
-<dt>:: code-block: python</dt><dd><dl class="field-list simple">
-<dt class="field-odd">linenos</dt>
-<dd class="field-odd"><p></p></dd>
-</dl>
-<p>from cyclonedds.domain import Participant</p>
-<p>dp = Participant(0)</p>
-</dd>
-</dl>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">cyclonedds.domain</span> <span class="kn">import</span> <span class="n">Participant</span>
+
+<span class="n">dp</span> <span class="o">=</span> <span class="n">Participant</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</td></tr></table></div>
 </div>
 </div>
 
@@ -189,7 +189,7 @@
         <a href="api.html" class="btn btn-neutral float-right" title="API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="cyclonedds.html" class="btn btn-neutral float-left" title="CycloneDDS-Python" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="datatypes.html" class="btn btn-neutral float-left" title="IDL datatypes in Python" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

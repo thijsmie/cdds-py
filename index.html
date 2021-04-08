@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Welcome to cyclonedds’s documentation! &mdash; cyclonedds-py  documentation</title>
+  <title>CycloneDDS Python &mdash; cyclonedds-py  documentation</title>
   
 
   
@@ -35,7 +35,9 @@
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="CycloneDDS-Python" href="cyclonedds.html" /> 
+    <link rel="next" title="Introduction" href="intro.html" />
+    <link href="_static/style.css" rel="stylesheet" type="text/css">
+
 </head>
 
 <body class="wy-body-for-nav">
@@ -80,9 +82,15 @@
               
             
             
-              <p class="caption"><span class="caption-text">Contents:</span></p>
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="datatypes.html">IDL datatypes in Python</a></li>
+</ul>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="cyclonedds.html">CycloneDDS-Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
+</ul>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="pycdr.html">PyCDR</a></li>
 <li class="toctree-l1"><a class="reference internal" href="dds.html">General information about DDS</a></li>
 </ul>
@@ -131,7 +139,7 @@
     
       <li><a href="#" class="icon icon-home"></a> &raquo;</li>
         
-      <li>Welcome to cyclonedds’s documentation!</li>
+      <li>CycloneDDS Python</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -150,57 +158,81 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="welcome-to-cyclonedds-s-documentation">
-<h1>Welcome to cyclonedds’s documentation!<a class="headerlink" href="#welcome-to-cyclonedds-s-documentation" title="Permalink to this headline">¶</a></h1>
-<div class="toctree-wrapper compound">
-<p class="caption"><span class="caption-text">Contents:</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="cyclonedds.html">CycloneDDS-Python</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="usage.html">Usage</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="usage.html#participant">Participant</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="api.html">API</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="cyclonedds.core.html">cyclonedds.core</a></li>
-<li class="toctree-l3"><a class="reference internal" href="cyclonedds.domain.html">cyclonedds.domain</a></li>
-<li class="toctree-l3"><a class="reference internal" href="cyclonedds.topic.html">cyclonedds.topic</a></li>
-<li class="toctree-l3"><a class="reference internal" href="cyclonedds.pub.html">cyclonedds.pub</a></li>
-<li class="toctree-l3"><a class="reference internal" href="cyclonedds.sub.html">cyclonedds.sub</a></li>
-<li class="toctree-l3"><a class="reference internal" href="cyclonedds.util.html">cyclonedds.util</a></li>
-<li class="toctree-l3"><a class="reference internal" href="cyclonedds.builtin.html">cyclonedds.builtin</a></li>
-<li class="toctree-l3"><a class="reference internal" href="cyclonedds.internal.html">cyclonedds.internal</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="pycdr.html">PyCDR</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="pycdr.html#usage">Usage</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pycdr.html#types">Types</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="pycdr.html#integers">Integers</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pycdr.html#floats">Floats</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pycdr.html#strings">Strings</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pycdr.html#lists">Lists</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pycdr.html#dictionaries">Dictionaries</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pycdr.html#unions">Unions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pycdr.html#objects">Objects</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pycdr.html#serialization">Serialization</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="pycdr.html#pycdr-module">pycdr module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pycdr.html#pycdr-types-module">pycdr.types module</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="dds.html">General information about DDS</a></li>
-</ul>
-</div>
-</div>
-<div class="section" id="indices-and-tables">
-<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="cyclonedds-python">
+<h1>CycloneDDS Python<a class="headerlink" href="#cyclonedds-python" title="Permalink to this headline">¶</a></h1>
+<p>Cyclone DDS Python is a modern and easy to use binding for Cyclone DDS. It provides access to almost all features available in the CycloneDDS C API while abstracting all of C’s quirks and hassles.</p>
+<div class="section" id="features">
+<h2>Features<a class="headerlink" href="#features" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
-<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
-<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
+<li><p>Modern Python API for python 3.6+ (python 3.10 support experimental while it is in alpha)</p></li>
+<li><p>Object oriented design, taking care of any C memory management under the hood</p></li>
+<li><p>(Eventually) fully type-hinted and documented API that your IDE will love</p></li>
 </ul>
+</div>
+<div class="section" id="getting-started">
+<h2>Getting started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h2>
+<p>Getting your hands dirty for the first time? Here are some points to get started for any skill level.</p>
+<ul class="simple">
+<li><p><strong>First steps:</strong> <code class="docutils literal notranslate"><span class="pre">first_steps_with_python</span></code> | <a class="reference internal" href="intro.html"><span class="doc">Introduction</span></a> | <a class="reference internal" href="intro.html#first-app"><span class="std std-ref">Your first Python DDS application</span></a></p></li>
+<li><p><strong>Usage:</strong></p>
+<ol class="loweralpha simple">
+<li><p>IDL datatypes in Python</p></li>
+<li><p>Publishing and subscribing</p></li>
+<li><p>Working with Qos</p></li>
+<li><p>Conditions and Waitsets</p></li>
+<li><p>Listeners</p></li>
+<li><p>Using built-in topics</p></li>
+</ol>
+</li>
+<li><p><strong>Examples:</strong> are available in the <em>repository</em>.</p></li>
+</ul>
+</div>
+<div class="section" id="getting-help">
+<h2>Getting help<a class="headerlink" href="#getting-help" title="Permalink to this headline">¶</a></h2>
+<p>Having trouble with something? These resources might provide some answers.</p>
+<ul class="simple">
+<li><p>Go to the Frequently Asked Questions.</p></li>
+<li><p>Look through the <a class="reference internal" href="genindex.html"><span class="std std-ref">index</span></a> or run a <a class="reference internal" href="search.html"><span class="std std-ref">search</span></a>.</p></li>
+<li><p>Report bugs on GitHub via the issue tracker.</p></li>
+<li><p>Ask your question on the GitHub discussions page.</p></li>
+</ul>
+</div>
+<div class="section" id="api-documentation">
+<h2>API documentation<a class="headerlink" href="#api-documentation" title="Permalink to this headline">¶</a></h2>
+<p>In-depth information on all parts of the API.</p>
+<div class="toctree-wrapper compound">
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#participant">Participant</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="cyclonedds.builtin.html">builtin</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cyclonedds.core.html">core</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cyclonedds.domain.html">domain</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cyclonedds.internal.html">internal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cyclonedds.pub.html">pub</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cyclonedds.sub.html">sub</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cyclonedds.topic.html">topic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cyclonedds.util.html">util</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="other">
+<h2>Other<a class="headerlink" href="#other" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Our GitHub repository</p></li>
+<li><p>Entries on Pypi for <em>pycdr</em> and <em>cyclonedds</em></p></li>
+<li><p>Changelog</p></li>
+<li><p>Learn more about <a class="reference internal" href="dds.html"><span class="doc">DDS</span></a></p></li>
+</ul>
+<div class="toctree-wrapper compound">
+</div>
+</div>
 </div>
 
 
@@ -211,7 +243,7 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="cyclonedds.html" class="btn btn-neutral float-right" title="CycloneDDS-Python" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="intro.html" class="btn btn-neutral float-right" title="Introduction" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
     </div>
