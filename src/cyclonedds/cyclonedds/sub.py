@@ -10,7 +10,9 @@
  * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
 """
 
-from typing import List, Optional, Union, Generator, TYPE_CHECKING
+import asyncio
+import concurrent.futures
+from typing import AsyncGenerator, List, Optional, Union, Generator, TYPE_CHECKING
 
 from .core import Entity, DDSException, WaitSet, ReadCondition, SampleState, InstanceState, ViewState
 from .internal import c_call, dds_c_t
@@ -167,6 +169,42 @@ class DataReader(Entity):
                 yield a[0]
             if waitset.wait(timeout) == 0:
                 break
+
+    async def read_aiter(self, condition=None, timeout: int = None) -> AsyncGenerator[object, None]:
+        waitset = WaitSet(self.participant)
+        condition = condition or ReadCondition(self, ViewState.Any | InstanceState.Any | SampleState.NotRead)
+        waitset.attach(condition)
+        timeout = timeout or duration(weeks=99999)
+
+        loop = asyncio.get_running_loop()
+        with concurrent.futures.ThreadPoolExecutor() as pool:
+            while True:
+                while True:
+                    a = self.read(condition=condition)
+                    if not a:
+                        break
+                    yield a[0]
+                result = await loop.run_in_executor(pool, waitset.wait, timeout)
+                if result == 0:
+                    break
+
+    async def take_aiter(self, condition=None, timeout: int = None) -> AsyncGenerator[object, None]:
+        waitset = WaitSet(self.participant)
+        condition = condition or ReadCondition(self, ViewState.Any | InstanceState.Any | SampleState.NotRead)
+        waitset.attach(condition)
+        timeout = timeout or duration(weeks=99999)
+
+        loop = asyncio.get_running_loop()
+        with concurrent.futures.ThreadPoolExecutor() as pool:
+            while True:
+                while True:
+                    a = self.take(condition=condition)
+                    if not a:
+                        break
+                    yield a[0]
+                result = await loop.run_in_executor(pool, waitset.wait, timeout)
+                if result == 0:
+                    break
 
     def wait_for_historical_data(self, timeout: int) -> bool:
         ret = self._wait_for_historical_data(self._ref, timeout)
