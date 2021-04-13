@@ -56,7 +56,7 @@ In-depth information on all parts of the API.
   datatypes
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
 
    usage
    api

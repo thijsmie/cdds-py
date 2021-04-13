@@ -19,8 +19,7 @@ from .internal import c_call, dds_c_t
 from .qos import _CQos
 from .util import duration
 
-from ddspy import ddspy_read, ddspy_take, ddspy_read_handle, ddspy_take_handle, ddspy_lookup_instance, \
-    ddspy_read_next, ddspy_take_next
+from ddspy import ddspy_read, ddspy_take, ddspy_read_handle, ddspy_take_handle, ddspy_lookup_instance
 
 
 if TYPE_CHECKING:
@@ -61,7 +60,7 @@ class Subscriber(Entity):
 
 
 class DataReader(Entity):
-    """
+    """Subscribe to a topic and read/take the data published to it.
     """
 
     def __init__(
@@ -70,6 +69,21 @@ class DataReader(Entity):
             topic: 'cyclonedds.topic.Topic',
             qos: Optional['cyclonedds.core.Qos'] = None,
             listener: Optional['cyclonedds.core.Listener'] = None):
+        """Initialize the DataReader
+
+        Parameters
+        ----------
+        subscriber_or_participant: cyclonedds.sub.Subscriber, cyclonedds.domain.DomainParticipant
+            The subscriber to which this reader will be added. If you supply a DomainParticipant a subscriber will be created for you.
+        builtin_topic: cyclonedds.builtin.BuiltinTopic
+            Which Builtin Topic to subscribe to. This can be one of BuiltinTopicDcpsParticipant, BuiltinTopicDcpsTopic,
+            BuiltinTopicDcpsPublication or BuiltinTopicDcpsSubscription. Please note that BuiltinTopicDcpsTopic will fail if
+            you built CycloneDDS without Topic Discovery.
+        qos: cyclonedds.core.Qos, optional = None
+            Optionally supply a Qos.
+        listener: cyclonedds.core.Listener = None
+            Optionally supply a Listener.
+        """
         cqos = _CQos.qos_to_cqos(qos) if qos else None
         super().__init__(
             self._create_reader(
@@ -85,6 +99,21 @@ class DataReader(Entity):
             _CQos.cqos_destroy(cqos)
 
     def read(self, N: int = 1, condition: Entity = None, instance_handle: int = None) -> List[object]:
+        """Read a maximum of N samples, non-blocking. Optionally use a read/query-condition to select which samples
+        you are interested in.
+
+        Parameters
+        ----------
+        N: int
+            The maximum number of samples to read.
+        condition: cyclonedds.core.ReadCondition, cyclonedds.core.QueryCondition, optional
+            Only read samples that satisfy the supplied condition.
+
+        Raises
+        ------
+        DDSException
+            If any error code is returned by the DDS API it is converted into an exception.
+        """
         if instance_handle is not None:
             ret = ddspy_read_handle(condition._ref if condition else self._ref, N, instance_handle)
         else:
@@ -100,6 +129,21 @@ class DataReader(Entity):
         return samples
 
     def take(self, N: int = 1, condition: Entity = None, instance_handle: int = None) -> List[object]:
+        """Take a maximum of N samples, non-blocking. Optionally use a read/query-condition to select which samples
+        you are interested in.
+
+        Parameters
+        ----------
+        N: int
+            The maximum number of samples to read.
+        condition: cyclonedds.core.ReadCondition, cyclonedds.core.QueryCondition, optional
+            Only take samples that satisfy the supplied condition.
+
+        Raises
+        ------
+        DDSException
+            If any error code is returned by the DDS API it is converted into an exception.
+        """
         if instance_handle is not None:
             ret = ddspy_take_handle(condition._ref if condition else self._ref, N, instance_handle)
         else:
@@ -115,32 +159,40 @@ class DataReader(Entity):
         return samples
 
     def read_next(self) -> Optional[object]:
-        ret = ddspy_read_next(self._ref)
+        """Shortcut method to read exactly one sample or return None.
 
-        if type(ret) == int:
-            raise DDSException(ret, f"Occurred while reading next in {repr(self)}")
-
-        if ret is None:
-            return None
-
-        sample = self._topic.data_type.deserialize(ret[0])
-        sample.sample_info = ret[1]
-        return sample
+        Raises
+        ------
+        DDSException
+            If any error code is returned by the DDS API it is converted into an exception.
+        """
+        samples = self.read(condition=self._next_condition)
+        if samples:
+            return samples[0]
+        return None
 
     def take_next(self) -> Optional[object]:
-        ret = ddspy_take_next(self._ref)
+        """Shortcut method to take exactly one sample or return None.
 
-        if type(ret) == int:
-            raise DDSException(ret, f"Occurred while taking next in {repr(self)}")
-
-        if ret is None:
-            return None
-
-        sample = self._topic.data_type.deserialize(ret[0])
-        sample.sample_info = ret[1]
-        return sample
+        Raises
+        ------
+        DDSException
+            If any error code is returned by the DDS API it is converted into an exception.
+        """
+        samples = self.take(condition=self._next_condition)
+        if samples:
+            return samples[0]
+        return None
 
     def read_iter(self, condition=None, timeout: int = None) -> Generator[object, None, None]:
+        """Shortcut method to iterate reading samples. Iteration will stop once the timeout you supply expires.
+        Every time a sample is received the timeout is reset.
+
+        Raises
+        ------
+        DDSException
+            If any error code is returned by the DDS API it is converted into an exception.
+        """
         waitset = WaitSet(self.participant)
         condition = ReadCondition(self, ViewState.Any | InstanceState.Any | SampleState.NotRead)
         waitset.attach(condition)
@@ -156,6 +208,14 @@ class DataReader(Entity):
                 break
 
     def take_iter(self, condition=None, timeout: int = None) -> Generator[object, None, None]:
+        """Shortcut method to iterate taking samples. Iteration will stop once the timeout you supply expires.
+        Every time a sample is received the timeout is reset.
+
+        Raises
+        ------
+        DDSException
+            If any error code is returned by the DDS API it is converted into an exception.
+        """
         waitset = WaitSet(self.participant)
         condition = condition or ReadCondition(self, ViewState.Any | InstanceState.Any | SampleState.NotRead)
         waitset.attach(condition)
@@ -171,6 +231,14 @@ class DataReader(Entity):
                 break
 
     async def read_aiter(self, condition=None, timeout: int = None) -> AsyncGenerator[object, None]:
+        """Shortcut method to asycn iterate reading samples. Iteration will stop once the timeout you supply expires.
+        Every time a sample is received the timeout is reset.
+
+        Raises
+        ------
+        DDSException
+            If any error code is returned by the DDS API it is converted into an exception.
+        """
         waitset = WaitSet(self.participant)
         condition = condition or ReadCondition(self, ViewState.Any | InstanceState.Any | SampleState.NotRead)
         waitset.attach(condition)
@@ -189,6 +257,14 @@ class DataReader(Entity):
                     break
 
     async def take_aiter(self, condition=None, timeout: int = None) -> AsyncGenerator[object, None]:
+        """Shortcut method to asycn iterate taking samples. Iteration will stop once the timeout you supply expires.
+        Every time a sample is received the timeout is reset.
+
+        Raises
+        ------
+        DDSException
+            If any error code is returned by the DDS API it is converted into an exception.
+        """
         waitset = WaitSet(self.participant)
         condition = condition or ReadCondition(self, ViewState.Any | InstanceState.Any | SampleState.NotRead)
         waitset.attach(condition)

@@ -68,7 +68,7 @@ class DDSException(Exception):
             ("DDS_RETCODE_NOT_ALLOWED_BY_SECURITY", "Insufficient credentials supplied to use the function")
     }
 
-    def __init__(self, code, *args, msg=None, **kwargs):
+    def __init__(self, code: int, *args, msg: str = None, **kwargs) -> None:
         self.code = code
         self.msg = msg or ""
         super().__init__(*args, **kwargs)
@@ -93,7 +93,7 @@ class DDSAPIException(Exception):
         A human readable description of what went wrong.
     """
 
-    def __init__(self, msg):
+    def __init__(self, msg: str) -> None:
         self.msg = msg
         super().__init__()
 
@@ -139,13 +139,17 @@ class Entity(DDS):
 
     _entities: Dict[dds_c_t.entity, 'Entity'] = WeakValueDictionary()
 
-    def __init__(self, ref: int, listener=None) -> None:
+    def __init__(self, ref: int, listener: 'Listener' = None) -> None:
         """Initialize an Entity. You should never need to initialize an Entity manually.
 
         Parameters
         ----------
         ref: int
             The reference id as returned by the DDS API.
+        listener: Listener
+            Listener for this entity. We retain the python object to avoid it being garbage collected if the listener
+            goes out of scope but the entity doesn't. If we don't the python function will be freed, causing C to call
+            into freed memory -> segfault.
 
         Raises
         ------
@@ -158,7 +162,7 @@ class Entity(DDS):
         self._entities[self._ref] = self
         self._listener = listener
 
-    def __del__(self):
+    def __del__(self) -> None:
         if not hasattr(self, "_ref") or self._ref not in self._entities:
             return
 
@@ -182,7 +186,7 @@ class Entity(DDS):
             return self.get_entity(ref)
         raise DDSException(ref, f"Occurred when getting the subscriber for {repr(self)}")
 
-    subscriber: 'cyclonedds.sub.Subscriber' = property(get_subscriber, doc=None)
+    subscriber: 'cyclonedds.sub.Subscriber' = property(get_subscriber)
 
     def get_publisher(self) -> Optional['cyclonedds.pub.Publisher']:
         """Retrieve the publisher associated with this entity.
@@ -228,7 +232,7 @@ class Entity(DDS):
         Returns
         -------
         int
-            TODO: replace this with some mechanism for an Instance class
+            The integer handle is just a number you can use in writer/reader calls.
 
         Raises
         ------
@@ -263,17 +267,17 @@ class Entity(DDS):
     guid: uuid.UUID = property(get_guid)
 
     def read_status(self, mask: int = None) -> int:
-        """Read the status bits set on this Entity. You can build a mask by using ``cdds.core.DDSStatus``.
+        """Read the status bits set on this Entity. You can build a mask by using :class:`DDSStatus`.
 
         Parameters
         ----------
         mask : int, optional
-            The ``DDSStatus`` mask. If not supplied the mask is used that was set on this Entity using set_status_mask.
+            The :class:`DDSStatus` mask. If not supplied the mask is used that was set on this Entity using set_status_mask.
 
         Returns
         -------
         int
-            The `DDSStatus`` bits that were set.
+            The :class:`DDSStatus` bits that were set.
 
         Raises
         ------
@@ -287,17 +291,17 @@ class Entity(DDS):
 
     def take_status(self, mask=None) -> int:
         """Take the status bits set on this Entity, after which they will be set to 0 again.
-        You can build a mask by using ``cdds.core.DDSStatus``.
+        You can build a mask by using :class:`DDSStatus`.
 
         Parameters
         ----------
         mask : int, optional
-            The ``DDSStatus`` mask. If not supplied the mask is used that was set on this Entity using set_status_mask.
+            The :class:`DDSStatus` mask. If not supplied the mask is used that was set on this Entity using set_status_mask.
 
         Returns
         -------
         int
-            The `DDSStatus`` bits that were set.
+            The :class:`DDSStatus` bits that were set.
 
         Raises
         ------
@@ -315,7 +319,7 @@ class Entity(DDS):
         Returns
         -------
         int
-            The `DDSStatus`` bits that were set.
+            The :class:`DDSStatus` bits that were set.
 
         Raises
         ------
@@ -333,7 +337,7 @@ class Entity(DDS):
         Returns
         -------
         int
-            The `DDSStatus`` bits that are enabled.
+            The :class:`DDSStatus` bits that are enabled.
 
         Raises
         ------
@@ -352,7 +356,7 @@ class Entity(DDS):
         Parameters
         ----------
         mask : int
-            The ``DDSStatus`` bits to track.
+            The :class:`DDSStatus` bits to track.
 
         Raises
         ------
@@ -366,14 +370,14 @@ class Entity(DDS):
     status_mask = property(get_status_mask, set_status_mask)
 
     def get_qos(self) -> Qos:
-        """Get the set of ``Qos`` policies associated with this entity. Note that the object returned is not
-        the same python object that you used to set the ``Qos`` on this object. Modifications to the ``Qos`` object
-        that is returned does _not_ modify the Qos of the Entity.
+        """Get the :class:`Qos` associated with this entity. Note that the object returned is not
+        the same python object that you used to set the :class:`Qos` on this object. Modifications to the :class:`Qos` object
+        that is returned does **not** modify the Qos of the Entity.
 
         Returns
         -------
         Qos
-            The Qos policies associated with this entity.
+            The :class:`Qos` object associated with this entity.
 
         Raises
         ------
@@ -389,14 +393,14 @@ class Entity(DDS):
         raise DDSException(ret, f"Occurred when getting the Qos Policies for {repr(self)}")
 
     def set_qos(self, qos: Qos) -> None:
-        """Set ``Qos`` policies on this entity. Note, only a limited number of ``Qos`` policies can be set after
-        the object is created (``Policy.LatencyBudget`` and ``Policy.OwnershipStrength``). Any policies not set
-        explicitly in the supplied ``Qos`` remain.
+        """Set :class:`Qos` policies on this entity. Note, only a limited number of :class:`Qos` policies can be set after
+        the object is created (:class:`Policy.LatencyBudget` and :class:`Policy.OwnershipStrength`). Any policies not set
+        explicitly in the supplied :class:`Qos` remain unchanged.
 
         Parameters
         ----------
         qos : Qos
-            The ``Qos`` to apply to this entity.
+            The :class:`Qos` to apply to this entity.
 
         Raises
         ------
@@ -1203,7 +1207,7 @@ class DDSStatus:
     LivelinessChanged = 1 << 11
     PublicationMatched = 1 << 12
     SubscriptionMatched = 1 << 13
-    All = (1 << 14) - 1
+    All: int = (1 << 14) - 1
 
 
 class _Condition(Entity):
@@ -1365,7 +1369,7 @@ class WaitSet(Entity):
     trigger the wait is unblocked. What a 'trigger' is depends on the type of entity, you can find out more in
     ``todo(DDS) triggers``.
     """
-    def __init__(self, domain_participant: 'cyclonedds.domain.DomainParticipant'):
+    def __init__(self, domain_participant: 'cyclonedds.domain.DomainParticipant') -> None:
         """Make a new WaitSet. It starts of empty. An empty waitset will never trigger.
 
         Parameters
@@ -1377,7 +1381,7 @@ class WaitSet(Entity):
         super().__init__(self._create_waitset(domain_participant._ref))
         self.attached = []
 
-    def __del__(self):
+    def __del__(self) -> None:
         for v in self.attached:
             self._waitset_detach(self._ref, v[0]._ref)
         super().__del__()
@@ -1389,10 +1393,6 @@ class WaitSet(Entity):
         ----------
         entity: Entity
             The entity you wish to attach.
-
-        Returns
-        -------
-        None
 
         Raises
         ------
@@ -1419,9 +1419,6 @@ class WaitSet(Entity):
         entity: Entity
             The entity you wish to attach
 
-        Returns
-        -------
-        None
         """
 
         for i, v in enumerate(self.attached):
@@ -1439,11 +1436,6 @@ class WaitSet(Entity):
         ----------
         entity: Entity
             Check the attachment of this entity.
-
-        Returns
-        -------
-        bool
-            Whether this entity is attached
         """
 
         for v in self.attached:
@@ -1451,14 +1443,8 @@ class WaitSet(Entity):
                 return True
         return False
 
-    def get_entities(self):
-        """Get all the attached entities
-
-        Returns
-        -------
-        List[Entity]
-            The attached entities
-        """
+    def get_entities(self) -> List[Entity]:
+        """Get all entities attached"""
         # Note: should spend some time on synchronisation. What if the waitset is used across threads?
         # That is probably a bad idea in python, but who is going to stop the user from doing it anyway...
         return [v[0] for v in self.attached]
@@ -1487,7 +1473,7 @@ class WaitSet(Entity):
 
         raise DDSException(ret, f"Occurred while waiting in {repr(self)}")
 
-    def wait_until(self, abstime: int):
+    def wait_until(self, abstime: int) -> int:
         """Block execution and wait for one of the entities in this waitset to trigger.
 
         Parameters
@@ -1519,10 +1505,6 @@ class WaitSet(Entity):
         ----------
         value: bool
             The trigger value.
-
-        Returns
-        -------
-        None
         """
         ret = self._waitset_set_trigger(self._ref, value)
         if ret < 0:

@@ -13,14 +13,13 @@
 import uuid
 import ctypes as ct
 from dataclasses import dataclass
-from typing import Optional, Union, ClassVar, Generator, TYPE_CHECKING
+from typing import Optional, Union, ClassVar, TYPE_CHECKING
 
-from .core import Entity, DDSException, Qos, ReadCondition, ViewState, InstanceState, SampleState, WaitSet
+from .core import Entity, DDSException, Qos, ReadCondition, ViewState, InstanceState, SampleState
 from .topic import Topic
 from .sub import DataReader
 from .internal import c_call, dds_c_t, SampleInfo
 from .qos import _CQos
-from .util import duration
 
 
 if TYPE_CHECKING:
@@ -260,78 +259,6 @@ class BuiltinDataReader(DataReader):
 
         return return_samples
 
-    def read_next(self) -> Optional[object]:
-        """Shortcut method to read exactly one sample or return None.
-
-        Raises
-        ------
-        DDSException
-            If any error code is returned by the DDS API it is converted into an exception.
-        """
-        samples = self.read(condition=self._next_condition)
-        if samples:
-            return samples[0]
-        return None
-
-    def take_next(self) -> Optional[object]:
-        """Shortcut method to take exactly one sample or return None.
-
-        Raises
-        ------
-        DDSException
-            If any error code is returned by the DDS API it is converted into an exception.
-        """
-        samples = self.take(condition=self._next_condition)
-        if samples:
-            return samples[0]
-        return None
-
-    def read_iter(self, timeout: int = None) -> Generator[object, None, None]:
-        """Shortcut method to iterate reading samples. Iteration will stop once the timeout you supply expires.
-        Every time a sample is received the timeout is reset.
-
-        Raises
-        ------
-        DDSException
-            If any error code is returned by the DDS API it is converted into an exception.
-        """
-        waitset = WaitSet(self.participant)
-        condition = ReadCondition(self, ViewState.Any | InstanceState.Any | SampleState.NotRead)
-        waitset.attach(condition)
-        timeout = timeout or duration(weeks=99999)
-
-        while True:
-            while True:
-                a = self.read_next()
-                if a is None:
-                    break
-                yield a
-            if waitset.wait(timeout) == 0:
-                break
-
-    def take_iter(self, timeout: int = None) -> Generator[object, None, None]:
-        """Shortcut method to iterate taking samples. Iteration will stop once the timeout you supply expires.
-        Every time a sample is received the timeout is reset.
-
-        Raises
-        ------
-        DDSException
-            If any error code is returned by the DDS API it is converted into an exception.
-        """
-        waitset = WaitSet(self.participant)
-        condition = ReadCondition(self, ViewState.Any | InstanceState.Any | SampleState.NotRead)
-        waitset.attach(condition)
-        timeout = timeout or duration(weeks=99999)
-
-        while True:
-            while True:
-                a = self.take_next()
-                if a is None:
-                    break
-                yield a
-            if waitset.wait(timeout) == 0:
-                break
-
     @c_call("dds_read")
     def _read(self, reader: dds_c_t.entity, buffer: ct.POINTER(ct.c_void_p), sample_info: ct.POINTER(dds_c_t.sample_info),
               buffer_size: ct.c_size_t, max_samples: ct.c_uint32) -> dds_c_t.returnv:
@@ -355,3 +282,9 @@ BuiltinTopicDcpsPublication = BuiltinTopic(_pseudo_handle + 3, DcpsEndpoint)
 
 BuiltinTopicDcpsSubscription = BuiltinTopic(_pseudo_handle + 4, DcpsEndpoint)
 """Built-in topic, is published to when a subscription happens."""
+
+__all__ = [
+    "DcpsParticipant", "DcpsEndpoint", "BuiltinDataReader",
+    "BuiltinTopicDcpsParticipant", "BuiltinTopicDcpsTopic",
+    "BuiltinTopicDcpsPublication", "BuiltinTopicDcpsSubscription"
+]
