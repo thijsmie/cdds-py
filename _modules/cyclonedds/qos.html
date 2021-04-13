@@ -158,7 +158,8 @@
   <h1>Source code for cyclonedds.qos</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">make_dataclass</span><span class="p">,</span> <span class="n">asdict</span>
 <span class="kn">from</span> <span class="nn">inspect</span> <span class="kn">import</span> <span class="n">isclass</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">ClassVar</span>
+<span class="kn">from</span> <span class="nn">base64</span> <span class="kn">import</span> <span class="n">b64encode</span><span class="p">,</span> <span class="n">b64decode</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">ClassVar</span>
 <span class="kn">import</span> <span class="nn">ctypes</span> <span class="k">as</span> <span class="nn">ct</span>
 
 <span class="kn">from</span> <span class="nn">.internal</span> <span class="kn">import</span> <span class="n">static_c_call</span><span class="p">,</span> <span class="n">dds_c_t</span><span class="p">,</span> <span class="n">DDS</span>
@@ -526,33 +527,96 @@
 
         <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="c1"># Tuple-fy partitions to ensure immutability</span>
+            <span class="c1"># The super trick here is because the class is already frozen so _officially_</span>
+            <span class="c1"># we are not supposed to be able to edit this variable.</span>
             <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="s1">&#39;partitions&#39;</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;partitions&#39;</span><span class="p">)))</span></div>
 
 <div class="viewcode-block" id="Policy.TransportPriority"><a class="viewcode-back" href="../../cyclonedds.qos.html#cyclonedds.core.Policy.TransportPriority">[docs]</a>    <span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="k">class</span> <span class="nc">TransportPriority</span><span class="p">(</span><span class="n">BasePolicy</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The TransportPriority Qos Policy</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; Policy.TransportPriority(priority=10)</span>
+
+<span class="sd">        Attributes</span>
+<span class="sd">        ----------</span>
+<span class="sd">        priority: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">__scope__</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;TransportPriority&quot;</span>
         <span class="n">priority</span><span class="p">:</span> <span class="nb">int</span></div>
 
-    <span class="k">class</span> <span class="nc">DestinationOrder</span><span class="p">:</span>
+<div class="viewcode-block" id="Policy.DestinationOrder"><a class="viewcode-back" href="../../cyclonedds.qos.html#cyclonedds.core.Policy.DestinationOrder">[docs]</a>    <span class="k">class</span> <span class="nc">DestinationOrder</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;The DestinationOrder Qos Policy</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; Policy.DestinationOrder.ByReceptionTimestamp</span>
+<span class="sd">        &gt;&gt;&gt; Policy.DestinationOrder.BySourceTimestamp</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">__scope__</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;DestinationOrder&quot;</span>
         <span class="n">ByReceptionTimestamp</span><span class="p">:</span> <span class="s1">&#39;Policy.DestinationOrder.ByReceptionTimestamp&#39;</span> <span class="o">=</span> \
             <span class="n">_policy_singleton</span><span class="p">(</span><span class="s2">&quot;DestinationOrder&quot;</span><span class="p">,</span> <span class="s2">&quot;ByReceptionTimestamp&quot;</span><span class="p">)</span>
         <span class="n">BySourceTimestamp</span><span class="p">:</span> <span class="s1">&#39;Policy.DestinationOrder.BySourceTimestamp&#39;</span> <span class="o">=</span> \
-            <span class="n">_policy_singleton</span><span class="p">(</span><span class="s2">&quot;DestinationOrder&quot;</span><span class="p">,</span> <span class="s2">&quot;BySourceTimestamp&quot;</span><span class="p">)</span>
+            <span class="n">_policy_singleton</span><span class="p">(</span><span class="s2">&quot;DestinationOrder&quot;</span><span class="p">,</span> <span class="s2">&quot;BySourceTimestamp&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Policy.WriterDataLifecycle"><a class="viewcode-back" href="../../cyclonedds.qos.html#cyclonedds.core.Policy.WriterDataLifecycle">[docs]</a>    <span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="k">class</span> <span class="nc">WriterDataLifecycle</span><span class="p">(</span><span class="n">BasePolicy</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The WriterDataLifecycle Qos Policy</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; Policy.WriterDataLifecycle(autodispose=False)</span>
+
+<span class="sd">        Attributes</span>
+<span class="sd">        ----------</span>
+<span class="sd">        autodispose: bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">__scope__</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;WriterDataLifecycle&quot;</span>
         <span class="n">autodispose</span><span class="p">:</span> <span class="nb">bool</span></div>
 
 <div class="viewcode-block" id="Policy.ReaderDataLifecycle"><a class="viewcode-back" href="../../cyclonedds.qos.html#cyclonedds.core.Policy.ReaderDataLifecycle">[docs]</a>    <span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="k">class</span> <span class="nc">ReaderDataLifecycle</span><span class="p">(</span><span class="n">BasePolicy</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The ReaderDataLifecycle Qos Policy</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; Policy.ReaderDataLifecycle(</span>
+<span class="sd">        &gt;&gt;&gt;     autopurge_nowriter_samples_delay=duration(minutes=2),</span>
+<span class="sd">        &gt;&gt;&gt;     autopurge_disposed_samples_delay=duration(minutes=5)</span>
+<span class="sd">        &gt;&gt;&gt; )</span>
+
+<span class="sd">        Attributes</span>
+<span class="sd">        ----------</span>
+<span class="sd">        autopurge_nowriter_samples_delay: bool</span>
+<span class="sd">        autopurge_disposed_samples_delay: bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">__scope__</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;ReaderDataLifecycle&quot;</span>
         <span class="n">autopurge_nowriter_samples_delay</span><span class="p">:</span> <span class="nb">int</span>
         <span class="n">autopurge_disposed_samples_delay</span><span class="p">:</span> <span class="nb">int</span></div>
 
 <div class="viewcode-block" id="Policy.DurabilityService"><a class="viewcode-back" href="../../cyclonedds.qos.html#cyclonedds.core.Policy.DurabilityService">[docs]</a>    <span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="k">class</span> <span class="nc">DurabilityService</span><span class="p">(</span><span class="n">BasePolicy</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The DurabilityService Qos Policy</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; Policy.DurabilityService(</span>
+<span class="sd">        &gt;&gt;&gt;     cleanup_delay=duration(minutes=2.5),</span>
+<span class="sd">        &gt;&gt;&gt;     history=Policy.History.KeepLast(20),</span>
+<span class="sd">        &gt;&gt;&gt;     max_samples=2000,</span>
+<span class="sd">        &gt;&gt;&gt;     max_instances=200,</span>
+<span class="sd">        &gt;&gt;&gt;     max_samples_per_instance=25</span>
+<span class="sd">        &gt;&gt;&gt; )</span>
+
+<span class="sd">        Attributes</span>
+<span class="sd">        ----------</span>
+<span class="sd">        cleanup_delay: int</span>
+<span class="sd">        history: Policy.History.KeepAll, Policy.History.KeepLast</span>
+<span class="sd">        max_samples: int</span>
+<span class="sd">        max_instances: int</span>
+<span class="sd">        max_samples_per_instance: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">__scope__</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;DurabilityService&quot;</span>
         <span class="n">cleanup_delay</span><span class="p">:</span> <span class="nb">int</span>
         <span class="n">history</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="s1">&#39;Policy.History.KeepAll&#39;</span><span class="p">,</span> <span class="s1">&#39;Policy.History.KeepLast&#39;</span><span class="p">]</span>
@@ -560,31 +624,84 @@
         <span class="n">max_instances</span><span class="p">:</span> <span class="nb">int</span>
         <span class="n">max_samples_per_instance</span><span class="p">:</span> <span class="nb">int</span></div>
 
-    <span class="k">class</span> <span class="nc">IgnoreLocal</span><span class="p">:</span>
+<div class="viewcode-block" id="Policy.IgnoreLocal"><a class="viewcode-back" href="../../cyclonedds.qos.html#cyclonedds.core.Policy.IgnoreLocal">[docs]</a>    <span class="k">class</span> <span class="nc">IgnoreLocal</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;The IgnoreLocal Qos Policy</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; Policy.IgnoreLocal.Nothing</span>
+<span class="sd">        &gt;&gt;&gt; Policy.IgnoreLocal.Participant</span>
+<span class="sd">        &gt;&gt;&gt; Policy.IgnoreLocal.Process</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="fm">__init__</span> <span class="o">=</span> <span class="n">_no_init</span>
         <span class="n">__scope__</span> <span class="o">=</span> <span class="s2">&quot;IgnoreLocal&quot;</span>
 
         <span class="n">Nothing</span><span class="p">:</span> <span class="s1">&#39;Policy.IgnoreLocal.Nothing&#39;</span> <span class="o">=</span> <span class="n">_policy_singleton</span><span class="p">(</span><span class="s2">&quot;IgnoreLocal&quot;</span><span class="p">,</span> <span class="s2">&quot;Nothing&quot;</span><span class="p">)</span>
         <span class="n">Participant</span><span class="p">:</span> <span class="s1">&#39;Policy.IgnoreLocal.Participant&#39;</span> <span class="o">=</span> <span class="n">_policy_singleton</span><span class="p">(</span><span class="s2">&quot;IgnoreLocal&quot;</span><span class="p">,</span> <span class="s2">&quot;Participant&quot;</span><span class="p">)</span>
-        <span class="n">Process</span><span class="p">:</span> <span class="s1">&#39;Policy.IgnoreLocal.Process&#39;</span> <span class="o">=</span> <span class="n">_policy_singleton</span><span class="p">(</span><span class="s2">&quot;IgnoreLocal&quot;</span><span class="p">,</span> <span class="s2">&quot;Process&quot;</span><span class="p">)</span>
+        <span class="n">Process</span><span class="p">:</span> <span class="s1">&#39;Policy.IgnoreLocal.Process&#39;</span> <span class="o">=</span> <span class="n">_policy_singleton</span><span class="p">(</span><span class="s2">&quot;IgnoreLocal&quot;</span><span class="p">,</span> <span class="s2">&quot;Process&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Policy.Userdata"><a class="viewcode-back" href="../../cyclonedds.qos.html#cyclonedds.core.Policy.Userdata">[docs]</a>    <span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="k">class</span> <span class="nc">Userdata</span><span class="p">(</span><span class="n">BasePolicy</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The Userdata Qos Policy</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; Policy.Userdata(data=b&quot;Hello, World!&quot;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">__scope__</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Userdata&quot;</span>
         <span class="n">data</span><span class="p">:</span> <span class="nb">bytes</span></div>
 
 <div class="viewcode-block" id="Policy.Topicdata"><a class="viewcode-back" href="../../cyclonedds.qos.html#cyclonedds.core.Policy.Topicdata">[docs]</a>    <span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="k">class</span> <span class="nc">Topicdata</span><span class="p">(</span><span class="n">BasePolicy</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The Topicdata Qos Policy</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; Policy.Topicdata(data=b&quot;Hello, World!&quot;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">__scope__</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Topicdata&quot;</span>
         <span class="n">data</span><span class="p">:</span> <span class="nb">bytes</span></div>
 
 <div class="viewcode-block" id="Policy.Groupdata"><a class="viewcode-back" href="../../cyclonedds.qos.html#cyclonedds.core.Policy.Groupdata">[docs]</a>    <span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="k">class</span> <span class="nc">Groupdata</span><span class="p">(</span><span class="n">BasePolicy</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The Groupdata Qos Policy</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; Policy.Groupdata(data=b&quot;Hello, World!&quot;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">__scope__</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Groupdata&quot;</span>
         <span class="n">data</span><span class="p">:</span> <span class="nb">bytes</span></div></div>
 
 
 <div class="viewcode-block" id="Qos"><a class="viewcode-back" href="../../cyclonedds.qos.html#cyclonedds.core.Qos">[docs]</a><span class="k">class</span> <span class="nc">Qos</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;This class represents a collections of policies. It allows for easy inspection of this set. When you retrieve a</span>
+<span class="sd">    Qos object from an entity modifying that object would actually does not change the Qos of the entity. To reflect this</span>
+<span class="sd">    Qos objects are immutable.</span>
+
+<span class="sd">    .. container:: operations</span>
+<span class="sd">        .. describe:: x == y</span>
+<span class="sd">            Checks if two Qos objects contain the same policies. This is a full comparison, not a match.</span>
+<span class="sd">        .. describe:: x != y</span>
+<span class="sd">            Checks if two Qos objects do not contain the same policies.</span>
+<span class="sd">        .. describe:: p in qos</span>
+<span class="sd">            Check if a Policy p is contained in Qos object qos. You can use all levels of generalization, for example:</span>
+<span class="sd">            ``Policy.History in qos``, ``Policy.History.KeepLast in qos`` and ``Policy.History.KeepLast(1) in qos``.</span>
+<span class="sd">        .. describe:: qos[p]</span>
+<span class="sd">            Obtain the Policy matched with p from the Qos object, for example: ``qos[Policy.History] -&gt; Policy.History.KeepAll``</span>
+<span class="sd">        .. describe:: iter(x)</span>
+<span class="sd">            The Qos object supports iteration over it&#39;s contents.</span>
+<span class="sd">        .. describe:: len(x)</span>
+<span class="sd">            Return the number of Policies in the Qos object.</span>
+<span class="sd">        .. describe:: str(x)</span>
+<span class="sd">            Human-readable description of the contained Qos policies.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    policies: Tuple[BasePolicy]</span>
+<span class="sd">        A sorted tuple of the Policies contained in this Qos object</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">_policy_mapper</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s2">&quot;Policy.Reliability.BestEffort&quot;</span><span class="p">:</span> <span class="n">Policy</span><span class="o">.</span><span class="n">Reliability</span><span class="o">.</span><span class="n">BestEffort</span><span class="p">,</span>
         <span class="s2">&quot;Policy.Reliability.Reliable&quot;</span><span class="p">:</span> <span class="n">Policy</span><span class="o">.</span><span class="n">Reliability</span><span class="o">.</span><span class="n">Reliable</span><span class="p">,</span>
@@ -623,7 +740,26 @@
         <span class="s2">&quot;Policy.Topicdata&quot;</span><span class="p">:</span> <span class="n">Policy</span><span class="o">.</span><span class="n">Topicdata</span>
     <span class="p">}</span>
 
-<div class="viewcode-block" id="Qos.__init__"><a class="viewcode-back" href="../../cyclonedds.qos.html#cyclonedds.core.Qos.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">policies</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Qos.__init__"><a class="viewcode-back" href="../../cyclonedds.qos.html#cyclonedds.core.Qos.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">policies</span><span class="p">,</span> <span class="n">base</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;Qos&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initialize a Qos object</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        *policies: BasePolicy</span>
+<span class="sd">            Pass in any number of constructed Policies.</span>
+<span class="sd">        base : Qos, optional</span>
+<span class="sd">            Optionally inherit policies from another Qos object. Inherited policies</span>
+<span class="sd">            are overwritten by those newly set.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        TypeError</span>
+<span class="sd">            If you pass something that is not a Policy or use a base that is not a Qos object</span>
+<span class="sd">            this will be treated as a TypeError.</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            If you pass two overlapping Policies, for example ``Policy.History.KeepLast(10)`` and</span>
+<span class="sd">            ``Policy.History.KeepAll`` this will be treated as a ValueError.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">policies</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">policies</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">policies</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">BasePolicy</span><span class="p">):</span>
@@ -708,30 +844,52 @@
 
     <span class="fm">__str__</span> <span class="o">=</span> <span class="fm">__repr__</span>
 
-    <span class="k">def</span> <span class="nf">asdict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Qos.asdict"><a class="viewcode-back" href="../../cyclonedds.qos.html#cyclonedds.core.Qos.asdict">[docs]</a>    <span class="k">def</span> <span class="nf">asdict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Convert a Qos object to a python dictionary.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        dict</span>
+<span class="sd">            Fully describe the Qos object using a python dictionary with only built-in types</span>
+<span class="sd">            (dict, list, string, int, boolean). This format is not guaranteed to stay consistent between</span>
+<span class="sd">            cyclonedds versions but can be useful for debugging or use within an application.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">ret</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">policies</span><span class="p">:</span>
             <span class="n">path</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__qualname__</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)</span>
             <span class="n">data</span> <span class="o">=</span> <span class="n">asdict</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="o">==</span> <span class="nb">bytes</span><span class="p">:</span>
+                    <span class="n">data</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">b64encode</span><span class="p">(</span><span class="n">v</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
                 <span class="n">ret</span><span class="p">[</span><span class="n">path</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="n">data</span>
             <span class="k">else</span><span class="p">:</span>  <span class="c1"># if len(path) == 3:</span>
                 <span class="n">ret</span><span class="p">[</span><span class="n">path</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;kind&quot;</span><span class="p">:</span> <span class="n">path</span><span class="p">[</span><span class="mi">2</span><span class="p">]}</span>
                 <span class="k">if</span> <span class="n">data</span><span class="p">:</span>
                     <span class="n">ret</span><span class="p">[</span><span class="n">path</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">ret</span>
+        <span class="k">return</span> <span class="n">ret</span></div>
 
-    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="Qos.fromdict"><a class="viewcode-back" href="../../cyclonedds.qos.html#cyclonedds.core.Qos.fromdict">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">fromdict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Convert a python dictionary as generated by ``asdict()`` to a Qos object.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Qos</span>
+<span class="sd">            Note that the format of the python dictionary is not guaranteed between cyclonedds versions</span>
+<span class="sd">            thus storing these dictionaries to disk and loading them again is not recommended.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">policies</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="c1"># Special case</span>
+            <span class="c1"># Special case for subqos</span>
             <span class="k">if</span> <span class="n">k</span> <span class="o">==</span> <span class="s2">&quot;DurabilityService&quot;</span><span class="p">:</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">v</span><span class="p">[</span><span class="s2">&quot;history&quot;</span><span class="p">]:</span>
                     <span class="n">v</span><span class="p">[</span><span class="s2">&quot;history&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Policy</span><span class="o">.</span><span class="n">History</span><span class="o">.</span><span class="n">KeepAll</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">v</span><span class="p">[</span><span class="s2">&quot;history&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Policy</span><span class="o">.</span><span class="n">History</span><span class="o">.</span><span class="n">KeepLast</span><span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="s2">&quot;history&quot;</span><span class="p">][</span><span class="s2">&quot;depth&quot;</span><span class="p">])</span>
-
+            <span class="c1"># Special case for UserData/TopicData/GroupData</span>
+            <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;Userdata&#39;</span><span class="p">,</span> <span class="s1">&#39;Topicdata&#39;</span><span class="p">,</span> <span class="s1">&#39;Groupdata&#39;</span><span class="p">]:</span>
+                <span class="n">v</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">b64decode</span><span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">encode</span><span class="p">())</span>
             <span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Policy.</span><span class="si">{k}</span><span class="s2">&quot;</span>
             <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_policy_mapper</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">v</span><span class="p">:</span>
@@ -750,10 +908,15 @@
                     <span class="k">continue</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Not a valid Qos dictionary.&quot;</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="o">*</span><span class="n">policies</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="o">*</span><span class="n">policies</span><span class="p">)</span></div></div>
 
 
 <span class="k">class</span> <span class="nc">_CQos</span><span class="p">(</span><span class="n">DDS</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;The _CQos object represents a qos pointer into DDS. Because they are somewhat annoying to deal with</span>
+<span class="sd">    these are intended to be short-lived objects, used just to convert between the handy Qos object and the</span>
+<span class="sd">    CycloneDDS C layer.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">_all_scopes</span> <span class="o">=</span> <span class="p">(</span>
         <span class="s2">&quot;Reliability&quot;</span><span class="p">,</span> <span class="s2">&quot;Durability&quot;</span><span class="p">,</span> <span class="s2">&quot;History&quot;</span><span class="p">,</span> <span class="s2">&quot;ResourceLimits&quot;</span><span class="p">,</span> <span class="s2">&quot;PresentationAccessScope&quot;</span><span class="p">,</span>
         <span class="s2">&quot;Lifespan&quot;</span><span class="p">,</span> <span class="s2">&quot;Deadline&quot;</span><span class="p">,</span> <span class="s2">&quot;LatencyBudget&quot;</span><span class="p">,</span> <span class="s2">&quot;Ownership&quot;</span><span class="p">,</span> <span class="s2">&quot;OwnershipStrength&quot;</span><span class="p">,</span>

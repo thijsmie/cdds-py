@@ -178,10 +178,75 @@
 <dt id="cyclonedds.core.Qos">
 <em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">cyclonedds.core.</span></code><code class="sig-name descname"><span class="pre">Qos</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">policies</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/qos.html#Qos"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Qos" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>This class represents a collections of policies. It allows for easy inspection of this set. When you retrieve a
+Qos object from an entity modifying that object would actually does not change the Qos of the entity. To reflect this
+Qos objects are immutable.</p>
+<dl class="py attribute">
+<dt id="cyclonedds.core.Qos.policies">
+<code class="sig-name descname"><span class="pre">policies</span></code><a class="headerlink" href="#cyclonedds.core.Qos.policies" title="Permalink to this definition">¶</a></dt>
+<dd><p>A sorted tuple of the Policies contained in this Qos object</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>Tuple[BasePolicy]</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py method">
 <dt id="cyclonedds.core.Qos.__init__">
 <code class="sig-name descname"><span class="pre">__init__</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">policies</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/qos.html#Qos.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Qos.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
+<dd><p>Initialize a Qos object</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>*policies</strong> (<em>BasePolicy</em>) – Pass in any number of constructed Policies.</p></li>
+<li><p><strong>base</strong> (<a class="reference internal" href="#cyclonedds.core.Qos" title="cyclonedds.core.Qos"><em>Qos</em></a><em>, </em><em>optional</em>) – Optionally inherit policies from another Qos object. Inherited policies
+are overwritten by those newly set.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.9)"><strong>TypeError</strong></a> – If you pass something that is not a Policy or use a base that is not a Qos object
+    this will be treated as a TypeError.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.9)"><strong>ValueError</strong></a> – If you pass two overlapping Policies, for example <code class="docutils literal notranslate"><span class="pre">Policy.History.KeepLast(10)</span></code> and
+    <code class="docutils literal notranslate"><span class="pre">Policy.History.KeepAll</span></code> this will be treated as a ValueError.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="cyclonedds.core.Qos.asdict">
+<code class="sig-name descname"><span class="pre">asdict</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/qos.html#Qos.asdict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Qos.asdict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert a Qos object to a python dictionary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Fully describe the Qos object using a python dictionary with only built-in types
+(dict, list, string, int, boolean). This format is not guaranteed to stay consistent between
+cyclonedds versions but can be useful for debugging or use within an application.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)">dict</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="cyclonedds.core.Qos.fromdict">
+<em class="property"><span class="pre">classmethod</span> </em><code class="sig-name descname"><span class="pre">fromdict</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/qos.html#Qos.fromdict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Qos.fromdict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert a python dictionary as generated by <code class="docutils literal notranslate"><span class="pre">asdict()</span></code> to a Qos object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Note that the format of the python dictionary is not guaranteed between cyclonedds versions
+thus storing these dictionaries to disk and loading them again is not recommended.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="#cyclonedds.core.Qos" title="cyclonedds.core.Qos">Qos</a></p>
+</dd>
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a>) – </p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -634,38 +699,195 @@ to write the duration in a human readable format.</p>
 
 <dl class="py class">
 <dt id="cyclonedds.core.Policy.TransportPriority">
-<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">TransportPriority</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">priority</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/qos.html#Policy.TransportPriority"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Policy.TransportPriority" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">TransportPriority</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">priority</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/qos.html#Policy.TransportPriority"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Policy.TransportPriority" title="Permalink to this definition">¶</a></dt>
+<dd><p>The TransportPriority Qos Policy</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Policy</span><span class="o">.</span><span class="n">TransportPriority</span><span class="p">(</span><span class="n">priority</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py attribute">
+<dt id="cyclonedds.core.Policy.TransportPriority.priority">
+<code class="sig-name descname"><span class="pre">priority</span></code><a class="headerlink" href="#cyclonedds.core.Policy.TransportPriority.priority" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="cyclonedds.core.Policy.DestinationOrder">
+<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">DestinationOrder</span></code><a class="reference internal" href="_modules/cyclonedds/qos.html#Policy.DestinationOrder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Policy.DestinationOrder" title="Permalink to this definition">¶</a></dt>
+<dd><p>The DestinationOrder Qos Policy</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Policy</span><span class="o">.</span><span class="n">DestinationOrder</span><span class="o">.</span><span class="n">ByReceptionTimestamp</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Policy</span><span class="o">.</span><span class="n">DestinationOrder</span><span class="o">.</span><span class="n">BySourceTimestamp</span>
+</pre></div>
+</div>
+</dd></dl>
 
 <dl class="py class">
 <dt id="cyclonedds.core.Policy.WriterDataLifecycle">
-<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">WriterDataLifecycle</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">autodispose</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><span class="pre">bool</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/qos.html#Policy.WriterDataLifecycle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Policy.WriterDataLifecycle" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">WriterDataLifecycle</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">autodispose</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/qos.html#Policy.WriterDataLifecycle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Policy.WriterDataLifecycle" title="Permalink to this definition">¶</a></dt>
+<dd><p>The WriterDataLifecycle Qos Policy</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Policy</span><span class="o">.</span><span class="n">WriterDataLifecycle</span><span class="p">(</span><span class="n">autodispose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py attribute">
+<dt id="cyclonedds.core.Policy.WriterDataLifecycle.autodispose">
+<code class="sig-name descname"><span class="pre">autodispose</span></code><a class="headerlink" href="#cyclonedds.core.Policy.WriterDataLifecycle.autodispose" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
 
 <dl class="py class">
 <dt id="cyclonedds.core.Policy.ReaderDataLifecycle">
-<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">ReaderDataLifecycle</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">autopurge_nowriter_samples_delay</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">autopurge_disposed_samples_delay</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/qos.html#Policy.ReaderDataLifecycle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Policy.ReaderDataLifecycle" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">ReaderDataLifecycle</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">autopurge_nowriter_samples_delay</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">autopurge_disposed_samples_delay</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/qos.html#Policy.ReaderDataLifecycle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Policy.ReaderDataLifecycle" title="Permalink to this definition">¶</a></dt>
+<dd><p>The ReaderDataLifecycle Qos Policy</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Policy</span><span class="o">.</span><span class="n">ReaderDataLifecycle</span><span class="p">(</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="n">autopurge_nowriter_samples_delay</span><span class="o">=</span><span class="n">duration</span><span class="p">(</span><span class="n">minutes</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="n">autopurge_disposed_samples_delay</span><span class="o">=</span><span class="n">duration</span><span class="p">(</span><span class="n">minutes</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py attribute">
+<dt id="cyclonedds.core.Policy.ReaderDataLifecycle.autopurge_nowriter_samples_delay">
+<code class="sig-name descname"><span class="pre">autopurge_nowriter_samples_delay</span></code><a class="headerlink" href="#cyclonedds.core.Policy.ReaderDataLifecycle.autopurge_nowriter_samples_delay" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="cyclonedds.core.Policy.ReaderDataLifecycle.autopurge_disposed_samples_delay">
+<code class="sig-name descname"><span class="pre">autopurge_disposed_samples_delay</span></code><a class="headerlink" href="#cyclonedds.core.Policy.ReaderDataLifecycle.autopurge_disposed_samples_delay" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
 
 <dl class="py class">
 <dt id="cyclonedds.core.Policy.DurabilityService">
-<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">DurabilityService</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cleanup_delay</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">history</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union[ForwardRef(‘Policy.History.KeepAll’),</span> <span class="pre">ForwardRef(‘Policy.History.KeepLast’)]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_samples</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_instances</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_samples_per_instance</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/qos.html#Policy.DurabilityService"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Policy.DurabilityService" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">DurabilityService</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cleanup_delay</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">history</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_samples</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_instances</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_samples_per_instance</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/qos.html#Policy.DurabilityService"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Policy.DurabilityService" title="Permalink to this definition">¶</a></dt>
+<dd><p>The DurabilityService Qos Policy</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Policy</span><span class="o">.</span><span class="n">DurabilityService</span><span class="p">(</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="n">cleanup_delay</span><span class="o">=</span><span class="n">duration</span><span class="p">(</span><span class="n">minutes</span><span class="o">=</span><span class="mf">2.5</span><span class="p">),</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="n">history</span><span class="o">=</span><span class="n">Policy</span><span class="o">.</span><span class="n">History</span><span class="o">.</span><span class="n">KeepLast</span><span class="p">(</span><span class="mi">20</span><span class="p">),</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="n">max_samples</span><span class="o">=</span><span class="mi">2000</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="n">max_instances</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="n">max_samples_per_instance</span><span class="o">=</span><span class="mi">25</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py attribute">
+<dt id="cyclonedds.core.Policy.DurabilityService.cleanup_delay">
+<code class="sig-name descname"><span class="pre">cleanup_delay</span></code><a class="headerlink" href="#cyclonedds.core.Policy.DurabilityService.cleanup_delay" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="cyclonedds.core.Policy.DurabilityService.history">
+<code class="sig-name descname"><span class="pre">history</span></code><a class="headerlink" href="#cyclonedds.core.Policy.DurabilityService.history" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>Policy.History.KeepAll, <a class="reference internal" href="#cyclonedds.core.Policy.History.KeepLast" title="cyclonedds.core.Policy.History.KeepLast">Policy.History.KeepLast</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="cyclonedds.core.Policy.DurabilityService.max_samples">
+<code class="sig-name descname"><span class="pre">max_samples</span></code><a class="headerlink" href="#cyclonedds.core.Policy.DurabilityService.max_samples" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="cyclonedds.core.Policy.DurabilityService.max_instances">
+<code class="sig-name descname"><span class="pre">max_instances</span></code><a class="headerlink" href="#cyclonedds.core.Policy.DurabilityService.max_instances" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="cyclonedds.core.Policy.DurabilityService.max_samples_per_instance">
+<code class="sig-name descname"><span class="pre">max_samples_per_instance</span></code><a class="headerlink" href="#cyclonedds.core.Policy.DurabilityService.max_samples_per_instance" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="cyclonedds.core.Policy.IgnoreLocal">
+<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">IgnoreLocal</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/qos.html#Policy.IgnoreLocal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Policy.IgnoreLocal" title="Permalink to this definition">¶</a></dt>
+<dd><p>The IgnoreLocal Qos Policy</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Policy</span><span class="o">.</span><span class="n">IgnoreLocal</span><span class="o">.</span><span class="n">Nothing</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Policy</span><span class="o">.</span><span class="n">IgnoreLocal</span><span class="o">.</span><span class="n">Participant</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Policy</span><span class="o">.</span><span class="n">IgnoreLocal</span><span class="o">.</span><span class="n">Process</span>
+</pre></div>
+</div>
+</dd></dl>
 
 <dl class="py class">
 <dt id="cyclonedds.core.Policy.Userdata">
-<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">Userdata</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.9)"><span class="pre">bytes</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/qos.html#Policy.Userdata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Policy.Userdata" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">Userdata</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/qos.html#Policy.Userdata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Policy.Userdata" title="Permalink to this definition">¶</a></dt>
+<dd><p>The Userdata Qos Policy</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Policy</span><span class="o">.</span><span class="n">Userdata</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="sa">b</span><span class="s2">&quot;Hello, World!&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
 
 <dl class="py class">
 <dt id="cyclonedds.core.Policy.Topicdata">
-<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">Topicdata</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.9)"><span class="pre">bytes</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/qos.html#Policy.Topicdata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Policy.Topicdata" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">Topicdata</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/qos.html#Policy.Topicdata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Policy.Topicdata" title="Permalink to this definition">¶</a></dt>
+<dd><p>The Topicdata Qos Policy</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Policy</span><span class="o">.</span><span class="n">Topicdata</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="sa">b</span><span class="s2">&quot;Hello, World!&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
 
 <dl class="py class">
 <dt id="cyclonedds.core.Policy.Groupdata">
-<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">Groupdata</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.9)"><span class="pre">bytes</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/qos.html#Policy.Groupdata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Policy.Groupdata" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">Groupdata</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/qos.html#Policy.Groupdata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.core.Policy.Groupdata" title="Permalink to this definition">¶</a></dt>
+<dd><p>The Groupdata Qos Policy</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Policy</span><span class="o">.</span><span class="n">Groupdata</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="sa">b</span><span class="s2">&quot;Hello, World!&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
 
 </dd></dl>
 

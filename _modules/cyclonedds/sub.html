@@ -253,6 +253,7 @@
             <span class="n">listener</span><span class="o">=</span><span class="n">listener</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_topic</span> <span class="o">=</span> <span class="n">topic</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_next_condition</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="n">cqos</span><span class="p">:</span>
             <span class="n">_CQos</span><span class="o">.</span><span class="n">cqos_destroy</span><span class="p">(</span><span class="n">cqos</span><span class="p">)</span>
 
@@ -324,6 +325,8 @@
 <span class="sd">        DDSException</span>
 <span class="sd">            If any error code is returned by the DDS API it is converted into an exception.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_next_condition</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_next_condition</span> <span class="ow">or</span> \
+            <span class="n">ReadCondition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ViewState</span><span class="o">.</span><span class="n">Any</span> <span class="o">|</span> <span class="n">SampleState</span><span class="o">.</span><span class="n">NotRead</span> <span class="o">|</span> <span class="n">InstanceState</span><span class="o">.</span><span class="n">Any</span><span class="p">)</span>
         <span class="n">samples</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">condition</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_next_condition</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">samples</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">samples</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -337,6 +340,8 @@
 <span class="sd">        DDSException</span>
 <span class="sd">            If any error code is returned by the DDS API it is converted into an exception.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_next_condition</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_next_condition</span> <span class="ow">or</span> \
+            <span class="n">ReadCondition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ViewState</span><span class="o">.</span><span class="n">Any</span> <span class="o">|</span> <span class="n">SampleState</span><span class="o">.</span><span class="n">NotRead</span> <span class="o">|</span> <span class="n">InstanceState</span><span class="o">.</span><span class="n">Any</span><span class="p">)</span>
         <span class="n">samples</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="n">condition</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_next_condition</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">samples</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">samples</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
