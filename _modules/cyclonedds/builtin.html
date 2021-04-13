@@ -171,14 +171,13 @@
 <span class="kn">import</span> <span class="nn">uuid</span>
 <span class="kn">import</span> <span class="nn">ctypes</span> <span class="k">as</span> <span class="nn">ct</span>
 <span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">ClassVar</span><span class="p">,</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">ClassVar</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span>
 
-<span class="kn">from</span> <span class="nn">.core</span> <span class="kn">import</span> <span class="n">Entity</span><span class="p">,</span> <span class="n">DDSException</span><span class="p">,</span> <span class="n">Qos</span><span class="p">,</span> <span class="n">ReadCondition</span><span class="p">,</span> <span class="n">ViewState</span><span class="p">,</span> <span class="n">InstanceState</span><span class="p">,</span> <span class="n">SampleState</span><span class="p">,</span> <span class="n">WaitSet</span>
+<span class="kn">from</span> <span class="nn">.core</span> <span class="kn">import</span> <span class="n">Entity</span><span class="p">,</span> <span class="n">DDSException</span><span class="p">,</span> <span class="n">Qos</span><span class="p">,</span> <span class="n">ReadCondition</span><span class="p">,</span> <span class="n">ViewState</span><span class="p">,</span> <span class="n">InstanceState</span><span class="p">,</span> <span class="n">SampleState</span>
 <span class="kn">from</span> <span class="nn">.topic</span> <span class="kn">import</span> <span class="n">Topic</span>
 <span class="kn">from</span> <span class="nn">.sub</span> <span class="kn">import</span> <span class="n">DataReader</span>
 <span class="kn">from</span> <span class="nn">.internal</span> <span class="kn">import</span> <span class="n">c_call</span><span class="p">,</span> <span class="n">dds_c_t</span><span class="p">,</span> <span class="n">SampleInfo</span>
 <span class="kn">from</span> <span class="nn">.qos</span> <span class="kn">import</span> <span class="n">_CQos</span>
-<span class="kn">from</span> <span class="nn">.util</span> <span class="kn">import</span> <span class="n">duration</span>
 
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
@@ -418,78 +417,6 @@
 
         <span class="k">return</span> <span class="n">return_samples</span></div>
 
-<div class="viewcode-block" id="BuiltinDataReader.read_next"><a class="viewcode-back" href="../../cyclonedds.builtin.html#cyclonedds.builtin.BuiltinDataReader.read_next">[docs]</a>    <span class="k">def</span> <span class="nf">read_next</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">object</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Shortcut method to read exactly one sample or return None.</span>
-
-<span class="sd">        Raises</span>
-<span class="sd">        ------</span>
-<span class="sd">        DDSException</span>
-<span class="sd">            If any error code is returned by the DDS API it is converted into an exception.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">samples</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">condition</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_next_condition</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">samples</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">samples</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="k">return</span> <span class="kc">None</span></div>
-
-<div class="viewcode-block" id="BuiltinDataReader.take_next"><a class="viewcode-back" href="../../cyclonedds.builtin.html#cyclonedds.builtin.BuiltinDataReader.take_next">[docs]</a>    <span class="k">def</span> <span class="nf">take_next</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">object</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Shortcut method to take exactly one sample or return None.</span>
-
-<span class="sd">        Raises</span>
-<span class="sd">        ------</span>
-<span class="sd">        DDSException</span>
-<span class="sd">            If any error code is returned by the DDS API it is converted into an exception.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">samples</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="n">condition</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_next_condition</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">samples</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">samples</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="k">return</span> <span class="kc">None</span></div>
-
-<div class="viewcode-block" id="BuiltinDataReader.read_iter"><a class="viewcode-back" href="../../cyclonedds.builtin.html#cyclonedds.builtin.BuiltinDataReader.read_iter">[docs]</a>    <span class="k">def</span> <span class="nf">read_iter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="nb">object</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Shortcut method to iterate reading samples. Iteration will stop once the timeout you supply expires.</span>
-<span class="sd">        Every time a sample is received the timeout is reset.</span>
-
-<span class="sd">        Raises</span>
-<span class="sd">        ------</span>
-<span class="sd">        DDSException</span>
-<span class="sd">            If any error code is returned by the DDS API it is converted into an exception.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">waitset</span> <span class="o">=</span> <span class="n">WaitSet</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">participant</span><span class="p">)</span>
-        <span class="n">condition</span> <span class="o">=</span> <span class="n">ReadCondition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ViewState</span><span class="o">.</span><span class="n">Any</span> <span class="o">|</span> <span class="n">InstanceState</span><span class="o">.</span><span class="n">Any</span> <span class="o">|</span> <span class="n">SampleState</span><span class="o">.</span><span class="n">NotRead</span><span class="p">)</span>
-        <span class="n">waitset</span><span class="o">.</span><span class="n">attach</span><span class="p">(</span><span class="n">condition</span><span class="p">)</span>
-        <span class="n">timeout</span> <span class="o">=</span> <span class="n">timeout</span> <span class="ow">or</span> <span class="n">duration</span><span class="p">(</span><span class="n">weeks</span><span class="o">=</span><span class="mi">99999</span><span class="p">)</span>
-
-        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
-            <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
-                <span class="n">a</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_next</span><span class="p">()</span>
-                <span class="k">if</span> <span class="n">a</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="k">break</span>
-                <span class="k">yield</span> <span class="n">a</span>
-            <span class="k">if</span> <span class="n">waitset</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="n">timeout</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="k">break</span></div>
-
-<div class="viewcode-block" id="BuiltinDataReader.take_iter"><a class="viewcode-back" href="../../cyclonedds.builtin.html#cyclonedds.builtin.BuiltinDataReader.take_iter">[docs]</a>    <span class="k">def</span> <span class="nf">take_iter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="nb">object</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Shortcut method to iterate taking samples. Iteration will stop once the timeout you supply expires.</span>
-<span class="sd">        Every time a sample is received the timeout is reset.</span>
-
-<span class="sd">        Raises</span>
-<span class="sd">        ------</span>
-<span class="sd">        DDSException</span>
-<span class="sd">            If any error code is returned by the DDS API it is converted into an exception.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">waitset</span> <span class="o">=</span> <span class="n">WaitSet</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">participant</span><span class="p">)</span>
-        <span class="n">condition</span> <span class="o">=</span> <span class="n">ReadCondition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ViewState</span><span class="o">.</span><span class="n">Any</span> <span class="o">|</span> <span class="n">InstanceState</span><span class="o">.</span><span class="n">Any</span> <span class="o">|</span> <span class="n">SampleState</span><span class="o">.</span><span class="n">NotRead</span><span class="p">)</span>
-        <span class="n">waitset</span><span class="o">.</span><span class="n">attach</span><span class="p">(</span><span class="n">condition</span><span class="p">)</span>
-        <span class="n">timeout</span> <span class="o">=</span> <span class="n">timeout</span> <span class="ow">or</span> <span class="n">duration</span><span class="p">(</span><span class="n">weeks</span><span class="o">=</span><span class="mi">99999</span><span class="p">)</span>
-
-        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
-            <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
-                <span class="n">a</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">take_next</span><span class="p">()</span>
-                <span class="k">if</span> <span class="n">a</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="k">break</span>
-                <span class="k">yield</span> <span class="n">a</span>
-            <span class="k">if</span> <span class="n">waitset</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="n">timeout</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="k">break</span></div>
-
     <span class="nd">@c_call</span><span class="p">(</span><span class="s2">&quot;dds_read&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">_read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reader</span><span class="p">:</span> <span class="n">dds_c_t</span><span class="o">.</span><span class="n">entity</span><span class="p">,</span> <span class="n">buffer</span><span class="p">:</span> <span class="n">ct</span><span class="o">.</span><span class="n">POINTER</span><span class="p">(</span><span class="n">ct</span><span class="o">.</span><span class="n">c_void_p</span><span class="p">),</span> <span class="n">sample_info</span><span class="p">:</span> <span class="n">ct</span><span class="o">.</span><span class="n">POINTER</span><span class="p">(</span><span class="n">dds_c_t</span><span class="o">.</span><span class="n">sample_info</span><span class="p">),</span>
               <span class="n">buffer_size</span><span class="p">:</span> <span class="n">ct</span><span class="o">.</span><span class="n">c_size_t</span><span class="p">,</span> <span class="n">max_samples</span><span class="p">:</span> <span class="n">ct</span><span class="o">.</span><span class="n">c_uint32</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dds_c_t</span><span class="o">.</span><span class="n">returnv</span><span class="p">:</span>
@@ -513,6 +440,12 @@
 
 <span class="n">BuiltinTopicDcpsSubscription</span> <span class="o">=</span> <span class="n">BuiltinTopic</span><span class="p">(</span><span class="n">_pseudo_handle</span> <span class="o">+</span> <span class="mi">4</span><span class="p">,</span> <span class="n">DcpsEndpoint</span><span class="p">)</span>
 <span class="sd">&quot;&quot;&quot;Built-in topic, is published to when a subscription happens.&quot;&quot;&quot;</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;DcpsParticipant&quot;</span><span class="p">,</span> <span class="s2">&quot;DcpsEndpoint&quot;</span><span class="p">,</span> <span class="s2">&quot;BuiltinDataReader&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;BuiltinTopicDcpsParticipant&quot;</span><span class="p">,</span> <span class="s2">&quot;BuiltinTopicDcpsTopic&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;BuiltinTopicDcpsPublication&quot;</span><span class="p">,</span> <span class="s2">&quot;BuiltinTopicDcpsSubscription&quot;</span>
+<span class="p">]</span>
 </pre></div>
 
            </div>

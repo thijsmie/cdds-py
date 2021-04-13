@@ -36,7 +36,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="topic" href="cyclonedds.topic.html" />
-    <link rel="prev" title="pub" href="cyclonedds.pub.html" />
+    <link rel="prev" title="core" href="cyclonedds.qos.html" />
     <link href="_static/style.css" rel="stylesheet" type="text/css">
 
 </head>
@@ -95,6 +95,7 @@
 <li class="toctree-l2"><a class="reference internal" href="cyclonedds.domain.html">domain</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cyclonedds.internal.html">internal</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cyclonedds.pub.html">pub</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cyclonedds.qos.html">core</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">sub</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cyclonedds.topic.html">topic</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cyclonedds.util.html">util</a></li>
@@ -188,19 +189,25 @@
 <dt id="cyclonedds.sub.DataReader">
 <em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">cyclonedds.sub.</span></code><code class="sig-name descname"><span class="pre">DataReader</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subscriber_or_participant</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">topic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qos</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">listener</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/sub.html#DataReader"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.sub.DataReader" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="cyclonedds.core.html#cyclonedds.core.Entity" title="cyclonedds.core.Entity"><code class="xref py py-class docutils literal notranslate"><span class="pre">cyclonedds.core.Entity</span></code></a></p>
+<p>Subscribe to a topic and read/take the data published to it.</p>
 <dl class="py method">
 <dt id="cyclonedds.sub.DataReader.read">
 <code class="sig-name descname"><span class="pre">read</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">N</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">condition</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instance_handle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/sub.html#DataReader.read"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.sub.DataReader.read" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
+<dd><p>Read a maximum of N samples, non-blocking. Optionally use a read/query-condition to select which samples
+you are interested in.</p>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>N</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – </p></li>
-<li><p><strong>condition</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="cyclonedds.core.html#cyclonedds.core.Entity" title="cyclonedds.core.Entity"><em>cyclonedds.core.Entity</em></a><em>]</em>) – </p></li>
+<li><p><strong>N</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – The maximum number of samples to read.</p></li>
+<li><p><strong>condition</strong> (<a class="reference internal" href="cyclonedds.core.html#cyclonedds.core.ReadCondition" title="cyclonedds.core.ReadCondition"><em>cyclonedds.core.ReadCondition</em></a><em>, </em><a class="reference internal" href="cyclonedds.core.html#cyclonedds.core.QueryCondition" title="cyclonedds.core.QueryCondition"><em>cyclonedds.core.QueryCondition</em></a><em>, </em><em>optional</em>) – Only read samples that satisfy the supplied condition.</p></li>
 <li><p><strong>instance_handle</strong> (<em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>]</em>) – </p></li>
 </ul>
 </dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>List[<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.9)">object</a>]</p>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><a class="reference internal" href="cyclonedds.core.html#cyclonedds.core.DDSException" title="cyclonedds.core.DDSException"><strong>DDSException</strong></a> – If any error code is returned by the DDS API it is converted into an exception.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.9)">object</a>]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -208,16 +215,21 @@
 <dl class="py method">
 <dt id="cyclonedds.sub.DataReader.take">
 <code class="sig-name descname"><span class="pre">take</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">N</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">condition</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instance_handle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/sub.html#DataReader.take"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.sub.DataReader.take" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
+<dd><p>Take a maximum of N samples, non-blocking. Optionally use a read/query-condition to select which samples
+you are interested in.</p>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>N</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – </p></li>
-<li><p><strong>condition</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="cyclonedds.core.html#cyclonedds.core.Entity" title="cyclonedds.core.Entity"><em>cyclonedds.core.Entity</em></a><em>]</em>) – </p></li>
+<li><p><strong>N</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – The maximum number of samples to read.</p></li>
+<li><p><strong>condition</strong> (<a class="reference internal" href="cyclonedds.core.html#cyclonedds.core.ReadCondition" title="cyclonedds.core.ReadCondition"><em>cyclonedds.core.ReadCondition</em></a><em>, </em><a class="reference internal" href="cyclonedds.core.html#cyclonedds.core.QueryCondition" title="cyclonedds.core.QueryCondition"><em>cyclonedds.core.QueryCondition</em></a><em>, </em><em>optional</em>) – Only take samples that satisfy the supplied condition.</p></li>
 <li><p><strong>instance_handle</strong> (<em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>]</em>) – </p></li>
 </ul>
 </dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>List[<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.9)">object</a>]</p>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><a class="reference internal" href="cyclonedds.core.html#cyclonedds.core.DDSException" title="cyclonedds.core.DDSException"><strong>DDSException</strong></a> – If any error code is returned by the DDS API it is converted into an exception.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.9)">object</a>]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -225,9 +237,13 @@
 <dl class="py method">
 <dt id="cyclonedds.sub.DataReader.read_next">
 <code class="sig-name descname"><span class="pre">read_next</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/sub.html#DataReader.read_next"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.sub.DataReader.read_next" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>Optional[<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.9)">object</a>]</p>
+<dd><p>Shortcut method to read exactly one sample or return None.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><a class="reference internal" href="cyclonedds.core.html#cyclonedds.core.DDSException" title="cyclonedds.core.DDSException"><strong>DDSException</strong></a> – If any error code is returned by the DDS API it is converted into an exception.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>Optional[<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.9)">object</a>]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -235,9 +251,13 @@
 <dl class="py method">
 <dt id="cyclonedds.sub.DataReader.take_next">
 <code class="sig-name descname"><span class="pre">take_next</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/sub.html#DataReader.take_next"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.sub.DataReader.take_next" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>Optional[<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.9)">object</a>]</p>
+<dd><p>Shortcut method to take exactly one sample or return None.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><a class="reference internal" href="cyclonedds.core.html#cyclonedds.core.DDSException" title="cyclonedds.core.DDSException"><strong>DDSException</strong></a> – If any error code is returned by the DDS API it is converted into an exception.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>Optional[<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.9)">object</a>]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -245,12 +265,17 @@
 <dl class="py method">
 <dt id="cyclonedds.sub.DataReader.read_iter">
 <code class="sig-name descname"><span class="pre">read_iter</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">condition</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/sub.html#DataReader.read_iter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.sub.DataReader.read_iter" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>timeout</strong> (<em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>]</em>) – </p>
+<dd><p>Shortcut method to iterate reading samples. Iteration will stop once the timeout you supply expires.
+Every time a sample is received the timeout is reset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><a class="reference internal" href="cyclonedds.core.html#cyclonedds.core.DDSException" title="cyclonedds.core.DDSException"><strong>DDSException</strong></a> – If any error code is returned by the DDS API it is converted into an exception.</p>
 </dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>Generator[<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.9)">object</a>, <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a>, <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a>]</p>
+<dt class="field-even">Parameters</dt>
+<dd class="field-even"><p><strong>timeout</strong> (<em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>]</em>) – </p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Generator[<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.9)">object</a>, <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a>, <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a>]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -258,12 +283,17 @@
 <dl class="py method">
 <dt id="cyclonedds.sub.DataReader.take_iter">
 <code class="sig-name descname"><span class="pre">take_iter</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">condition</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/sub.html#DataReader.take_iter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.sub.DataReader.take_iter" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>timeout</strong> (<em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>]</em>) – </p>
+<dd><p>Shortcut method to iterate taking samples. Iteration will stop once the timeout you supply expires.
+Every time a sample is received the timeout is reset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><a class="reference internal" href="cyclonedds.core.html#cyclonedds.core.DDSException" title="cyclonedds.core.DDSException"><strong>DDSException</strong></a> – If any error code is returned by the DDS API it is converted into an exception.</p>
 </dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>Generator[<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.9)">object</a>, <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a>, <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a>]</p>
+<dt class="field-even">Parameters</dt>
+<dd class="field-even"><p><strong>timeout</strong> (<em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>]</em>) – </p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Generator[<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.9)">object</a>, <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a>, <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a>]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -271,12 +301,17 @@
 <dl class="py method">
 <dt id="cyclonedds.sub.DataReader.read_aiter">
 <code class="sig-name descname"><span class="pre">read_aiter</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">condition</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/sub.html#DataReader.read_aiter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.sub.DataReader.read_aiter" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>timeout</strong> (<em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>]</em>) – </p>
+<dd><p>Shortcut method to asycn iterate reading samples. Iteration will stop once the timeout you supply expires.
+Every time a sample is received the timeout is reset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><a class="reference internal" href="cyclonedds.core.html#cyclonedds.core.DDSException" title="cyclonedds.core.DDSException"><strong>DDSException</strong></a> – If any error code is returned by the DDS API it is converted into an exception.</p>
 </dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>AsyncGenerator[<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.9)">object</a>, <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a>]</p>
+<dt class="field-even">Parameters</dt>
+<dd class="field-even"><p><strong>timeout</strong> (<em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>]</em>) – </p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>AsyncGenerator[<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.9)">object</a>, <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a>]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -284,12 +319,17 @@
 <dl class="py method">
 <dt id="cyclonedds.sub.DataReader.take_aiter">
 <code class="sig-name descname"><span class="pre">take_aiter</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">condition</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyclonedds/sub.html#DataReader.take_aiter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyclonedds.sub.DataReader.take_aiter" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>timeout</strong> (<em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>]</em>) – </p>
+<dd><p>Shortcut method to asycn iterate taking samples. Iteration will stop once the timeout you supply expires.
+Every time a sample is received the timeout is reset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><a class="reference internal" href="cyclonedds.core.html#cyclonedds.core.DDSException" title="cyclonedds.core.DDSException"><strong>DDSException</strong></a> – If any error code is returned by the DDS API it is converted into an exception.</p>
 </dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>AsyncGenerator[<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.9)">object</a>, <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a>]</p>
+<dt class="field-even">Parameters</dt>
+<dd class="field-even"><p><strong>timeout</strong> (<em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>]</em>) – </p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>AsyncGenerator[<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.9)">object</a>, <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a>]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -327,7 +367,7 @@
         <a href="cyclonedds.topic.html" class="btn btn-neutral float-right" title="topic" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="cyclonedds.pub.html" class="btn btn-neutral float-left" title="pub" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="cyclonedds.qos.html" class="btn btn-neutral float-left" title="core" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

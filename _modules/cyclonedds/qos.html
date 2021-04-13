@@ -180,7 +180,7 @@
         <span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)()</span>
 
 
-<div class="viewcode-block" id="Policy"><a class="viewcode-back" href="../../cyclonedds.core.html#cyclonedds.core.Policy">[docs]</a><span class="k">class</span> <span class="nc">Policy</span><span class="p">:</span>
+<div class="viewcode-block" id="Policy"><a class="viewcode-back" href="../../cyclonedds.qos.html#cyclonedds.core.Policy">[docs]</a><span class="k">class</span> <span class="nc">Policy</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;The Policy class is fully static and should never need to be instantiated.</span>
 
 <span class="sd">    See Also</span>
@@ -189,7 +189,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="fm">__init__</span> <span class="o">=</span> <span class="n">_no_init</span>
 
-<div class="viewcode-block" id="Policy.Reliability"><a class="viewcode-back" href="../../cyclonedds.core.html#cyclonedds.core.Policy.Reliability">[docs]</a>    <span class="k">class</span> <span class="nc">Reliability</span><span class="p">:</span>
+<div class="viewcode-block" id="Policy.Reliability"><a class="viewcode-back" href="../../cyclonedds.qos.html#cyclonedds.core.Policy.Reliability">[docs]</a>    <span class="k">class</span> <span class="nc">Reliability</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;The Reliability Qos Policy</span>
 
 <span class="sd">        Examples</span>
@@ -200,7 +200,7 @@
         <span class="n">__scope__</span> <span class="o">=</span> <span class="s2">&quot;Reliability&quot;</span>
         <span class="fm">__init__</span> <span class="o">=</span> <span class="n">_no_init</span>
 
-<div class="viewcode-block" id="Policy.Reliability.BestEffort"><a class="viewcode-back" href="../../cyclonedds.core.html#cyclonedds.core.Policy.Reliability.BestEffort">[docs]</a>        <span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="viewcode-block" id="Policy.Reliability.BestEffort"><a class="viewcode-back" href="../../cyclonedds.qos.html#cyclonedds.core.Policy.Reliability.BestEffort">[docs]</a>        <span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">class</span> <span class="nc">BestEffort</span><span class="p">(</span><span class="n">BasePolicy</span><span class="p">):</span>
             <span class="sd">&quot;&quot;&quot;Use BestEffort reliability</span>
 
@@ -213,7 +213,7 @@
             <span class="n">__scope__</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Reliability&quot;</span>
             <span class="n">max_blocking_time</span><span class="p">:</span> <span class="nb">int</span></div>
 
-<div class="viewcode-block" id="Policy.Reliability.Reliable"><a class="viewcode-back" href="../../cyclonedds.core.html#cyclonedds.core.Policy.Reliability.Reliable">[docs]</a>        <span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="viewcode-block" id="Policy.Reliability.Reliable"><a class="viewcode-back" href="../../cyclonedds.qos.html#cyclonedds.core.Policy.Reliability.Reliable">[docs]</a>        <span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">class</span> <span class="nc">Reliable</span><span class="p">(</span><span class="n">BasePolicy</span><span class="p">):</span>
             <span class="sd">&quot;&quot;&quot;Use Reliable reliability</span>
 
@@ -227,7 +227,7 @@
             <span class="n">__scope__</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Reliability&quot;</span>
             <span class="n">max_blocking_time</span><span class="p">:</span> <span class="nb">int</span></div></div>
 
-<div class="viewcode-block" id="Policy.Durability"><a class="viewcode-back" href="../../cyclonedds.core.html#cyclonedds.core.Policy.Durability">[docs]</a>    <span class="k">class</span> <span class="nc">Durability</span><span class="p">:</span>
+<div class="viewcode-block" id="Policy.Durability"><a class="viewcode-back" href="../../cyclonedds.qos.html#cyclonedds.core.Policy.Durability">[docs]</a>    <span class="k">class</span> <span class="nc">Durability</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot; The Durability Qos Policy</span>
 
 <span class="sd">        Examples</span>
@@ -245,7 +245,7 @@
         <span class="n">Transient</span><span class="p">:</span> <span class="s1">&#39;Policy.Durability.Transient&#39;</span> <span class="o">=</span> <span class="n">_policy_singleton</span><span class="p">(</span><span class="s2">&quot;Durability&quot;</span><span class="p">,</span> <span class="s2">&quot;Transient&quot;</span><span class="p">)</span>
         <span class="n">Persistent</span><span class="p">:</span> <span class="s1">&#39;Policy.Durability.Persistent&#39;</span> <span class="o">=</span> <span class="n">_policy_singleton</span><span class="p">(</span><span class="s2">&quot;Durability&quot;</span><span class="p">,</span> <span class="s2">&quot;Persistent&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Policy.History"><a class="viewcode-back" href="../../cyclonedds.core.html#cyclonedds.core.Policy.History">[docs]</a>    <span class="k">class</span> <span class="nc">History</span><span class="p">:</span>
+<div class="viewcode-block" id="Policy.History"><a class="viewcode-back" href="../../cyclonedds.qos.html#cyclonedds.core.Policy.History">[docs]</a>    <span class="k">class</span> <span class="nc">History</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot; The History Qos Policy</span>
 
 <span class="sd">        Examples</span>
@@ -263,7 +263,7 @@
 
         <span class="n">KeepAll</span><span class="p">:</span> <span class="s1">&#39;Policy.History.KeepAll&#39;</span> <span class="o">=</span> <span class="n">_policy_singleton</span><span class="p">(</span><span class="s2">&quot;History&quot;</span><span class="p">,</span> <span class="s2">&quot;KeepAll&quot;</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Policy.History.KeepLast"><a class="viewcode-back" href="../../cyclonedds.core.html#cyclonedds.core.Policy.History.KeepLast">[docs]</a>        <span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="viewcode-block" id="Policy.History.KeepLast"><a class="viewcode-back" href="../../cyclonedds.qos.html#cyclonedds.core.Policy.History.KeepLast">[docs]</a>        <span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">class</span> <span class="nc">KeepLast</span><span class="p">(</span><span class="n">BasePolicy</span><span class="p">):</span>
             <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Parameters</span>
@@ -274,7 +274,7 @@
             <span class="n">__scope__</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;History&quot;</span>
             <span class="n">depth</span><span class="p">:</span> <span class="nb">int</span></div></div>
 
-<div class="viewcode-block" id="Policy.ResourceLimits"><a class="viewcode-back" href="../../cyclonedds.core.html#cyclonedds.core.Policy.ResourceLimits">[docs]</a>    <span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="viewcode-block" id="Policy.ResourceLimits"><a class="viewcode-back" href="../../cyclonedds.qos.html#cyclonedds.core.Policy.ResourceLimits">[docs]</a>    <span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="k">class</span> <span class="nc">ResourceLimits</span><span class="p">(</span><span class="n">BasePolicy</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;The ResourceLimits Qos Policy</span>
 
@@ -300,7 +300,7 @@
         <span class="n">max_instances</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
         <span class="n">max_samples_per_instance</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span></div>
 
-<div class="viewcode-block" id="Policy.PresentationAccessScope"><a class="viewcode-back" href="../../cyclonedds.core.html#cyclonedds.core.Policy.PresentationAccessScope">[docs]</a>    <span class="k">class</span> <span class="nc">PresentationAccessScope</span><span class="p">:</span>
+<div class="viewcode-block" id="Policy.PresentationAccessScope"><a class="viewcode-back" href="../../cyclonedds.qos.html#cyclonedds.core.Policy.PresentationAccessScope">[docs]</a>    <span class="k">class</span> <span class="nc">PresentationAccessScope</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;The Presentation Access Scope Qos Policy</span>
 
 <span class="sd">        Examples</span>
@@ -312,7 +312,7 @@
         <span class="fm">__init__</span> <span class="o">=</span> <span class="n">_no_init</span>
         <span class="n">__scope__</span> <span class="o">=</span> <span class="s2">&quot;PresentationAccessScope&quot;</span>
 
-<div class="viewcode-block" id="Policy.PresentationAccessScope.Instance"><a class="viewcode-back" href="../../cyclonedds.core.html#cyclonedds.core.Policy.PresentationAccessScope.Instance">[docs]</a>        <span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="viewcode-block" id="Policy.PresentationAccessScope.Instance"><a class="viewcode-back" href="../../cyclonedds.qos.html#cyclonedds.core.Policy.PresentationAccessScope.Instance">[docs]</a>        <span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">class</span> <span class="nc">Instance</span><span class="p">(</span><span class="n">BasePolicy</span><span class="p">):</span>
             <span class="sd">&quot;&quot;&quot;Use Instance Presentation Access Scope</span>
 
@@ -327,7 +327,7 @@
             <span class="n">coherent_access</span><span class="p">:</span> <span class="nb">bool</span>
             <span class="n">ordered_access</span><span class="p">:</span> <span class="nb">bool</span></div>
 
-<div class="viewcode-block" id="Policy.PresentationAccessScope.Topic"><a class="viewcode-back" href="../../cyclonedds.core.html#cyclonedds.core.Policy.PresentationAccessScope.Topic">[docs]</a>        <span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="viewcode-block" id="Policy.PresentationAccessScope.Topic"><a class="viewcode-back" href="../../cyclonedds.qos.html#cyclonedds.core.Policy.PresentationAccessScope.Topic">[docs]</a>        <span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">class</span> <span class="nc">Topic</span><span class="p">(</span><span class="n">BasePolicy</span><span class="p">):</span>
             <span class="sd">&quot;&quot;&quot;Use Topic Presentation Access Scope</span>
 
@@ -342,7 +342,7 @@
             <span class="n">coherent_access</span><span class="p">:</span> <span class="nb">bool</span>
             <span class="n">ordered_access</span><span class="p">:</span> <span class="nb">bool</span></div>
 
-<div class="viewcode-block" id="Policy.PresentationAccessScope.Group"><a class="viewcode-back" href="../../cyclonedds.core.html#cyclonedds.core.Policy.PresentationAccessScope.Group">[docs]</a>        <span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="viewcode-block" id="Policy.PresentationAccessScope.Group"><a class="viewcode-back" href="../../cyclonedds.qos.html#cyclonedds.core.Policy.PresentationAccessScope.Group">[docs]</a>        <span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">class</span> <span class="nc">Group</span><span class="p">(</span><span class="n">BasePolicy</span><span class="p">):</span>
             <span class="sd">&quot;&quot;&quot;Use Group Presentation Access Scope</span>
 
@@ -357,7 +357,7 @@
             <span class="n">coherent_access</span><span class="p">:</span> <span class="nb">bool</span>
             <span class="n">ordered_access</span><span class="p">:</span> <span class="nb">bool</span></div></div>
 
-<div class="viewcode-block" id="Policy.Lifespan"><a class="viewcode-back" href="../../cyclonedds.core.html#cyclonedds.core.Policy.Lifespan">[docs]</a>    <span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="viewcode-block" id="Policy.Lifespan"><a class="viewcode-back" href="../../cyclonedds.qos.html#cyclonedds.core.Policy.Lifespan">[docs]</a>    <span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="k">class</span> <span class="nc">Lifespan</span><span class="p">(</span><span class="n">BasePolicy</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;The Lifespan Qos Policy</span>
 
@@ -373,7 +373,7 @@
         <span class="n">__scope__</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Lifespan&quot;</span>
         <span class="n">lifespan</span><span class="p">:</span> <span class="nb">int</span></div>
 
-<div class="viewcode-block" id="Policy.Deadline"><a class="viewcode-back" href="../../cyclonedds.core.html#cyclonedds.core.Policy.Deadline">[docs]</a>    <span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="viewcode-block" id="Policy.Deadline"><a class="viewcode-back" href="../../cyclonedds.qos.html#cyclonedds.core.Policy.Deadline">[docs]</a>    <span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="k">class</span> <span class="nc">Deadline</span><span class="p">(</span><span class="n">BasePolicy</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;The Deadline Qos Policy</span>
 
@@ -389,7 +389,7 @@
         <span class="n">__scope__</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Deadline&quot;</span>
         <span class="n">deadline</span><span class="p">:</span> <span class="nb">int</span></div>
 
-<div class="viewcode-block" id="Policy.LatencyBudget"><a class="viewcode-back" href="../../cyclonedds.core.html#cyclonedds.core.Policy.LatencyBudget">[docs]</a>    <span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="viewcode-block" id="Policy.LatencyBudget"><a class="viewcode-back" href="../../cyclonedds.qos.html#cyclonedds.core.Policy.LatencyBudget">[docs]</a>    <span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="k">class</span> <span class="nc">LatencyBudget</span><span class="p">(</span><span class="n">BasePolicy</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;The Latency Budget Qos Policy</span>
 
@@ -405,7 +405,7 @@
         <span class="n">__scope__</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;LatencyBudget&quot;</span>
         <span class="n">budget</span><span class="p">:</span> <span class="nb">int</span></div>
 
-<div class="viewcode-block" id="Policy.Ownership"><a class="viewcode-back" href="../../cyclonedds.core.html#cyclonedds.core.Policy.Ownership">[docs]</a>    <span class="k">class</span> <span class="nc">Ownership</span><span class="p">:</span>
+<div class="viewcode-block" id="Policy.Ownership"><a class="viewcode-back" href="../../cyclonedds.qos.html#cyclonedds.core.Policy.Ownership">[docs]</a>    <span class="k">class</span> <span class="nc">Ownership</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;The Ownership Qos Policy</span>
 
 <span class="sd">        Examples</span>
@@ -424,7 +424,7 @@
         <span class="n">Shared</span><span class="p">:</span> <span class="s1">&#39;Policy.Ownership.Shared&#39;</span> <span class="o">=</span> <span class="n">_policy_singleton</span><span class="p">(</span><span class="s2">&quot;Ownership&quot;</span><span class="p">,</span> <span class="s2">&quot;Shared&quot;</span><span class="p">)</span>
         <span class="n">Exclusive</span><span class="p">:</span> <span class="s1">&#39;Policy.Ownership.Exclusive&#39;</span> <span class="o">=</span> <span class="n">_policy_singleton</span><span class="p">(</span><span class="s2">&quot;Ownership&quot;</span><span class="p">,</span> <span class="s2">&quot;Exclusive&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Policy.OwnershipStrength"><a class="viewcode-back" href="../../cyclonedds.core.html#cyclonedds.core.Policy.OwnershipStrength">[docs]</a>    <span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="viewcode-block" id="Policy.OwnershipStrength"><a class="viewcode-back" href="../../cyclonedds.qos.html#cyclonedds.core.Policy.OwnershipStrength">[docs]</a>    <span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="k">class</span> <span class="nc">OwnershipStrength</span><span class="p">(</span><span class="n">BasePolicy</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;The Ownership Strength Qos Policy</span>
 
@@ -440,7 +440,7 @@
         <span class="n">__scope__</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;OwnershipStrength&quot;</span>
         <span class="n">strength</span><span class="p">:</span> <span class="nb">int</span></div>
 
-<div class="viewcode-block" id="Policy.Liveliness"><a class="viewcode-back" href="../../cyclonedds.core.html#cyclonedds.core.Policy.Liveliness">[docs]</a>    <span class="k">class</span> <span class="nc">Liveliness</span><span class="p">:</span>
+<div class="viewcode-block" id="Policy.Liveliness"><a class="viewcode-back" href="../../cyclonedds.qos.html#cyclonedds.core.Policy.Liveliness">[docs]</a>    <span class="k">class</span> <span class="nc">Liveliness</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;The Liveliness Qos Policy</span>
 
 <span class="sd">        Examples</span>
@@ -452,7 +452,7 @@
         <span class="fm">__init__</span> <span class="o">=</span> <span class="n">_no_init</span>
         <span class="n">__scope__</span> <span class="o">=</span> <span class="s2">&quot;Liveliness&quot;</span>
 
-<div class="viewcode-block" id="Policy.Liveliness.Automatic"><a class="viewcode-back" href="../../cyclonedds.core.html#cyclonedds.core.Policy.Liveliness.Automatic">[docs]</a>        <span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="viewcode-block" id="Policy.Liveliness.Automatic"><a class="viewcode-back" href="../../cyclonedds.qos.html#cyclonedds.core.Policy.Liveliness.Automatic">[docs]</a>        <span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">class</span> <span class="nc">Automatic</span><span class="p">(</span><span class="n">BasePolicy</span><span class="p">):</span>
             <span class="sd">&quot;&quot;&quot;Use Automatic Liveliness</span>
 
@@ -465,7 +465,7 @@
             <span class="n">__scope__</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Liveliness&quot;</span>
             <span class="n">lease_duration</span><span class="p">:</span> <span class="nb">int</span></div>
 
-<div class="viewcode-block" id="Policy.Liveliness.ManualByParticipant"><a class="viewcode-back" href="../../cyclonedds.core.html#cyclonedds.core.Policy.Liveliness.ManualByParticipant">[docs]</a>        <span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="viewcode-block" id="Policy.Liveliness.ManualByParticipant"><a class="viewcode-back" href="../../cyclonedds.qos.html#cyclonedds.core.Policy.Liveliness.ManualByParticipant">[docs]</a>        <span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">class</span> <span class="nc">ManualByParticipant</span><span class="p">(</span><span class="n">BasePolicy</span><span class="p">):</span>
             <span class="sd">&quot;&quot;&quot;Use ManualByParticipant Liveliness</span>
 
@@ -478,7 +478,7 @@
             <span class="n">__scope__</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Liveliness&quot;</span>
             <span class="n">lease_duration</span><span class="p">:</span> <span class="nb">int</span></div>
 
-<div class="viewcode-block" id="Policy.Liveliness.ManualByTopic"><a class="viewcode-back" href="../../cyclonedds.core.html#cyclonedds.core.Policy.Liveliness.ManualByTopic">[docs]</a>        <span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="viewcode-block" id="Policy.Liveliness.ManualByTopic"><a class="viewcode-back" href="../../cyclonedds.qos.html#cyclonedds.core.Policy.Liveliness.ManualByTopic">[docs]</a>        <span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">class</span> <span class="nc">ManualByTopic</span><span class="p">(</span><span class="n">BasePolicy</span><span class="p">):</span>
             <span class="sd">&quot;&quot;&quot;Use ManualByTopic Liveliness</span>
 
@@ -491,7 +491,7 @@
             <span class="n">__scope__</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Liveliness&quot;</span>
             <span class="n">lease_duration</span><span class="p">:</span> <span class="nb">int</span></div></div>
 
-<div class="viewcode-block" id="Policy.TimeBasedFilter"><a class="viewcode-back" href="../../cyclonedds.core.html#cyclonedds.core.Policy.TimeBasedFilter">[docs]</a>    <span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="viewcode-block" id="Policy.TimeBasedFilter"><a class="viewcode-back" href="../../cyclonedds.qos.html#cyclonedds.core.Policy.TimeBasedFilter">[docs]</a>    <span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="k">class</span> <span class="nc">TimeBasedFilter</span><span class="p">(</span><span class="n">BasePolicy</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;The TimeBasedFilter Qos Policy</span>
 
@@ -508,7 +508,7 @@
         <span class="n">__scope__</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;TimeBasedFilter&quot;</span>
         <span class="n">filter_time</span><span class="p">:</span> <span class="nb">int</span></div>
 
-<div class="viewcode-block" id="Policy.Partition"><a class="viewcode-back" href="../../cyclonedds.core.html#cyclonedds.core.Policy.Partition">[docs]</a>    <span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="viewcode-block" id="Policy.Partition"><a class="viewcode-back" href="../../cyclonedds.qos.html#cyclonedds.core.Policy.Partition">[docs]</a>    <span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="k">class</span> <span class="nc">Partition</span><span class="p">(</span><span class="n">BasePolicy</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;The Partition Qos Policy</span>
 
@@ -528,7 +528,7 @@
             <span class="c1"># Tuple-fy partitions to ensure immutability</span>
             <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="s1">&#39;partitions&#39;</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;partitions&#39;</span><span class="p">)))</span></div>
 
-<div class="viewcode-block" id="Policy.TransportPriority"><a class="viewcode-back" href="../../cyclonedds.core.html#cyclonedds.core.Policy.TransportPriority">[docs]</a>    <span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="viewcode-block" id="Policy.TransportPriority"><a class="viewcode-back" href="../../cyclonedds.qos.html#cyclonedds.core.Policy.TransportPriority">[docs]</a>    <span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="k">class</span> <span class="nc">TransportPriority</span><span class="p">(</span><span class="n">BasePolicy</span><span class="p">):</span>
         <span class="n">__scope__</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;TransportPriority&quot;</span>
         <span class="n">priority</span><span class="p">:</span> <span class="nb">int</span></div>
@@ -540,18 +540,18 @@
         <span class="n">BySourceTimestamp</span><span class="p">:</span> <span class="s1">&#39;Policy.DestinationOrder.BySourceTimestamp&#39;</span> <span class="o">=</span> \
             <span class="n">_policy_singleton</span><span class="p">(</span><span class="s2">&quot;DestinationOrder&quot;</span><span class="p">,</span> <span class="s2">&quot;BySourceTimestamp&quot;</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Policy.WriterDataLifecycle"><a class="viewcode-back" href="../../cyclonedds.core.html#cyclonedds.core.Policy.WriterDataLifecycle">[docs]</a>    <span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="viewcode-block" id="Policy.WriterDataLifecycle"><a class="viewcode-back" href="../../cyclonedds.qos.html#cyclonedds.core.Policy.WriterDataLifecycle">[docs]</a>    <span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="k">class</span> <span class="nc">WriterDataLifecycle</span><span class="p">(</span><span class="n">BasePolicy</span><span class="p">):</span>
         <span class="n">__scope__</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;WriterDataLifecycle&quot;</span>
         <span class="n">autodispose</span><span class="p">:</span> <span class="nb">bool</span></div>
 
-<div class="viewcode-block" id="Policy.ReaderDataLifecycle"><a class="viewcode-back" href="../../cyclonedds.core.html#cyclonedds.core.Policy.ReaderDataLifecycle">[docs]</a>    <span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="viewcode-block" id="Policy.ReaderDataLifecycle"><a class="viewcode-back" href="../../cyclonedds.qos.html#cyclonedds.core.Policy.ReaderDataLifecycle">[docs]</a>    <span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="k">class</span> <span class="nc">ReaderDataLifecycle</span><span class="p">(</span><span class="n">BasePolicy</span><span class="p">):</span>
         <span class="n">__scope__</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;ReaderDataLifecycle&quot;</span>
         <span class="n">autopurge_nowriter_samples_delay</span><span class="p">:</span> <span class="nb">int</span>
         <span class="n">autopurge_disposed_samples_delay</span><span class="p">:</span> <span class="nb">int</span></div>
 
-<div class="viewcode-block" id="Policy.DurabilityService"><a class="viewcode-back" href="../../cyclonedds.core.html#cyclonedds.core.Policy.DurabilityService">[docs]</a>    <span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="viewcode-block" id="Policy.DurabilityService"><a class="viewcode-back" href="../../cyclonedds.qos.html#cyclonedds.core.Policy.DurabilityService">[docs]</a>    <span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="k">class</span> <span class="nc">DurabilityService</span><span class="p">(</span><span class="n">BasePolicy</span><span class="p">):</span>
         <span class="n">__scope__</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;DurabilityService&quot;</span>
         <span class="n">cleanup_delay</span><span class="p">:</span> <span class="nb">int</span>
@@ -568,23 +568,23 @@
         <span class="n">Participant</span><span class="p">:</span> <span class="s1">&#39;Policy.IgnoreLocal.Participant&#39;</span> <span class="o">=</span> <span class="n">_policy_singleton</span><span class="p">(</span><span class="s2">&quot;IgnoreLocal&quot;</span><span class="p">,</span> <span class="s2">&quot;Participant&quot;</span><span class="p">)</span>
         <span class="n">Process</span><span class="p">:</span> <span class="s1">&#39;Policy.IgnoreLocal.Process&#39;</span> <span class="o">=</span> <span class="n">_policy_singleton</span><span class="p">(</span><span class="s2">&quot;IgnoreLocal&quot;</span><span class="p">,</span> <span class="s2">&quot;Process&quot;</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Policy.Userdata"><a class="viewcode-back" href="../../cyclonedds.core.html#cyclonedds.core.Policy.Userdata">[docs]</a>    <span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="viewcode-block" id="Policy.Userdata"><a class="viewcode-back" href="../../cyclonedds.qos.html#cyclonedds.core.Policy.Userdata">[docs]</a>    <span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="k">class</span> <span class="nc">Userdata</span><span class="p">(</span><span class="n">BasePolicy</span><span class="p">):</span>
         <span class="n">__scope__</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Userdata&quot;</span>
         <span class="n">data</span><span class="p">:</span> <span class="nb">bytes</span></div>
 
-<div class="viewcode-block" id="Policy.Topicdata"><a class="viewcode-back" href="../../cyclonedds.core.html#cyclonedds.core.Policy.Topicdata">[docs]</a>    <span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="viewcode-block" id="Policy.Topicdata"><a class="viewcode-back" href="../../cyclonedds.qos.html#cyclonedds.core.Policy.Topicdata">[docs]</a>    <span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="k">class</span> <span class="nc">Topicdata</span><span class="p">(</span><span class="n">BasePolicy</span><span class="p">):</span>
         <span class="n">__scope__</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Topicdata&quot;</span>
         <span class="n">data</span><span class="p">:</span> <span class="nb">bytes</span></div>
 
-<div class="viewcode-block" id="Policy.Groupdata"><a class="viewcode-back" href="../../cyclonedds.core.html#cyclonedds.core.Policy.Groupdata">[docs]</a>    <span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="viewcode-block" id="Policy.Groupdata"><a class="viewcode-back" href="../../cyclonedds.qos.html#cyclonedds.core.Policy.Groupdata">[docs]</a>    <span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="k">class</span> <span class="nc">Groupdata</span><span class="p">(</span><span class="n">BasePolicy</span><span class="p">):</span>
         <span class="n">__scope__</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Groupdata&quot;</span>
         <span class="n">data</span><span class="p">:</span> <span class="nb">bytes</span></div></div>
 
 
-<div class="viewcode-block" id="Qos"><a class="viewcode-back" href="../../cyclonedds.core.html#cyclonedds.core.Qos">[docs]</a><span class="k">class</span> <span class="nc">Qos</span><span class="p">:</span>
+<div class="viewcode-block" id="Qos"><a class="viewcode-back" href="../../cyclonedds.qos.html#cyclonedds.core.Qos">[docs]</a><span class="k">class</span> <span class="nc">Qos</span><span class="p">:</span>
     <span class="n">_policy_mapper</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s2">&quot;Policy.Reliability.BestEffort&quot;</span><span class="p">:</span> <span class="n">Policy</span><span class="o">.</span><span class="n">Reliability</span><span class="o">.</span><span class="n">BestEffort</span><span class="p">,</span>
         <span class="s2">&quot;Policy.Reliability.Reliable&quot;</span><span class="p">:</span> <span class="n">Policy</span><span class="o">.</span><span class="n">Reliability</span><span class="o">.</span><span class="n">Reliable</span><span class="p">,</span>
@@ -623,7 +623,7 @@
         <span class="s2">&quot;Policy.Topicdata&quot;</span><span class="p">:</span> <span class="n">Policy</span><span class="o">.</span><span class="n">Topicdata</span>
     <span class="p">}</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">policies</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Qos.__init__"><a class="viewcode-back" href="../../cyclonedds.qos.html#cyclonedds.core.Qos.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">policies</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">policies</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">policies</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">policies</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">BasePolicy</span><span class="p">):</span>
@@ -640,7 +640,7 @@
                     <span class="n">policies</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">policy</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">__policies</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">policies</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">__scope__</span><span class="p">))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_assert_consistency</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_assert_consistency</span><span class="p">()</span></div>
 
     <span class="k">def</span> <span class="nf">_assert_consistency</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__policies</span><span class="p">)):</span>
